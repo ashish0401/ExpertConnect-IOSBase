@@ -18,13 +18,13 @@ class ApiService: ApiServiceProtocol {
     /**
      This function constructs an api endpoint with the given parameters
      - parameters:
-        - base: Base url
-        - params: url segments for endpoint construction
+     - base: Base url
+     - params: url segments for endpoint construction
      - returns: API Endpoint
      */
     func constructApiEndpoint(base: String, params: String...) throws -> String {
         var url: String = base.hasSuffix("/") ? base.substring(to: base.index(before: base.endIndex)) : base
-
+        
         for param in params {
             guard !param.isEmpty else {
                 throw EApiErrorType.InvalidParameters
@@ -42,7 +42,7 @@ class ApiService: ApiServiceProtocol {
     /**
      This method constructs HTTP header to consume the API
      - parameters:
-        - csrfToken: CSRF Token for passing CSRF
+     - csrfToken: CSRF Token for passing CSRF
      - returns: HTTP header as key-value pairs
      */
     func constructHeader(withCsrfToken exist: Bool, cookieDictionary: [String: String]?) throws -> [String: String] {
@@ -53,36 +53,36 @@ class ApiService: ApiServiceProtocol {
         
         
         // Update cookie if new key-values exist
-    /*    let cookie = self.getCookieString()
-        if var cookie = cookie {
-            if(cookieDictionary != nil && cookieDictionary!.count > 0) {
-                for keyValuePair in cookieDictionary! {
-                    cookie = self.updateCookieString(cookie: cookie, withKey: keyValuePair.key, withValue: keyValuePair.value)
-                }
-            }
-            
-            headers["Cookie"] = cookie // Send the current cookie at every request
-        }
-        
-        if (exist) {
-            let csrfToken = self.getCsrfToken()
-            
-            if csrfToken == nil {
-                throw EApiErrorType.InvalidCsrfToken
-            }
-            
-            headers["X-CSRF-TOKEN"] = csrfToken!
-        }
-*/
+        /*    let cookie = self.getCookieString()
+         if var cookie = cookie {
+         if(cookieDictionary != nil && cookieDictionary!.count > 0) {
+         for keyValuePair in cookieDictionary! {
+         cookie = self.updateCookieString(cookie: cookie, withKey: keyValuePair.key, withValue: keyValuePair.value)
+         }
+         }
+         
+         headers["Cookie"] = cookie // Send the current cookie at every request
+         }
+         
+         if (exist) {
+         let csrfToken = self.getCsrfToken()
+         
+         if csrfToken == nil {
+         throw EApiErrorType.InvalidCsrfToken
+         }
+         
+         headers["X-CSRF-TOKEN"] = csrfToken!
+         }
+         */
         return headers
     }
     
     /**
      This method sends a GET request to given url in order to fetch data
      - parameters:
-        - url: API Endpoint
-        - headers: Required HTTP header
-        - callback: The callback handler to provide the result of the fetched data
+     - url: API Endpoint
+     - headers: Required HTTP header
+     - callback: The callback handler to provide the result of the fetched data
      */
     func get(url: String, headers: [String : String]?, converter: ((JSON) -> Any)?, callback: @escaping (ECallbackResultType) -> Void) {
         // Send the GET request
@@ -90,7 +90,7 @@ class ApiService: ApiServiceProtocol {
             // Get the status code of response
             if (response.response != nil) {
                 let status = response.response!.statusCode;
-
+                
                 switch status {
                     
                 case EHttpStatusCode.OK.rawValue:
@@ -131,7 +131,7 @@ class ApiService: ApiServiceProtocol {
     }
     
     func create(_ url: String, parameters: [String : Any]?, headers: [String : String]?, converter: ((JSON) -> Any)?, callback: @escaping (ECallbackResultType) -> Void) {
-       
+        
         // Send the POST request
         Alamofire.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.prettyPrinted, headers: headers)
             .responseJSON { response in
@@ -155,46 +155,46 @@ class ApiService: ApiServiceProtocol {
                         }
                     }
                     
-/*
-                    // Get the status code of response
-                    let status = response.response!.statusCode;
-                    
-                    switch status {
-    
-                    case EHttpStatusCode.CREATED.rawValue:
-                        // Get the response body
-                        if let value = response.result.value as Any? {
-                            
-                            var model: Any? = nil
-                            
-                            if converter != nil {
-                                let json = JSON(value)
-                                model = converter!(json)
-                            }
-                            
-                            // call callback with no error
-                            callback(ECallbackResultType.Success(model))
-                        }
-                        
-                    case EHttpStatusCode.INVALID_CREDENTIAL.rawValue:
-                        // User already exist
-                        callback(ECallbackResultType.Failure(EApiErrorType.InvalidCredentials))
-                        
-                    case EHttpStatusCode.CONFLICT.rawValue:
-                        // User already exist
-                        callback(ECallbackResultType.Failure(EApiErrorType.AlreadyExist))
-                        
-                    case EHttpStatusCode.NOT_FOUND.rawValue:
-                        // The email does not exist
-                        callback(ECallbackResultType.Failure(EApiErrorType.NotExist))
-                        
-                    case EHttpStatusCode.BAD_REQUEST.rawValue:
-                        // Invalid parameters
-                        callback(ECallbackResultType.Failure(EApiErrorType.InvalidParameters))
-                        
-                    default:
-                        callback(ECallbackResultType.Failure(EApiErrorType.UnknownError))
-                    } */
+                    /*
+                     // Get the status code of response
+                     let status = response.response!.statusCode;
+                     
+                     switch status {
+                     
+                     case EHttpStatusCode.CREATED.rawValue:
+                     // Get the response body
+                     if let value = response.result.value as Any? {
+                     
+                     var model: Any? = nil
+                     
+                     if converter != nil {
+                     let json = JSON(value)
+                     model = converter!(json)
+                     }
+                     
+                     // call callback with no error
+                     callback(ECallbackResultType.Success(model))
+                     }
+                     
+                     case EHttpStatusCode.INVALID_CREDENTIAL.rawValue:
+                     // User already exist
+                     callback(ECallbackResultType.Failure(EApiErrorType.InvalidCredentials))
+                     
+                     case EHttpStatusCode.CONFLICT.rawValue:
+                     // User already exist
+                     callback(ECallbackResultType.Failure(EApiErrorType.AlreadyExist))
+                     
+                     case EHttpStatusCode.NOT_FOUND.rawValue:
+                     // The email does not exist
+                     callback(ECallbackResultType.Failure(EApiErrorType.NotExist))
+                     
+                     case EHttpStatusCode.BAD_REQUEST.rawValue:
+                     // Invalid parameters
+                     callback(ECallbackResultType.Failure(EApiErrorType.InvalidParameters))
+                     
+                     default:
+                     callback(ECallbackResultType.Failure(EApiErrorType.UnknownError))
+                     } */
                 } else {
                     callback(ECallbackResultType.Failure(EApiErrorType.APIEndpointNotAvailable))
                 }
@@ -202,83 +202,42 @@ class ApiService: ApiServiceProtocol {
     }
     
     func createForgotPassword(_ url: String, parameters: [String : Any]?, headers: [String : String]?, converter: ((JSON) -> Any)?, callback: @escaping (ECallbackResultType) -> Void) {
-    // Send the POST request
-    Alamofire.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.prettyPrinted, headers: headers)
-    .responseJSON { response in
-    
-    if (response.response != nil) {
-    
-    if let value = response.result.value as Any? {
-    
-    var model: Any? = nil
-    
-    if converter != nil {
-    let json = JSON(value)
-    
-    if json["status"].boolValue {
-    model = converter!(json)
-    // call callback with no error
-    callback(ECallbackResultType.Success(model))
-    } else {
-    model = converter!(json)
-    callback(ECallbackResultType.Success(model))
+        // Send the POST request
+        Alamofire.request(url, method: .post, parameters: parameters, encoding: JSONEncoding.prettyPrinted, headers: headers)
+            .responseJSON { response in
+                
+                if (response.response != nil) {
+                    
+                    if let value = response.result.value as Any? {
+                        
+                        var model: Any? = nil
+                        
+                        if converter != nil {
+                            let json = JSON(value)
+                            
+                            if json["status"].boolValue {
+                                model = converter!(json)
+                                // call callback with no error
+                                callback(ECallbackResultType.Success(model))
+                            } else {
+                                model = converter!(json)
+                                callback(ECallbackResultType.Success(model))
+                            }
+                        }
+                        
+                    }
+                } else {
+                    callback(ECallbackResultType.Failure(EApiErrorType.APIEndpointNotAvailable))
+                }
+        }
     }
-    }
-    
-    }
-    
-    /*
-     // Get the status code of response
-     let status = response.response!.statusCode;
-     
-     switch status {
-     
-     case EHttpStatusCode.CREATED.rawValue:
-     // Get the response body
-     if let value = response.result.value as Any? {
-     
-     var model: Any? = nil
-     
-     if converter != nil {
-     let json = JSON(value)
-     model = converter!(json)
-     }
-     
-     // call callback with no error
-     callback(ECallbackResultType.Success(model))
-     }
-     
-     case EHttpStatusCode.INVALID_CREDENTIAL.rawValue:
-     // User already exist
-     callback(ECallbackResultType.Failure(EApiErrorType.InvalidCredentials))
-     
-     case EHttpStatusCode.CONFLICT.rawValue:
-     // User already exist
-     callback(ECallbackResultType.Failure(EApiErrorType.AlreadyExist))
-     
-     case EHttpStatusCode.NOT_FOUND.rawValue:
-     // The email does not exist
-     callback(ECallbackResultType.Failure(EApiErrorType.NotExist))
-     
-     case EHttpStatusCode.BAD_REQUEST.rawValue:
-     // Invalid parameters
-     callback(ECallbackResultType.Failure(EApiErrorType.InvalidParameters))
-     
-     default:
-     callback(ECallbackResultType.Failure(EApiErrorType.UnknownError))
-     } */
-    } else {
-    callback(ECallbackResultType.Failure(EApiErrorType.APIEndpointNotAvailable))
-    }
-  }
-}
     /**
      This method sends a PUT request to given url in order to update data
      - parameters:
-        - url: API endpoint
-        - parameters: The data to be updated
-        - headers: Required HTTP header
-        - callback: The callback handler to provide the result of the update operation
+     - url: API endpoint
+     - parameters: The data to be updated
+     - headers: Required HTTP header
+     - callback: The callback handler to provide the result of the update operation
      */
     func update(url: String, parameters: [String : Any]?, headers: [String : String]?, callback: @escaping (ECallbackResultType) -> Void) {
         // Send the POST request
@@ -329,10 +288,10 @@ class ApiService: ApiServiceProtocol {
     /**
      This method sends a DELETE request to given url in order to update data
      - parameters:
-        - url: API endpoint
-        - parameters: The data to be updated
-        - headers: Required HTTP header
-        - callback: The callback handler to provide the result of the update operation
+     - url: API endpoint
+     - parameters: The data to be updated
+     - headers: Required HTTP header
+     - callback: The callback handler to provide the result of the update operation
      */
     func delete(url: String, parameters: [String : Any]?, headers: [String : String]?, callback: @escaping (ECallbackResultType) -> Void) {
         // Send the POST request
@@ -375,7 +334,7 @@ class ApiService: ApiServiceProtocol {
         UserDefaults.standard.setValue(cookie, forKey: self.cookieKey)
         UserDefaults.standard.synchronize()
     }
-
+    
     func getCookieString() -> String? {
         let cookie = UserDefaults.standard.object(forKey: self.cookieKey) as? String
         return cookie

@@ -25,6 +25,7 @@ class HomeVC: UIViewController, VKSideMenuDelegate, VKSideMenuDataSource, UIColl
         
         super.viewDidLoad()
         NotificationCenter.default.addObserver(self, selector: #selector(self.onUserAuthenticationStatusChanged), name: NSNotification.Name(rawValue: "com.ExpertConnect.loggedIn"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.onUserSignupStatusChanged), name: NSNotification.Name(rawValue: "com.ExpertConnect.Signup"), object: nil)
         
         if !UserDefaults.standard.bool(forKey: "UserLoggedInStatus") {
             self.navigationController!.pushViewController(LoginWireFrame.setupLoginModule() as UIViewController, animated: false)
@@ -343,7 +344,6 @@ class HomeVC: UIViewController, VKSideMenuDelegate, VKSideMenuDataSource, UIColl
         return item
     }
     
-    
     // MARK: - VKSideMenuDelegate
     func sideMenu(_ sideMenu: VKSideMenu!, didSelectRowAt indexPath: IndexPath!) {
         if indexPath.row == 7 {
@@ -435,10 +435,25 @@ class HomeVC: UIViewController, VKSideMenuDelegate, VKSideMenuDataSource, UIColl
             } catch {
                 print(error)
             }
-
             print("Hey you logged in: \(model.firstName)")
         }
     }
+    
+    @objc func onUserSignupStatusChanged(notification: Notification) {
+        if let userInfo = notification.userInfo as NSDictionary? as? [String: Any] {
+            let model = userInfo["CoachingDetailsOutputDomainModel"] as! CoachingDetailsOutputDomainModel
+            UserDefaults.standard.setValue(String(format: "%@ %@", model.firstName, model.lastName), forKey: "UserFullName")
+            let url = URL(string: model.profilePic)
+            do {
+                let imageData = try NSData(contentsOf: url!, options: NSData.ReadingOptions())
+                UserDefaults.standard.setValue( imageData, forKey: "UserProfileData")
+            } catch {
+                print(error)
+            }
+            print("Hey you logged in: \(model.firstName)")
+        }
+    }
+
 }
 
 

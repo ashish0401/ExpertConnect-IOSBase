@@ -11,8 +11,6 @@ import UIKit
 
 class CoachingDetailsVC: UIViewController {
     
-    
-    
     @IBOutlet var travelKmButton: UIButton!
     @IBOutlet var joinExpertConnectButton: UIButton!
     @IBOutlet var twoLineLabel: UILabel!
@@ -23,7 +21,8 @@ class CoachingDetailsVC: UIViewController {
     @IBOutlet var otherLibraryCheckboxButton: UIButton!
     @IBOutlet var onlineSkypeCheckboxButton: UIButton!
     @IBOutlet var termsAndConditionsCheckboxButton: UIButton!
-    
+    var userId: String = ""
+
     let step: Float = 10
     
     enum UIAlertControllerStyle : Int {
@@ -84,15 +83,12 @@ class CoachingDetailsVC: UIViewController {
     
     @IBAction func expertConnectButtonClicked(_ sender: UIButton) {
         self.view.endEditing(true)
-        
         if (self.homeCheckboxButton.image(for: UIControlState.normal) == UIImage(named:"unselected_check_boc") && self.instituteCheckboxButton.image(for: UIControlState.normal) == UIImage(named:"unselected_check_boc") && self.travelCheckboxButton.image(for: UIControlState.normal) == UIImage(named:"unselected_check_boc") && self.otherLibraryCheckboxButton.image(for: UIControlState.normal) == UIImage(named:"unselected_check_boc") && self.onlineSkypeCheckboxButton.image(for: UIControlState.normal) == UIImage(named:"unselected_check_boc")){
             self.alert(message: "Please check atleast one field")
         }
         if self.termsAndConditionsCheckboxButton.image(for: UIControlState.normal) == UIImage(named:"unselected_check_boc"){
             self.alert(message: "Agree to Terms And Conditions")
-        }
-        else {
-
+        } else {
             var coachingVenue = [] as Array
             
             if self.homeCheckboxButton.image(for: UIControlState.normal) == UIImage(named:"selected_check_box"){
@@ -110,7 +106,8 @@ class CoachingDetailsVC: UIViewController {
             if self.onlineSkypeCheckboxButton.image(for: UIControlState.normal) == UIImage(named:"selected_check_box"){
                 coachingVenue.append("Online - Skype, Messanger")
             }
-            let coachingDetailsInput = CoachingDetailsInputDomainModel.init(userId: "31", coachingVenue: coachingVenue)
+            self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
+            let coachingDetailsInput = CoachingDetailsInputDomainModel.init(userId: self.userId, coachingVenue: coachingVenue)
             
             var url = String()
             let defaults = UserDefaults.standard
@@ -126,13 +123,13 @@ class CoachingDetailsVC: UIViewController {
             APIDataManager.coachingDetails(endpoint: url, data:coachingDetailsInput,callback: { (result) in
                 print(result)
                 switch result {
-                case .Failure(let error):
+                case.Failure(let error):
                     self.onUserCoachingDetailsFailed(error: error)
-                case .Success(let data as OTPOutputDomainModel):
+                case.Success(let data as CoachingDetailsOutputDomainModel):
                     do {
                         self.onUserCoachingDetailsSucceeded(data: data)
                     } catch {
-                        self.onUserCoachingDetailsFailed(data: data)
+                        self.onUserCoachingDetailsFailed(error: EApiErrorType.InternalError)
                     }
                 default:
                     break
@@ -218,30 +215,26 @@ class CoachingDetailsVC: UIViewController {
             self.termsAndConditionsCheckboxButton.setImage(UIImage(named:"unselected_check_boc"), for: UIControlState.normal)
         }
     }
-    // MARK: SignUp Methods
-    func onUserCoachingDetailsSucceeded(data: OTPOutputDomainModel) {
+    // MARK: CoachingDetail Delegate
+    func onUserCoachingDetailsSucceeded(data: CoachingDetailsOutputDomainModel) {
         // Convert Domain Model to View Model
         // Send to wireframe to route somewhere else
         self.dismissProgress()
+        
         print("signup data %@",data.message)
         print("signup data %@",data.status)
-        //        self.showSuccessMessage(message: data.message)
-        if data.status {
-            self.performSelector(onMainThread: #selector(LoginVC.showHomeController), with: nil, waitUntilDone: true)
-        } else {
-            self.displayErrorMessage(message: data.message)
-        }
+        
+        let userInfo = ["CoachingDetailsOutputDomainModel": data] as [String: Any]
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "com.ExpertConnect.Signup"), object: nil, userInfo:userInfo)
+        UserDefaults.standard.set(true, forKey: "UserLoggedInStatus")
+        self.navigateBackToHomeViewController()
     }
+    
     func onUserCoachingDetailsFailed(error: EApiErrorType) {
         self.dismissProgress()
         self.displayErrorMessage(message: "Failed to register the user")
     }
-    
-    func onUserCoachingDetailsFailed(data:OTPOutputDomainModel) {
-        self.dismissProgress()
-        self.displayErrorMessage(message: data.message)
-    }
-    
+        
     // MARK: Alert methods
     func displayErrorMessage(message: String) {
         self.showErrorMessage( message: message)
@@ -257,6 +250,12 @@ class CoachingDetailsVC: UIViewController {
         alertController.addAction(OKAction)
         self.present(alertController, animated: true, completion: nil)
     }
+    
+    func navigateBackToHomeViewController() {
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        appDelegate.setInitialViewController()
+    }
+
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

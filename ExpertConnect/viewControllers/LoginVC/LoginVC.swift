@@ -36,8 +36,8 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
         self.view.insertSubview(backgroundImage, at: 0)
         self.hideKeyboardWhenTappedAround()
         self.emailTextfield.delegate = self
-        self.emailTextfield.text = "Email"
-        self.passwordTextfield.text = "Password"
+        self.emailTextfield.text = "Genius@gmail.com"
+        self.passwordTextfield.text = "123456"
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -248,7 +248,6 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.setInitialViewController()
     }
-    
     
     /**
      Validates the given text according to input type which can be Phone, Email or Default, if input text is empty returns valid(true)

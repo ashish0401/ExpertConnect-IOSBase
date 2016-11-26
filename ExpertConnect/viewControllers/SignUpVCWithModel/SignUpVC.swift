@@ -28,6 +28,9 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
     var OTPTextfield = UITextField()
     let alertView = CustomIOS7AlertView()
     
+    var userId: String = ""
+    var userType: String = ""
+
     // The buttons that will appear in the alertView
     let buttons = [
         "SUBMIT"
@@ -237,7 +240,6 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
     
     // MARK: next Button method
     @IBAction func nextButtonClicked(_ sender: UIButton) {
-        
 //        self.view.endEditing(true)
         if (self.profileImageview.image == nil || self.profileImageview.image == UIImage(named:"default_profile_pic"))
         {
@@ -270,15 +272,20 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
             
             let datestring: String = self.DOBTextfield.text!
             var parts = datestring.components(separatedBy: "/")
-            var anotherDatestring: String = String(format:"%@-%@-%@",parts[2],parts[1],parts[0])
+            let userBirthDate: String = String(format:"%@-%@-%@",parts[2],parts[1],parts[0])
             
             print(gender)
             
-        selectedImage = UIImage(named:"default_profile_pic")!
-        let base64Image = selectedImage.convertImageToBase64(image: selectedImage)
-            
-        let signupInput = SignUpInputDomainModel.init(userType: "2", firstName: self.firstNameTextfield.text!, lastName: self.firstNameTextfield.text!, emailId: self.firstNameTextfield.text!, password: self.firstNameTextfield.text!, countryCode: self.firstNameTextfield.text!, mobileNo: self.firstNameTextfield.text!, dob: anotherDatestring, gender: gender, profilePic: base64Image, deviceToken: "APA91bEjHcRNwyoNZ4FPDmBFCx9p2W4tDnF6A1kcScrcmrYNEV_IO9_zF4Hidb04e3nEVZEObnxj3YLNOFM--Szj_IFdUiJ6rDYCZlPfsslLwf1ZTzMdoqeG2kWUkN9d2SHV5ZLDVc-z", osType: "iOS", latitude: "18.5077762", longitude: "73.7751809", location: "pune", regType: "1", socialId: "")
+        let userPrifilePic = selectedImage.convertImageToBase64(image: selectedImage)
         
+            let defaults = UserDefaults.standard
+            let teacherStudentValue = defaults.string(forKey: "teacherStudentValue")
+            if teacherStudentValue! == NSString(format:"%@","0") as String {
+                self.userType = teacherStudentValue!
+            } else if teacherStudentValue! == NSString(format:"%@","1") as String {
+                self.userType = teacherStudentValue!
+            }
+        let signupInput = SignUpInputDomainModel.init(userType: self.userType, firstName: self.firstNameTextfield.text!, lastName: self.lastNameTextfield.text!, emailId: self.EmailTextfield.text!, password: self.passwordTextfield.text!, countryCode: self.countryCodeTextfield.text!, mobileNo: self.mobileNoTextfield.text!, dob: userBirthDate, gender: gender, profilePic: userPrifilePic, deviceToken: "APA91bEjHcRNwyoNZ4FPDmBFCx9p2W4tDnF6A1kcScrcmrYNEV_IO9_zF4Hidb04e3nEVZEObnxj3YLNOFM--Szj_IFdUiJ6rDYCZlPfsslLwf1ZTzMdoqeG2kWUkN9d2SHV5ZLDVc-z", osType: "iOS", latitude: "18.5077762", longitude: "73.7751809", location: "Pune", regType: "1", socialId: "")
         
         let APIDataManager: SignUpProtocols = SignUpApiDataManager()
             APIDataManager.signUp(data:signupInput,callback: { (result) in
@@ -572,6 +579,7 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
     func onUserSignUpSucceeded(data: SignUpOutputDomainModel) {
         // Convert Domain Model to View Model
         // Send to wireframe to route somewhere else
+        UserDefaults.standard.setValue( data.userId, forKey: "UserId")
         print("Hey you logged in: \(data.message)")
         self.dismissProgress()
         print("signup data %@",data.message)
@@ -652,12 +660,17 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
             //push next VC
             let defaults = UserDefaults.standard
             let teacherStudentValue = defaults.string(forKey: "teacherStudentValue")
+            
             if teacherStudentValue! == NSString(format:"%@","0") as String {
-                self.navigationController!.pushViewController(self.storyboard!.instantiateViewController(withIdentifier: "CoachingDetailsVC") as UIViewController, animated: true)
+                let coachingDetailsVC : CoachingDetailsVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "CoachingDetailsVC") as UIViewController as! CoachingDetailsVC
+                //coachingDetailsVC.userId = self.userId
+                self.navigationController?.pushViewController(coachingDetailsVC, animated: true)
+                
             } else if teacherStudentValue! == NSString(format:"%@","1") as String {
-                self.navigationController!.pushViewController(self.storyboard!.instantiateViewController(withIdentifier: "ExpertDetailsVC") as UIViewController, animated: true)
+                let expertDetailsVC : ExpertDetailsVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ExpertDetailsVC") as UIViewController as! ExpertDetailsVC
+               // expertDetailsVC.userId = self.userId
+                self.navigationController?.pushViewController(expertDetailsVC, animated: true)
             }
-        
         } else {
             self.displayErrorMessage(message: data.message)
             alertView.close()

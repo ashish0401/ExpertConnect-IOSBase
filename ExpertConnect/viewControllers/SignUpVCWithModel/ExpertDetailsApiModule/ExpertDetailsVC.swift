@@ -31,6 +31,8 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
     @IBOutlet var nextButton: UIButton!
     @IBOutlet var slider: UISlider!
     
+    var userId: String = ""
+
     @IBOutlet var expertLevelButton: UIButton!
     @IBOutlet var textview: UITextView!
     
@@ -105,7 +107,6 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
         self.pickerviewExpertDetails.dataSource = self
         
         self.navigationController?.setNavigationBarHidden(false, animated: true)
-        
         
         self.navigationItem.hidesBackButton = true;
         
@@ -245,6 +246,7 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
             self.advanceMiddleButton.isEnabled = true
         }
     }
+    
     @IBAction func nextButtonAction(_ sender: UIButton) {
         self.view.endEditing(true)
         if (self.mainCategoryTextfield.text == nil || (self.mainCategoryTextfield.text?.characters.count)! == 0){
@@ -299,7 +301,8 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
             self.alert(message: "Please Write about yourself")
         }
         else {
-            let expertDetailsInput = ExpertDetailsInputDomainModel.init(userId: "31",
+            self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
+            let expertDetailsInput = ExpertDetailsInputDomainModel.init(userId: self.userId,
                                                                         categoryId: self.mainCategoryTextfield.text!,
                                                                         subCategoryId: self.subCategoryTextfield.text!,
                                                                         qualification: self.qualificationTextfield.text!,
@@ -334,44 +337,38 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
             })
         }
     }
+    
     func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
         if (textField == self.mainCategoryTextfield || textField == self.subCategoryTextfield || textField == self.beginnerMiddleTextfield || textField == self.intermediateMiddleTextfield || textField == self.advanceMiddleTextfield)
         {
-            
             var cell = SignupDateCell()
             cell = Bundle.main.loadNibNamed("SignupDateCell", owner: nil, options: nil)?[0] as! SignupDateCell
             cell.doneButton.addTarget(self, action: #selector(inputAccessoryViewDidFinish(button:)), for: .touchUpInside)
             let myToolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: 44))
+            
             cell.frame = myToolbar.frame
             myToolbar.addSubview(cell)
+            
             textField.inputAccessoryView = myToolbar;
             textField.inputAccessoryView?.backgroundColor=UIColor.darkGray
             if textField == self.mainCategoryTextfield {
                 cell.centerLabel.text = "Select main Category"
-            }
-            else if textField == self.subCategoryTextfield {
+            } else if textField == self.subCategoryTextfield {
                 cell.centerLabel.text = "Select sub Category"
-            }
-            else if (textField == self.beginnerMiddleTextfield || textField == self.intermediateMiddleTextfield || textField == self.advanceMiddleTextfield){
+            } else if (textField == self.beginnerMiddleTextfield || textField == self.intermediateMiddleTextfield || textField == self.advanceMiddleTextfield){
                 cell.centerLabel.text = "Select Wages"
             }
+            
             self.datePickerArray.removeAllObjects()
-            
-            
             self.pickerviewExpertDetails.tag = textField.tag
             
-            for i in 1..<10{
+            for i in 1..<10 {
                 var dateLocal = NSString()
-                
-                dateLocal = NSString(format:"0%d" , i )
+                dateLocal = NSString(format: "0%d" , i)
                 self.datePickerArray .add(dateLocal)
             }
-            
             self.pickerviewExpertDetails.reloadAllComponents()
-            
-        }
-        else
-        {
+        } else {
             textField.inputAccessoryView = nil;
             textField.inputAccessoryView?.backgroundColor=UIColor.clear
         }
@@ -396,7 +393,6 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
 
         let title = NSString(format:"%@" , self.datePickerArray[row] as! CVarArg )
         return title as String
-        
         
     }
     
@@ -446,7 +442,6 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
         return true
     }
     
-    
     public func textViewShouldEndEditing(_ textView: UITextView) -> Bool{
         return true
     }
@@ -476,7 +471,7 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
             return true
         }
     }
-    // MARK: SignUp Methods
+    // MARK: SignUp Delegate
     func onUserExpertDetailsSucceeded(data: OTPOutputDomainModel) {
         // Convert Domain Model to View Model
         // Send to wireframe to route somewhere else

@@ -19,7 +19,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Override point for customization after application launch.
         //self.window?.rootViewController = LoginWireFrame.setupLoginModule()
         if let font = UIFont(name: "Raleway-Medium", size: 22) {
-            let attributes = [NSFontAttributeName: font]
            // UINavigationBar.appearance().titleTextAttributes = attributes
             UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName : UIColor.ExpertConnectRed, NSFontAttributeName: font]
         } else {

@@ -34,8 +34,8 @@ class SignUpApiModelConverter {
         
         model.message = message
         model.status = status
-        model.userType = userId
-        model.userId = userType
+        model.userType = userType
+        model.userId = userId
         
         print(model.message)
         print(model.status)

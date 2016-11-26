@@ -21,11 +21,12 @@ final class CoachingDetailsApiDataManager: CoachingDetailsProtocol {
             let parameters = ["user_id" : data.userId, "coaching_venue" : data.coachingVenue] as [String : Any]
             
             let apiConverter = CoachingDetailsApiModelConverter()
-            api.createForgotPassword(url,
-                                     parameters: parameters as [String : AnyObject]?,
-                                     headers: headers, converter: { (json) -> AnyObject in
+            api.create(url,
+                       parameters: parameters as [String : AnyObject]?,
+                       headers: headers,
+                       converter: { (json) -> AnyObject in
                                         return apiConverter.fromJson(json: json) as CoachingDetailsOutputDomainModel},
-                                     callback: callback)
+                       callback: callback)
             
         } catch {
             // Change it with the real error
