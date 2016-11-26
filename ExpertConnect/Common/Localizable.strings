@@ -1,0 +1,10 @@
+/* 
+  Localizable.strings
+  Mezuka
+
+  Created by Hasan H. Topcu on 20/10/2016.
+  Copyright © 2016 Mezuka. All rights reserved.
+*/
+"Ok" = "Ok";
+"Success" = "Success";
+"Error" = "Error";

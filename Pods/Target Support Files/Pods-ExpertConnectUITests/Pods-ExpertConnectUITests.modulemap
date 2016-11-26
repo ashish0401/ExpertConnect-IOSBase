@@ -1,0 +1,6 @@
+framework module Pods_ExpertConnectUITests {
+  umbrella header "Pods-ExpertConnectUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}
