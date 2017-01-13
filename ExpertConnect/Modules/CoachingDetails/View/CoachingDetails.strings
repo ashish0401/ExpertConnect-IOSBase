@@ -1,0 +1,15 @@
+/* 
+  Login.strings
+  Mezuka
+
+  Created by Hasan H. Topcu on 20/10/2016.
+  Copyright © 2016 Mezuka. All rights reserved.
+*/
+"Processing" = "Processing";
+"Username or password is incorrect" = "Username or password is incorrect";
+"Please Enter Valid Email" = "Please Enter Valid Email";
+"No Internet Connection" = "No Internet Connection";
+"No categories found in the database" = "No categories found in the database";
+"No sub categories found in the database" = "No sub categories found in the database";
+"Please Check Atleast One Field" = "Please Check Atleast One Field";
+"Agree To Terms And Conditions" = "Agree To Terms And Conditions";

@@ -15,11 +15,52 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.0</string>
+	<string>2.1.1</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb223294754748724</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
-	<string>1</string>
+	<string>2.1.1</string>
+	<key>FacebookAppID</key>
+	<string>223294754748724</string>
+	<key>FacebookDisplayName</key>
+	<string>ExpertConnect</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>fbapi</string>
+		<string>fb-messenger-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Media Access Warning</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Camera Access Warning</string>
+	<key>NSContactsUsageDescription</key>
+	<string>Contacts Access Warning</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>$(PRODUCT_NAME) location use.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Location Access Warning</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Photo Library Access Warning</string>
+	<key>UIAppFonts</key>
+	<array>
+		<string>Raleway-ExtraLight.ttf</string>
+		<string>Raleway-Light.ttf</string>
+		<string>Raleway-Medium.ttf</string>
+		<string>Raleway-SemiBold.ttf</string>
+		<string>Raleway-Thin.ttf</string>
+		<string>01 Digitall.ttf</string>
+	</array>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
@@ -32,15 +73,6 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<key>UIAppFonts</key>
-	<array>
-		<string>Raleway-ExtraLight.ttf</string>
-		<string>Raleway-Light.ttf</string>
-		<string>Raleway-Medium.ttf</string>
-		<string>Raleway-SemiBold.ttf</string>
-		<string>Raleway-Thin.ttf</string>
-		<string>01 Digitall.ttf</string>
-	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
@@ -48,11 +80,5 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Photo Library Access Warning</string>
-	<key>NSCameraUsageDescription</key>
-	<string>Camera Access Warning</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Location Access Warning</string>
 </dict>
 </plist>

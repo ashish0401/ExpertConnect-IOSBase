@@ -1,0 +1,23 @@
+/* 
+  Login.strings
+  Mezuka
+
+  Created by Hasan H. Topcu on 20/10/2016.
+  Copyright © 2016 Mezuka. All rights reserved.
+*/
+"Processing" = "Processing";
+"Username or password is incorrect" = "Username or password is incorrect";
+"Please Enter Valid Email" = "Please Enter Valid Email";
+"No Internet Connection" = "No Internet Connection";
+"No categories found in the database" = "No categories found in the database";
+"No sub categories found in the database" = "No sub categories found in the database";
+"Please Select Profile Picture" = "Please Select Profile Picture";
+"Please Enter Valid Firstname" = "Please Enter Valid Firstname";
+"Please Enter Valid Lastname" = "Please Enter Valid Lastname";
+"Please Enter Mobile No. With Minimum 9 Digits" = "Please Enter Mobile No. With Minimum 9 Digits";
+"Please Enter Password With Minimum 6 Characters" = "Please Enter Password  With Minimum 6 Characters";
+"Please Select Country Code" = "Please Select Country Code";
+"Please Enter Mobile No." = "Please Enter Mobile No.";
+"Please Enter Date Of Birth" = "Please Enter Date Of Birth";
+"Please Select Gender" = "Please Select Gender";
+"Mobile No should be minimum 9 digits" = "Mobile No should be minimum 9 digits";

@@ -153,7 +153,10 @@ class ApiService: ApiServiceProtocol {
                                 callback(ECallbackResultType.Failure(EApiErrorType.UnknownError))
                             }
                         }
+                    } else {
+                        callback(ECallbackResultType.Failure(EApiErrorType.UnknownError))
                     }
+
                     
                     /*
                      // Get the status code of response
@@ -225,9 +228,11 @@ class ApiService: ApiServiceProtocol {
                             }
                         }
                         
+                    }else {
+                        callback(ECallbackResultType.Failure(EApiErrorType.UnknownError))
                     }
                 } else {
-                    callback(ECallbackResultType.Failure(EApiErrorType.APIEndpointNotAvailable))
+                    callback(ECallbackResultType.Failure(EApiErrorType.UnknownError))
                 }
         }
     }

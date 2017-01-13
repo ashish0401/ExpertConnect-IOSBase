@@ -1,0 +1,36 @@
+/* 
+  Login.strings
+  Mezuka
+
+  Created by Hasan H. Topcu on 20/10/2016.
+  Copyright © 2016 Mezuka. All rights reserved.
+*/
+"Processing" = "Processing";
+"Username or password is incorrect" = "Username or password is incorrect";
+"Please Enter Valid Email" = "Please Enter Valid Email";
+"No Internet Connection" = "No Internet Connection";
+"No categories found in the database" = "No categories found in the database";
+"No sub categories found in the database" = "No sub categories found in the database";
+"Please Select Main Category" = "Please Select Main Category";
+"Please Select Sub Category" = "Please Select Sub Category";
+"Please Enter Beginner First Field" = "Please Enter Beginner First Field";
+"Please Enter Beginner Second Field" = "Please Enter Beginner Second Field";
+"Please Enter Beginner Third Field" = "Please Enter Beginner Third Field";
+"Please Enter Intermediate First Field" = "Please Enter Intermediate First Field";
+"Please Enter Intermediate Second Field" = "Please Enter Intermediate Second Field";
+"Please Enter Intermediate Third Field" = "Please Enter Intermediate Third Field";
+"Please Enter Advance First Field" = "Please Enter Advance First Field";
+"Please Enter Advance Second Field" = "Please Enter Advance Second Field";
+"Please Enter Advance Third Field" = "Please Enter Advance Third Field";
+"Please Write About Yourself" = "Please Write About Yourself";
+"Please Enter OTP" = "Please Enter OTP";
+"Please Enter Your Charges" = "Please Enter Your Charges";
+"Please Enter Beginner Lectures Required" = "Please Enter Beginner Lectures Required";
+"Please Enter Intermediate Lectures Required" = "Please Enter Intermediate Lectures Required";
+"Please Enter Advance Lectures Required" = "Please Enter Advance Lectures Required";
+"Your Charges Cannot Be Zero" = "Your Charges Cannot Be Zero";
+"Beginner Lectures Cannot Be Zero" = "Beginner Lectures Cannot Be Zero";
+"Intermediate Lectures Cannot Be Zero" = "Intermediate Lectures Cannot Be Zero";
+"Advance Lectures Cannot Be Zero" = "Advance Lectures Cannot Be Zero";
+
+"Adding New Expertise Details" = "Adding New Expertise Details";

@@ -6,10 +6,16 @@ use_frameworks!
 target 'ExpertConnect' do
 	pod 'Alamofire', '~> 4.0'
 	pod 'Locksmith', '~> 3.0'
-	pod ‘Cosmos’, ‘~> 1.0’
+	pod ‘Cosmos’, ‘~> 7.0’
 	pod 'MBProgressHUD', '~> 1.0.0'
 	pod 'SwiftyJSON'
     pod 'Kingfisher', '~> 3.0'
+    pod 'GooglePlaces'
+    pod 'GooglePlacePicker'
+    pod 'GoogleMaps'
+    pod 'FacebookCore'
+    pod 'FacebookLogin'
+    pod 'FacebookShare'
 end
 
   target 'ExpertConnectTests' do

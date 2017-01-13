@@ -8,29 +8,50 @@
 
 import UIKit
 import CoreData
+import GooglePlaces
+import GoogleMaps
+import FBSDKLoginKit
+import UserNotifications
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
     var window: UIWindow?
     var objTabbarMain = TabbarMainVC()
-    var catchCountryCode = String()
-// Test push Nadeem
+    var selectedCountryCode = String()
+    var deviceToken = String()
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        // Google PlacePicker
+        GMSPlacesClient.provideAPIKey("AIzaSyCHghGMhFROKnppb6LINQXJdXsXGtMgamo")
+        GMSServices.provideAPIKey("AIzaSyCHghGMhFROKnppb6LINQXJdXsXGtMgamo")
+
+        UserDefaults.standard.setValue("com.ExpertConnect.devicetoken", forKey: "com.ExpertConnect.devicetoken")
+
+        registerForPushNotifications(application: application)
+        
         //self.window?.rootViewController = LoginWireFrame.setupLoginModule()
         if let font = UIFont(name: "Raleway-Medium", size: 22) {
            // UINavigationBar.appearance().titleTextAttributes = attributes
             UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName : UIColor.ExpertConnectRed, NSFontAttributeName: font]
+
         } else {
             // The font "Raleway-SemiBold" is not found
         }
         self.setInitialViewController()
+        
+        //FeceBook Login
+        return FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
+        
         return true
     }
 
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
+        
+        FBSDKAppEvents.activateApp()
     }
     
     func applicationDidEnterBackground(_ application: UIApplication) {
@@ -52,6 +73,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.saveContext()
     }
     
+    func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
+        return FBSDKApplicationDelegate.sharedInstance().application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
+    }
     // MARK: - Core Data stack
     
     lazy var persistentContainer: NSPersistentContainer = {
@@ -116,6 +140,82 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
     }
     
+    func registerForPushNotifications(application: UIApplication) {
+        let center = UNUserNotificationCenter.current()
+        center.requestAuthorization(options:[.badge, .alert, .sound]) { (granted, error) in
+            // Enable or disable features based on authorization.
+        }
+        application.registerForRemoteNotifications()
+    }
     
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let deviceTokenString = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
+        
+        print(deviceTokenString)
+        self.deviceToken = deviceTokenString
+        UserDefaults.standard.setValue(self.deviceToken, forKey: "com.ExpertConnect.devicetoken")
+        print("deviceToken \(self.deviceToken)")
+
+    }
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        UserDefaults.standard.setValue("com.ExpertConnect.devicetoken", forKey: "com.ExpertConnect.devicetoken")
+        print("i am not available in simulator \(error)")
+        
+    }
+    
+    
+    
+    /* swift 3 version stack
+    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+        // Override point for customization after application launch.
+        
+        let settings = UIUserNotificationSettings(forTypes: [.Alert, .Badge, .Sound], categories: nil)
+        
+        application.registerUserNotificationSettings(settings)
+        application.registerForRemoteNotifications()
+        
+        return true
+    }
+    
+    
+    func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
+        let characterSet = CharacterSet(charactersIn: "<>")
+        let deviceTokenString = deviceToken.description.trimmingCharacters(in: characterSet).replacingOccurrences(of: " ", with: "");
+        print(deviceTokenString)
+    }
+     */
+    
+    
+    /*
+    func application(_ application: UIApplication, didRegister notificationSettings: UNNotificationSetting) {
+        if notificationSettings.types != .none {
+            application.registerForRemoteNotifications()
+        }
+    }
+    */
+    
+    
+//    // Called when APNs has assigned the device a unique token
+//    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+//        // Convert token to string
+//        let deviceTokenString = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
+//        
+//        // Print it to console
+//        print("APNs device token: \(deviceTokenString)")
+//        
+//        // Persist it in your backend in case it's new
+//    }
+//    
+//    // Called when APNs failed to register the device for push notifications
+//    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+//        // Print the error to console (you should alert the user that registration failed)
+//        print("APNs registration failed: \(error)")
+//    }
+//    
+//    // Push notification received
+//    func application(_ application: UIApplication, didReceiveRemoteNotification data: [AnyHashable : Any]) {
+//        // Print notification payload data
+//        print("Push notification received: \(data)")
+//    }
 }
 
