@@ -1,9 +1,9 @@
 //
 //  String+Localization.swift
-//  Mezuka
+//  ExpertConnect
 //
-//  Created by Hasan H. Topcu on 02/10/2016.
-//  Copyright © 2016 Mezuka. All rights reserved.
+//  Created by Ramesh.M on 06/12/16.
+//  Copyright © 2016 user. All rights reserved.
 //
 
 import Foundation

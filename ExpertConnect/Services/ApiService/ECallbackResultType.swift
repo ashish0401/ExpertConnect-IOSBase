@@ -1,9 +1,9 @@
 //
 //  ECallbackResultType.swift
-//  Mezuka
+//  ExpertConnect
 //
-//  Created by Hasan H. Topcu on 04/01/16.
-//  Copyright © 2016 Kinetica. All rights reserved.
+//  Created by Redbytes on 04/01/16.
+//  Copyright © 2016 ExpertConnect. All rights reserved.
 //
 
 import Foundation

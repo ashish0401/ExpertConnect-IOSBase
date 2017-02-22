@@ -1,9 +1,9 @@
 /* 
-  Login.strings
-  Mezuka
+  CoachingDetails.strings
+  ExpertConnect
 
-  Created by Hasan H. Topcu on 20/10/2016.
-  Copyright © 2016 Mezuka. All rights reserved.
+  Created by Redbytes on 20/10/2016.
+  Copyright © 2016 ExpertConnect. All rights reserved.
 */
 "Processing" = "Processing";
 "Username or password is incorrect" = "Username or password is incorrect";
@@ -13,3 +13,4 @@
 "No sub categories found in the database" = "No sub categories found in the database";
 "Please Check Atleast One Field" = "Please Check Atleast One Field";
 "Agree To Terms And Conditions" = "Agree To Terms And Conditions";
+"Registering to ExpertConnect" = "Registering to ExpertConnect";

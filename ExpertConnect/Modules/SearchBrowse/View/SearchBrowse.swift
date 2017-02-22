@@ -15,6 +15,7 @@ protocol SearchBrowseListTransferProtocol {
     func searchBrowseSucceded(SearchBrowseListArray:NSArray, isFiltered:Bool) -> Void
     func searchBrowseFailed(isFiltered:Bool) -> Void
 }
+
 class SearchBrowse: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource,  UITextFieldDelegate {
     
     @IBOutlet var mainView: UIView!
@@ -25,31 +26,25 @@ class SearchBrowse: UIViewController, UIPickerViewDelegate, UIPickerViewDataSour
     
     var delegate:SearchBrowseListTransferProtocol!
     var pickerviewSearchBrowse = UIPickerView()
-    
     var userId = String()
     var mainCategoryValue = String()
     var subCategoryValue = String()
     var mainCategoryArray: NSArray = [NSDictionary]() as NSArray
     var subCategoryArray: NSArray = [NSDictionary]() as NSArray
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         self.activateSearchBrouseBackIcon(delegate: delegate as! BrowseEnquiryVC)
-
         self.navigationController?.setNavigationBarHidden(false, animated: true)
         self.navigationItem.title = "Browse Enquiry"
         self.navigationController?.navigationBar.backgroundColor = UIColor.white
-        
         self.mainCategoryArray = UserDefaults.standard.value(forKey: "MainCategory") as! NSArray
-        
         self.setExpertConnectTextFieldTheme(textfield: self.mainCategoryTextfield)
         self.setExpertConnectTextFieldTheme(textfield: self.subCategoryTextfield)
         self.setExpertConnectTextFieldTheme(textfield: self.chargesTextfield)
-        
         self.mainCategoryTextfield.setLeftPaddingPoints(10)
         self.subCategoryTextfield.setLeftPaddingPoints(10)
         self.chargesTextfield.sizeToFit()
-        
         self.setupInputViewForTextField(textField: self.mainCategoryTextfield)
         self.setupInputViewForTextField(textField: self.subCategoryTextfield)
     }
@@ -116,7 +111,7 @@ class SearchBrowse: UIViewController, UIPickerViewDelegate, UIPickerViewDataSour
             })
         }
     }
-   
+    
     // MARK: pickerview datasource
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
@@ -273,6 +268,7 @@ class SearchBrowse: UIViewController, UIPickerViewDelegate, UIPickerViewDataSour
         textField.resignFirstResponder()
         return true
     }
+    
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         textField.resignFirstResponder()
         return true
@@ -293,17 +289,13 @@ class SearchBrowse: UIViewController, UIPickerViewDelegate, UIPickerViewDataSour
         
         var cell = SignupDateCell()
         cell = Bundle.main.loadNibNamed("SignupDateCell", owner: nil, options: nil)?[0] as! SignupDateCell
-        
         cell.doneButton.addTarget(self, action: #selector(inputAccessoryViewDidFinishForDoneButton(button:)), for: .touchUpInside)
         cell.cancelButton.addTarget(self, action: #selector(inputAccessoryViewDidFinishForDoneButton(button:)), for: .touchUpInside)
         cell.doneButton.tag = 101
         cell.cancelButton.tag = 102
-        
         cell.centerLabel.textColor = UIColor.ExpertConnectBlack
         cell.centerLabel.font = UIFont(name: "Raleway-Light", size: 18)
-        
         let myToolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: 44))
-        
         cell.frame = myToolbar.frame
         myToolbar.addSubview(cell)
         
@@ -318,8 +310,6 @@ class SearchBrowse: UIViewController, UIPickerViewDelegate, UIPickerViewDataSour
     
     // MARK: SubCategory Response methods
     func onSubcategoryDataSucceeded(data: SubCategoryOutputDomainModel) {
-        // Convert Domain Model to View Model
-        // Send to wireframe to route somewhere else
         print("Hey you logged in: \(data.subCategories[0])")
         self.subCategoryArray = data.subCategories
         self.dismissProgress()

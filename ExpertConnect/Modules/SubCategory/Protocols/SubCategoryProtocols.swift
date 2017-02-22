@@ -9,7 +9,5 @@
 import Foundation
 
 protocol SubCategoryProtocols {
-
     func getSubCategoryDetails(model: SubCategoryDomainModel, callback: @escaping (ECallbackResultType) -> Void)
-
 }

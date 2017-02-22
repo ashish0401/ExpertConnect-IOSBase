@@ -14,6 +14,7 @@ class CoachingDetailsOutputDomainModel {
     var userType: String = ""
     var firstName: String = ""
     var lastName: String = ""
+    var email: String = ""
     var countryCode: String = ""
     var mobileNo: String = ""
     var dob: String = ""
@@ -25,5 +26,6 @@ class CoachingDetailsOutputDomainModel {
     var regType: String = ""
     var socialId: String = ""
     var message: String = ""
-
+    var notificationStatus: String = ""
+    var currentPassword: String = ""
 }

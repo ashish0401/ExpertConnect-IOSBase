@@ -1,5 +1,5 @@
 //
-//  SubCategoryOutputDomainModel.swift
+//  BrowseEnquiryReceivedNotificationOutputDomainModel.swift
 //  ExpertConnect
 //
 //  Created by Redbytes on 21/11/16.

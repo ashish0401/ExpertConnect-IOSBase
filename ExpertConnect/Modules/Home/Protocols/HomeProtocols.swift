@@ -9,7 +9,5 @@
 import Foundation
 
 protocol HomeProtocols {
-
     func getCategoryDetails(callback: @escaping (ECallbackResultType) -> Void)
-
 }

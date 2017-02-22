@@ -14,33 +14,34 @@ protocol filteredTeacherListTransferProtocol {
     func filterTeachersDataSucceeded(filteredTeacherListArray:NSArray, isFiltered:Bool) -> Void
     func filterTeachersDataFailed(isFiltered:Bool) -> Void
 }
-class TeacherFilter: UIViewController, AKSSegmentedSliderControlDelegate {
+
+class TeacherFilter: UIViewController, AKSSegmentedSliderControlDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
     var delegate:filteredTeacherListTransferProtocol!
     let emptyArray = NSArray()
     
     var expertDetailsInputDomainModel: ExpertDetailsInputDomainModel!
     var signUpInputDomainModel: SignUpInputDomainModel!
+    var pickerviewExpertDetails = UIPickerView()
+    var distanceArray = NSMutableArray()
     
     @IBOutlet var travelKmButton: UIButton!
     @IBOutlet var applyButton: UIButton!
     @IBOutlet var twoLineLabel: UILabel!
     @IBOutlet weak var onlineSkypeLabel: UILabel!
-    
     @IBOutlet var homeCheckboxButton: UIButton!
     @IBOutlet var instituteCheckboxButton: UIButton!
     @IBOutlet var travelCheckboxButton: UIButton!
     @IBOutlet var otherLibraryCheckboxButton: UIButton!
     @IBOutlet var onlineSkypeCheckboxButton: UIButton!
     @IBOutlet var customSliderView: UIView!
+    @IBOutlet weak var distanceTextfield: UITextField!
     
     let checkboxDeselected = UIImage(named:"unselected_check_boc")
     let checkboxSelected = UIImage(named:"selected_check_box")
-    
     var userId = String()
     var categoryId = String()
     var subCategoryId = String()
     var expertLevel = String()
-    
     enum UIAlertControllerStyle : Int {
         case ActionSheet
         case Alert
@@ -49,26 +50,22 @@ class TeacherFilter: UIViewController, AKSSegmentedSliderControlDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.activateBackIcon()
-        
         self.navigationController?.setNavigationBarHidden(false, animated: true)
         self.navigationItem.hidesBackButton = true;
         self.twoLineLabel.font =  UIFont(name: "Raleway-Light", size: 18)
         self.twoLineLabel.text = NSString(format: "%@", "Other - Library, Community center etc.") as String
         self.onlineSkypeLabel.font =  UIFont(name: "Raleway-Light", size: 18)
         self.onlineSkypeLabel.text = NSString(format: "%@", "Online - Skype, Messanger etc") as String
-        
         self.navigationItem.title = "Filters"
         self.navigationController?.navigationBar.backgroundColor = UIColor.white
-        // self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor(red: 247/255, green: 67/255, blue: 0.0, alpha: 1.0)]
-        self.travelKmButton.contentEdgeInsets = UIEdgeInsets(top: 0.0, left: 8.0, bottom: 0.0, right: 8.0)
         self.travelKmButton.setTitle("10", for: UIControlState.normal)
-        
         self.homeCheckboxButton.setImage(checkboxDeselected, for: UIControlState.normal)
         self.instituteCheckboxButton.setImage(checkboxDeselected, for: UIControlState.normal)
         self.travelCheckboxButton.setImage(checkboxDeselected, for: UIControlState.normal)
         self.otherLibraryCheckboxButton.setImage(checkboxDeselected, for: UIControlState.normal)
         self.onlineSkypeCheckboxButton.setImage(checkboxDeselected, for: UIControlState.normal)
-        self.setUpDistanceSlider()
+        self.distanceArray.addObjects(from: ["10","20","30","40","50"])
+        self.setupInputViewForTextField(textField: self.distanceTextfield)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -78,8 +75,12 @@ class TeacherFilter: UIViewController, AKSSegmentedSliderControlDelegate {
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        self.setExpertConnectRedButtonTheme(button: self.travelKmButton)
         self.setExpertConnectRedButtonTheme(button: self.applyButton)
+    }
+    
+    @IBAction func distanceButtonClicked(_ sender: UIButton) {
+        self.distanceTextfield.becomeFirstResponder()
+        self.pickerviewExpertDetails.reloadAllComponents()
     }
     
     //MARK: Add Clear Button method
@@ -87,7 +88,6 @@ class TeacherFilter: UIViewController, AKSSegmentedSliderControlDelegate {
         let clearButton = UIButton()
         clearButton.frame = CGRect(x: 0, y: 0, width: 55, height: 35)
         clearButton.backgroundColor = UIColor.clear
-        
         clearButton.setTitle("Clear", for: .normal)
         clearButton.setTitleColor(UIColor.ExpertConnectRed, for: .normal)
         clearButton.titleLabel!.font =  UIFont(name: "Raleway-Light", size: 19)
@@ -113,12 +113,12 @@ class TeacherFilter: UIViewController, AKSSegmentedSliderControlDelegate {
     //MARK: Clear Button Clicked method
     func clearButtonClicked(button: UIButton) {
         /*
-        self.view.endEditing(true)
-        self.delegate.filterTeachersDataSucceeded(filteredTeacherListArray: emptyArray, isFiltered: false)
-        self.navigationController?.popViewController(animated: true)
+         self.view.endEditing(true)
+         self.delegate.filterTeachersDataSucceeded(filteredTeacherListArray: emptyArray, isFiltered: false)
+         self.navigationController?.popViewController(animated: true)
          */
     }
-   
+    
     //MARK: Apply Button method
     @IBAction func applyButtonClicked(_ sender: UIButton) {
         self.view.endEditing(true)
@@ -149,7 +149,7 @@ class TeacherFilter: UIViewController, AKSSegmentedSliderControlDelegate {
             if self.onlineSkypeCheckboxButton.image(for: UIControlState.normal) == checkboxSelected {
                 coachingVenue.append("Online - Skype, Messanger")
             }
-
+            
             self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
             let TeacherFilterModel = TeacherFilterDomainModel.init(userId: self.userId, categoryId: self.categoryId, subCategoryId: self.subCategoryId, level: self.expertLevel, coachingVenue: coachingVenue)
             
@@ -216,115 +216,128 @@ class TeacherFilter: UIViewController, AKSSegmentedSliderControlDelegate {
         }
     }
     
-    
     // MARK: TeacherFilter Response methods
     func onGetTeacherFilterListSucceeded(data: TeacherFilterOutputDomainModel) {
         self.dismissProgress()
         if data.status {
             self.delegate.filterTeachersDataSucceeded(filteredTeacherListArray: data.categories, isFiltered: true)
-            self.navigationController?.popViewController(animated: true)
+            _ = self.navigationController?.popViewController(animated: true)
         }
         else{
-           // self.displayErrorMessage(message: data.message)
+            // self.displayErrorMessage(message: data.message)
             self.delegate.filterTeachersDataFailed(isFiltered: true)
-            self.navigationController?.popViewController(animated: true)
+            _ = self.navigationController?.popViewController(animated: true)
         }
     }
     
     func onGetTeacherFilterListFailed(error: EApiErrorType) {
         self.dismissProgress()
         self.delegate.filterTeachersDataFailed(isFiltered: true)
-        self.navigationController?.popViewController(animated: true)
+        _ = self.navigationController?.popViewController(animated: true)
     }
     
     func onGetTeacherFilterListFailed(data:TeacherFilterOutputDomainModel) {
         self.dismissProgress()
         //self.displayErrorMessage(message: data.message)
         self.delegate.filterTeachersDataFailed(isFiltered: true)
-        self.navigationController?.popViewController(animated: true)
+        _ = self.navigationController?.popViewController(animated: true)
     }
     
-    // MARK: setUpDistanceSlider method
-    func setUpDistanceSlider() {
+    func setupInputViewForTextField(textField: UITextField) {
+        let str = NSString(format:"%@", "0")
+        let defaults = UserDefaults.standard
+        defaults.set(str, forKey: "pickerviewExpertDetailsCoaching")
+        self.pickerviewExpertDetails.delegate = self
+        self.pickerviewExpertDetails.dataSource = self
+        self.pickerviewExpertDetails.backgroundColor = UIColor.white
+        self.pickerviewExpertDetails.tag = 101
+        textField.inputView = pickerviewExpertDetails
         
-        let screenSize = UIScreen.main.bounds
-        let screenWidth = screenSize.width
-        //let screenHeight = screenSize.height
-        if(screenWidth == 320) {
-            let tempXPosition : Float = Float((self.view.frame.width * 12)/100)
-            let xPosition : Int = Int(tempXPosition)
-            let yPosition = 20
-            
-            let tempWidth : Float = Float((self.view.frame.width * 88)/100)
-            let width : Int = Int(tempWidth)
-            let height = 20
-            
-            let tempSpaceBetweenPoints : Float = Float((self.view.frame.width * 14)/100)
-            let spaceBetweenPoints = tempSpaceBetweenPoints
-            let radiusPoint = 8
-            let sliderLineWidth = 5
-            
-            var sliderConrolFrame: CGRect = CGRect.null
-            sliderConrolFrame = CGRect(x: xPosition-4, y: (yPosition), width: width, height: height)
-            //let sliderControl :  AKSSegmentedSliderControl = AKSSegmentedSliderControl(frame: sliderConrolFrame)
-            let sliderControl :  AKSSegmentedSliderControl = AKSSegmentedSliderControl.init(frame: sliderConrolFrame)
-            sliderControl.delegate = self
-            sliderControl.move(to: 0)
-            sliderControl.spaceBetweenPoints = Float(spaceBetweenPoints)
-            sliderControl.radiusPoint = Float(radiusPoint)
-            sliderControl.heightLine = Float(sliderLineWidth)
-            sliderControl.numberOfPoints = 5
-            self.customSliderView.addSubview(sliderControl)
-        } else {
-            
-            let tempXPosition : Float = Float((self.view.frame.width * 12)/100)
-            let xPosition : Int = Int(tempXPosition)
-            let yPosition = 20
-            
-            let tempWidth : Float = Float((self.view.frame.width * 88)/100)
-            let width : Int = Int(tempWidth)
-            let height = 20
-            
-            let tempSpaceBetweenPoints : Float = Float((self.view.frame.width * 15)/100)
-            let spaceBetweenPoints = tempSpaceBetweenPoints
-            let radiusPoint = 8
-            let sliderLineWidth = 5
-            
-            var sliderConrolFrame: CGRect = CGRect.null
-            sliderConrolFrame = CGRect(x: xPosition-4, y: (yPosition), width: width, height: height)
-            //let sliderControl :  AKSSegmentedSliderControl = AKSSegmentedSliderControl(frame: sliderConrolFrame)
-            let sliderControl :  AKSSegmentedSliderControl = AKSSegmentedSliderControl.init(frame: sliderConrolFrame)
-            sliderControl.delegate = self
-            sliderControl.move(to: 0)
-            sliderControl.spaceBetweenPoints = Float(spaceBetweenPoints)
-            sliderControl.radiusPoint = Float(radiusPoint)
-            sliderControl.heightLine = Float(sliderLineWidth)
-            sliderControl.numberOfPoints = 5
-            self.customSliderView.addSubview(sliderControl)
-            //sliderControl.backgroundColor = UIColor.red
+        var cell = SignupDateCell()
+        cell = Bundle.main.loadNibNamed("SignupDateCell", owner: nil, options: nil)?[0] as! SignupDateCell
+        
+        cell.doneButton.addTarget(self, action: #selector(inputAccessoryViewDidFinishForDoneButton(button:)), for: .touchUpInside)
+        cell.cancelButton.addTarget(self, action: #selector(inputAccessoryViewDidFinishForDoneButton(button:)), for: .touchUpInside)
+        cell.doneButton.tag = 101
+        cell.cancelButton.tag = 102
+        cell.centerLabel.textColor = UIColor.ExpertConnectBlack
+        cell.centerLabel.font = UIFont(name: "Raleway-Light", size: 18)
+        let myToolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: 44))
+        cell.frame = myToolbar.frame
+        myToolbar.addSubview(cell)
+        textField.inputAccessoryView = myToolbar;
+        textField.inputAccessoryView?.backgroundColor=UIColor.darkGray
+        if textField == self.distanceTextfield {
+            cell.centerLabel.text = "Distance in Km"
         }
     }
     
-    // MARK: DistanceSlider Delegate method
-    func timeSlider(_ timeSlider: AKSSegmentedSliderControl! , didSelectPointAtIndex index:Int) -> Void  {
-        print(index)
-        var sliderIntValue = Int()
-        if index == 0 {
-            sliderIntValue = 10
+    // MARK: pickerview datasource
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        if self.pickerviewExpertDetails.tag == 101 {
+            return distanceArray.count
         }
-        if index == 1 {
-            sliderIntValue = 20
+        return 0
+    }
+    
+    // MARK: pickerview delegates
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        var title = String()
+        if self.pickerviewExpertDetails.tag == 101 {
+            title = self.distanceArray[row] as! String
         }
-        if index == 2 {
-            sliderIntValue = 30
+        return title as String
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView
+    {
+        if self.pickerviewExpertDetails.tag == 101 {
+            let pickerLabel = UILabel()
+            pickerLabel.textColor = UIColor.ExpertConnectBlack
+            pickerLabel.text = self.distanceArray[row] as? String
+            pickerLabel.font = UIFont(name: "Raleway-Light", size: 18) // In this use your custom font
+            pickerLabel.textAlignment = NSTextAlignment.center
+            return pickerLabel
         }
-        if index == 3 {
-            sliderIntValue = 40
+        
+        let pickerLabel = UILabel()
+        pickerLabel.textColor = UIColor.ExpertConnectBlack
+        pickerLabel.text = ""
+        pickerLabel.font = UIFont(name: "Raleway-Light", size: 18) // In this use your custom font
+        pickerLabel.textAlignment = NSTextAlignment.center
+        return pickerLabel
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        let str = NSString(format:"%d", row)
+        let defaults = UserDefaults.standard
+        defaults.set(str, forKey: "pickerviewExpertDetailsCoaching")
+    }
+    
+    func inputAccessoryViewDidFinishForDoneButton(button : UIButton) {
+        self.view.endEditing(true)
+        if button.tag == 101 {
+            let defaults = UserDefaults.standard
+            let pickerviewExpertDetails = defaults.string(forKey: "pickerviewExpertDetailsCoaching")
+            let intValue = Int(pickerviewExpertDetails!)
+            
+            if self.pickerviewExpertDetails.tag == 101 {
+                let title = self.distanceArray[intValue!] as! String
+                //self.distanceTextfield.text = title
+                self.travelKmButton.setTitle(NSString(format:"%@", title) as String , for: UIControlState.normal)
+                
+                let str = NSString(format:"%@", "0")
+                let defaults = UserDefaults.standard
+                defaults.set(str, forKey: "pickerviewExpertDetailsCoaching")
+                
+                self.pickerviewExpertDetails.reloadAllComponents()
+                self.pickerviewExpertDetails.selectRow(0, inComponent: 0, animated: true)
+            }
         }
-        if index == 4 {
-            sliderIntValue = 50
-        }
-        self.travelKmButton.setTitle(NSString(format:"%d", sliderIntValue) as String , for: UIControlState.normal)
     }
     
     // MARK: Alert methods

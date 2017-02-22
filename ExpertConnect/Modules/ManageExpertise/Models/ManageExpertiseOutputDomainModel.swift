@@ -1,5 +1,5 @@
 //
-//  SubCategoryOutputDomainModel.swift
+//  ManageExpertiseOutputDomainModel.swift
 //  ExpertConnect
 //
 //  Created by Redbytes on 21/11/16.

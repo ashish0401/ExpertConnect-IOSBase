@@ -1,5 +1,5 @@
 //
-//  CoachingDetailsInputDomainModel.swift
+//  RegisterUserInputDomainModel.swift
 //  ExpertConnect
 //
 //  Created by Nadeem on 24/11/16.

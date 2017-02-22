@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11542" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <customFonts key="customFonts">
+        <array key="Raleway-Medium.ttf">
+            <string>Raleway-Medium</string>
+        </array>
+    </customFonts>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="gTV-IL-0wX" customClass="HomeViewCell" customModule="ExpertConnect" customModuleProvider="target">
+            <rect key="frame" x="0.0" y="0.0" width="165" height="130"/>
+            <autoresizingMask key="autoresizingMask"/>
+            <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center">
+                <rect key="frame" x="0.0" y="0.0" width="165" height="130"/>
+                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                <subviews>
+                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6Af-o8-z4j">
+                        <rect key="frame" x="2" y="2" width="161" height="126"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tGp-y1-cXO">
+                                <rect key="frame" x="8" y="88" width="149" height="34"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="149" id="sKr-wv-s8J"/>
+                                    <constraint firstAttribute="height" constant="34" id="xGh-rm-rqc"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" name="Raleway-Medium" family="Raleway" pointSize="15"/>
+                                <color key="textColor" red="0.21176470589999999" green="0.21176470589999999" blue="0.21176470589999999" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="iJP-3t-AzV">
+                                <rect key="frame" x="8" y="20" width="149" height="64"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="149" id="BL0-O5-AlB"/>
+                                    <constraint firstAttribute="height" constant="64" id="vKa-dt-juc"/>
+                                </constraints>
+                            </imageView>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="iJP-3t-AzV" firstAttribute="top" secondItem="6Af-o8-z4j" secondAttribute="top" constant="20" id="BnB-N8-8ua"/>
+                            <constraint firstAttribute="height" constant="126" id="D2Y-tw-LJE"/>
+                            <constraint firstItem="iJP-3t-AzV" firstAttribute="leading" secondItem="6Af-o8-z4j" secondAttribute="leading" constant="8" id="HGE-fr-yC5"/>
+                            <constraint firstAttribute="trailing" secondItem="tGp-y1-cXO" secondAttribute="trailing" constant="4" id="IWT-VW-gxd"/>
+                            <constraint firstAttribute="width" constant="161" id="Ikz-zJ-52h"/>
+                            <constraint firstAttribute="bottom" secondItem="tGp-y1-cXO" secondAttribute="bottom" constant="4" id="U6R-vl-joq"/>
+                            <constraint firstItem="tGp-y1-cXO" firstAttribute="top" secondItem="iJP-3t-AzV" secondAttribute="bottom" constant="4" id="Wvq-1r-aJ2"/>
+                            <constraint firstItem="tGp-y1-cXO" firstAttribute="leading" secondItem="6Af-o8-z4j" secondAttribute="leading" constant="8" id="qeL-b8-FlX"/>
+                            <constraint firstAttribute="trailing" secondItem="iJP-3t-AzV" secondAttribute="trailing" constant="4" id="qtp-N1-7wf"/>
+                        </constraints>
+                    </view>
+                </subviews>
+            </view>
+            <constraints>
+                <constraint firstAttribute="trailing" secondItem="6Af-o8-z4j" secondAttribute="trailing" constant="2" id="NTP-IY-gMQ"/>
+                <constraint firstAttribute="bottom" secondItem="6Af-o8-z4j" secondAttribute="bottom" constant="2" id="Obl-pg-TRd"/>
+                <constraint firstItem="6Af-o8-z4j" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="2" id="ac3-wH-I5b"/>
+                <constraint firstItem="6Af-o8-z4j" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="2" id="vaX-4c-z97"/>
+            </constraints>
+            <connections>
+                <outlet property="baseView" destination="6Af-o8-z4j" id="qCT-NZ-05x"/>
+                <outlet property="categoryNameLabel" destination="tGp-y1-cXO" id="O1J-oS-VRe"/>
+                <outlet property="iconView" destination="iJP-3t-AzV" id="Okj-vd-QhV"/>
+            </connections>
+            <point key="canvasLocation" x="-58.5" y="-78"/>
+        </collectionViewCell>
+    </objects>
+</document>

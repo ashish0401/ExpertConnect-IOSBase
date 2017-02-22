@@ -8,7 +8,7 @@
 
 import Foundation
 class SendRequestOutputDomainModel {
-    //    var categories: NSArray = [NSDictionary]() as NSArray
+
     var status: Bool = false
     var message: String = ""
 }

@@ -15,35 +15,26 @@ class CountryCodeSelectionViewController: UIViewController,UITableViewDataSource
     
     @IBOutlet var searchBar: UISearchBar!
     @IBOutlet var tableview: UITableView!
-    @IBOutlet var backButton: UIButton!
     
     var countryArray:NSMutableArray = NSMutableArray()
     var searchResultsArray = NSMutableArray()
     var filteredArray: NSArray = [NSDictionary]() as NSArray
-    let noDataLabel = UILabel()
+    var noDataLabel = UILabel()
     var searchActive = false
     weak var countryCodedelegate: CountryCodeSelectionViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        self.activateRightTextualCancelIcon()
         tableview.delegate = self
         tableview.dataSource = self
         searchBar.delegate = self
-        let originalImage = UIImage(named:"back_btn")
-        //let image: UIImage = UIImage(named: "search_icon")!
-        //self.searchBar.setImage(image, for: UISearchBarIcon.search, state: UIControlState.normal)
-        let tintedImage = originalImage?.withRenderingMode(UIImageRenderingMode.alwaysTemplate)
-        backButton.setImage(tintedImage, for: .normal)
-        backButton.tintColor = UIColor.ExpertConnectRed
-        
-        noDataLabel.frame = CGRect(x: 0, y: 0, width: 200, height: 21)
-        noDataLabel.center = self.view.center
-        noDataLabel.textAlignment = .center
-        noDataLabel.text = "No Results".localized(in: "Login")
-        noDataLabel.font =  UIFont(name: "Raleway-Medium", size: 22)
-        noDataLabel.textColor = UIColor.ExpertConnectBlack
-        self.view.addSubview(noDataLabel)
-        noDataLabel.isHidden = true
+        let message = "No Results".localized(in: "Login")
+        self.noDataLabel = self.showStickyErrorMessage(message: message)
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
+        self.navigationItem.hidesBackButton = true;
+        self.navigationItem.title = "Select Country"
+        self.navigationController?.navigationBar.backgroundColor = UIColor.white
         parseTheCountryjson()
         // Do any additional setup after loading the view.
     }
@@ -51,7 +42,7 @@ class CountryCodeSelectionViewController: UIViewController,UITableViewDataSource
     override func viewDidAppear(_ animated: Bool) {
         self.setExpertConnectSeacrhBarTheme(searchBar: self.searchBar)
     }
-
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -68,23 +59,21 @@ class CountryCodeSelectionViewController: UIViewController,UITableViewDataSource
                     print(countryArray)
                 }
                 self.tableview.reloadData()
-                } catch {
+            } catch {
                 print("Error")
             }
         }
     }
     
     //MARK:- Tableview Delegates
-    func tableView(_ tableView:UITableView, numberOfRowsInSection: Int)->Int
-    {
+    func tableView(_ tableView:UITableView, numberOfRowsInSection: Int)->Int {
         if searchActive {
             return self.filteredArray.count
         }
         return  countryArray.count
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell
-    {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let  cell = tableView.dequeueReusableCell(withIdentifier: "countryCell", for: indexPath) as UITableViewCell
         let font = UIFont(name: "Raleway-Light", size: 18)
         if (cell == nil) {
@@ -116,8 +105,7 @@ class CountryCodeSelectionViewController: UIViewController,UITableViewDataSource
         return cell;
     }
     
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath)
-    {
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         var countryDict = [String: String]()
         if searchActive {
             countryDict = (self.filteredArray[indexPath.row] as? [String:AnyObject])! as! [String : String]
@@ -129,9 +117,16 @@ class CountryCodeSelectionViewController: UIViewController,UITableViewDataSource
         self.dismiss(animated: true, completion: nil)
     }
     
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat
-    {
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 60.0;//Choose your custom row height
+    }
+    
+    func tableView( _ tableView: UITableView, heightForHeaderInSection section: Int ) -> CGFloat {
+        return CGFloat.leastNormalMagnitude
+    }
+    
+    func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        return CGFloat.leastNormalMagnitude
     }
     
     // MARK: SearchBar Delegate
@@ -170,9 +165,8 @@ class CountryCodeSelectionViewController: UIViewController,UITableViewDataSource
         self.tableview.reloadData()
         return true
     }
-
+    
     @IBAction func backButtonClicked(_ sender: UIButton) {
         self.dismiss(animated: true, completion: nil)
     }
-    
 }

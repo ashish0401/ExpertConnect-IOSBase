@@ -15,23 +15,18 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
     
     let imagePicker = UIImagePickerController()
     var selectedImage: UIImage?
-    
     var gender : String = "Female"
-    
     var cell = SignupDateCell()
     var date = String()
     var month = String()
     var year = String()
-    
     var pickerview = UIPickerView()
     var datePickerArray = NSMutableArray()
     var monthPickerArray = NSMutableArray()
     var yearPickerArray = NSMutableArray()
-    
     var text: String?
     var OTPTextfield = UITextField()
     let alertView = CustomIOS7AlertView()
-    
     var userId: String = ""
     var userType: String = ""
     var lattitude = CLLocationDegrees()
@@ -40,7 +35,16 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
     var signUpInputDomainModel: SignUpInputDomainModel!
     var socialID : String = ""
     var cityName : String = ""
-
+    let radioButtonDeselected = UIImage(named:"radio_unselected_btn")
+    let radioButtonSelected = UIImage(named:"radio_selected_btn")
+    let locationManager = CLLocationManager()
+    var locValue = CLLocationCoordinate2D()
+    // MARK: Alert enum for UIAlertController
+    enum UIAlertControllerStyle : Int {
+        case ActionSheet
+        case Alert
+    }
+    
     // The buttons that will appear in the alertView
     let buttons = ["SUBMIT"]
     @IBOutlet var scrollview: TPKeyboardAvoidingScrollView!
@@ -50,10 +54,8 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
     @IBOutlet var firstNameTextfield: UITextField!
     @IBOutlet var lastNameTextfield: UITextField!
     @IBOutlet var EmailTextfield: UITextField!
-    
     @IBOutlet var passwordTextfield: UITextField!
     @IBOutlet var countryCodeTextfield: UITextField!
-    
     @IBOutlet var mobileNoTextfield: UITextField!
     @IBOutlet var countryCodeButton: UIButton!
     @IBOutlet var DOBTextfield: UITextField!
@@ -65,17 +67,6 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
     @IBOutlet weak var leadingSpaceFemaleButton: NSLayoutConstraint!
     @IBOutlet weak var trailingSpaceMaleButton: NSLayoutConstraint!
     
-    let radioButtonDeselected = UIImage(named:"radio_unselected_btn")
-    let radioButtonSelected = UIImage(named:"radio_selected_btn")
-    
-    let locationManager = CLLocationManager()
-    var locValue = CLLocationCoordinate2D()
-    // MARK: Alert enum for UIAlertController
-    enum UIAlertControllerStyle : Int {
-        case ActionSheet
-        case Alert
-    }
-    
     // MARK: view life cycle methods
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -83,21 +74,17 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
         self.navigationController?.setNavigationBarHidden(true, animated: true)
         imagePicker.delegate = self
         OTPTextfield.delegate = self
-        
         self.countryCodeTextfield.delegate = self
         self.DOBTextfield.delegate = self
         self.EmailTextfield.delegate = self
         self.mobileNoTextfield.delegate = self
         self.locationTextfield.delegate = self
         self.scrollview.delegate = self
-        
         date = NSString(format:"%@", "01") as String
         month = NSString(format:"%@", "01") as String as String
         year = NSString(format:"%@", "1950") as String
-        
         self.femaleButton.setImage(radioButtonDeselected, for: UIControlState.normal)
         self.maleButton.setImage(radioButtonDeselected, for: UIControlState.normal)
-        
         // Setup data from FB
         if (self.isUserSignupFromFB()) {
             self.setupFBUserData()
@@ -109,7 +96,6 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
             self.femaleButton.isUserInteractionEnabled = true
             self.maleButton.isUserInteractionEnabled = true
         }
-        
         self.getCurrentLocation()
     }
     
@@ -137,14 +123,12 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
         self.profileImageview.layer.cornerRadius = self.profileImageview.frame.size.width/2
         self.profileImageview.layer.masksToBounds = true
         self.profileImageview.clipsToBounds = true
-        
         let image: UIImage? = selectedImage
         if image != nil {
             self.profileImageview.image = selectedImage
         } else {
             self.profileImageview.image = UIImage(named:"default_profile_pic")!
         }
-        
         self.setExpertConnectRedButtonTheme(button: self.locationButton)
         self.setExpertConnectRedButtonTheme(button: self.nextButton)
         self.setExpertConnectTextFieldTheme(textfield: self.locationTextfield)
@@ -157,10 +141,8 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
     func getCurrentLocation() {
         // Ask for Authorisation from the User.
         self.locationManager.requestAlwaysAuthorization()
-        
         // For use in foreground
         self.locationManager.requestWhenInUseAuthorization()
-        
         if CLLocationManager.locationServicesEnabled() {
             locationManager.delegate = self
             locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
@@ -214,7 +196,7 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
     // MARK: back button click methods
     @IBAction func backButtonClicked(_ sender: UIButton) {
         self.view.endEditing(true)
-        self.navigationController?.popViewController(animated: false)
+        _ = self.navigationController?.popViewController(animated: false)
     }
     
     // MARK: editProfile button click methods
@@ -224,8 +206,7 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
     }
     
     // MARK: image picker methods
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]){
-        
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
         if imagePicker.sourceType == UIImagePickerControllerSourceType.camera {
             dismiss(animated: true, completion: nil)
             selectedImage = info[UIImagePickerControllerOriginalImage] as? UIImage
@@ -248,7 +229,6 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
         let alertController = UIAlertController(title: "Add Profile Pic (Optional)", message: "", preferredStyle: .actionSheet)
         let ok = UIAlertAction(title: "Camera", style: .default, handler: { (action) -> Void in
             print("Ok Button Pressed")
-            
             self.takePhoto()
         })
         let ok1 = UIAlertAction(title: "Choose from Gallery", style: .default, handler: { (action) -> Void in
@@ -264,7 +244,6 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
         alertController.addAction(ok1)
         alertController.addAction(cancel)
         present(alertController, animated: true, completion: nil)
-        
     }
     
     func takePhoto() {
@@ -273,13 +252,8 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
             imagePicker.sourceType = .camera
             present(imagePicker, animated: true, completion: nil)
         }
-        //        else
-        //        {
-        //
-        //            [Constant showAlertWithTitle:@"Warning" message:@"Camera is not available, so try with another source" presentingVC:self];
-        //
-        //        }
     }
+    
     func openPhotoGallery()  {
         if UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.photoLibrary){
             imagePicker.allowsEditing = true
@@ -323,24 +297,18 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
     // MARK: location Button method
     @IBAction func locationButtonClicked(_ sender: UIButton) {
         self.view.endEditing(true)
-        let message = "Processing".localized(in: "SignUp")
+        let message = "Getting Locations".localized(in: "SignUp")
         self.displayProgress(message: message)
         self.setCurrentLocationOnPlacePicker()
     }
     
     // MARK: next Button method
     @IBAction func nextButtonClicked(_ sender: UIButton) {
-        //        self.view.endEditing(true)
         if (!self.isInternetAvailable()) {
             let message = "No Internet Connection".localized(in: "SignUp")
             self.displayErrorMessage(message: message)
             return
         }
-        //        if (self.profileImageview.image == nil || self.profileImageview.image == UIImage(named:"default_profile_pic")) {
-        //            let message = "Please Select Profile Picture".localized(in: "SignUp")
-        //            self.displayErrorMessage(message: message)
-        //            return
-        //        }
         if !self.userNameValidation(string: self.firstNameTextfield.text!) {
             let message = "Please Enter Valid Firstname".localized(in: "SignUp")
             self.displayErrorMessage(message: message)
@@ -393,10 +361,8 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
         } else {
             print(self.DOBTextfield.text)
             print(gender)
-            
             //Set Socil ID
             var regType: String
-            
             if (self.isUserSignupFromFB()) {
                 self.socialID = self.facebookOutputDomainModel.userId
                 selectedImage = self.profileImageview.image
@@ -404,7 +370,6 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
             } else {
                 regType = "1"
             }
-            
             var userPrifilePic: String
             let image: UIImage? = selectedImage
             if image != nil {
@@ -443,7 +408,6 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
             
             
             let verifyEmailAndMobileNoInput = verifyEmailAndMobileNoInputDomainModel.init(emailId: self.EmailTextfield.text!, mobileNo: self.mobileNoTextfield.text!)
-            
             let message = "Procssing".localized(in: "SignUp")
             self.displayProgress(message: message)
             let APIDataManager: verifyEmailAndMobileNoProtocols = verifyEmailAndMobileNoApiDataManager()
@@ -469,15 +433,9 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
         let emailRegex = "[a-zA-z]+([ '-][a-zA-Z]+)*$"
         return NSPredicate(format: "SELF MATCHES %@", emailRegex).evaluate(with: string)
     }
-    //    func mobileNumberValidation(string: NSString) -> Bool {
-    //        let phoneRegex = "[0-9]{10}"
-    //
-    //        return NSPredicate(format: "SELF MATCHES %@", phoneRegex).evaluate(with: string)
-    //    }
     func isValidateDOB(string: NSString) -> Bool {
         var dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "dd/MM"
-        
         return true
     }
     
@@ -570,7 +528,7 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
         }
         if textField == self.locationTextfield {
             self.view.endEditing(true)
-            let message = "Processing".localized(in: "SignUp")
+            let message = "Getting Locations".localized(in: "SignUp")
             self.displayProgress(message: message)
             self.setCurrentLocationOnPlacePicker()
             return false
@@ -602,7 +560,8 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
             if textField == countryCodeTextfield {
                 let countryCodeSelectionView : CountryCodeSelectionViewController = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "CountryCodeSelectionViewController") as UIViewController as! CountryCodeSelectionViewController
                 countryCodeSelectionView.countryCodedelegate = self
-                self.present(countryCodeSelectionView, animated: true, completion: nil)
+                let navController = UINavigationController(rootViewController: countryCodeSelectionView)
+                self.present(navController, animated: true, completion: nil)
                 countryCodeSelectionView.modalTransitionStyle = UIModalTransitionStyle(rawValue: 0)!
                 return false
             }
@@ -719,11 +678,7 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
                 }
             }
             /** end - show OTP on textField */
-            
             alertView.delegate = self
-            //            alertView.onButtonTouchUpInside = { (alertView: CustomIOS7AlertView, buttonIndex: Int) -> Void in
-            //                print("CLOSURE: Button '\(self.buttons[buttonIndex])' touched")
-            //            }
             alertView.catchString(withString: "3")
             alertView.show()
         } else {
@@ -738,10 +693,6 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
     
     // MARK: Alert for verify email and mobileNo
     func onVerifyEmailAndMobileNoSucceeded(data: verifyEmailAndMobileNoOutputDomainModel) {
-        // Convert Domain Model to View Model
-        // Send to wireframe to route somewhere else
-        //        UserDefaults.standard.setValue( data.userId, forKey: "UserId")
-        
         print("Hey you logged in: \(data.message)")
         self.dismissProgress()
         print("signup data %@",data.message)
@@ -790,14 +741,14 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
             let teacherStudentValue = defaults.string(forKey: "teacherStudentValue")
             
             if teacherStudentValue! == NSString(format:"%@","2") as String {
+                //Student
                 let coachingDetailsVC : CoachingDetailsVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "CoachingDetailsVC") as UIViewController as! CoachingDetailsVC
-                //coachingDetailsVC.userId = self.userId
                 coachingDetailsVC.signUpInputDomainModel = signUpInputDomainModel
                 self.navigationController?.pushViewController(coachingDetailsVC, animated: true)
                 
             } else if teacherStudentValue! == NSString(format:"%@","3") as String {
+                //Teacher
                 let expertDetailsVC : ExpertDetailsVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ExpertDetailsVC") as UIViewController as! ExpertDetailsVC
-                // expertDetailsVC.userId = self.userId
                 expertDetailsVC.signUpInputDomainModel = signUpInputDomainModel
                 self.navigationController?.pushViewController(expertDetailsVC, animated: true)
             }
@@ -863,8 +814,7 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
             pickerLabel.textAlignment = NSTextAlignment.center
             return pickerLabel
         }
-        else if component == 1
-        {
+        else if component == 1 {
             
             let pickerLabel = UILabel()
             pickerLabel.textColor = UIColor.ExpertConnectBlack
@@ -874,7 +824,6 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
             return pickerLabel
             
         }
-        
         let pickerLabel = UILabel()
         pickerLabel.textColor = UIColor.ExpertConnectBlack
         pickerLabel.text = NSString(format:"%@" , self.yearPickerArray[row] as! CVarArg ) as String
@@ -934,14 +883,11 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
                 self.longitude = place.coordinate.longitude
                 self.setUsersClosestCity()
             } else {
-                // self.locationTextfield.text = ""
-                //self.address.text = ""
             }
         })
     }
     
     func getDefaultLocation() {
-        
         let center = CLLocationCoordinate2DMake(51.5108396, -0.0922251)
         let northEast = CLLocationCoordinate2DMake(center.latitude + 0.001, center.longitude + 0.001)
         let southWest = CLLocationCoordinate2DMake(center.latitude - 0.001, center.longitude - 0.001)
@@ -962,17 +908,15 @@ class SignUpVC: UIViewController, CustomIOS7AlertViewDelegate, UITextFieldDelega
                 self.longitude = place.coordinate.longitude
                 self.setUsersClosestCity()
             } else {
-                // self.locationTextfield.text = ""
-                //self.address.text = ""
             }
         })
     }
-
+    
     func setUsersClosestCity()
     {
-        let message = "Processing".localized(in: "SignUp")
+        let message = "Updating Location".localized(in: "SignUp")
         self.displayProgress(message: message)
-
+        
         let geoCoder = CLGeocoder()
         let location = CLLocation(latitude: self.lattitude, longitude: self.longitude)
         geoCoder.reverseGeocodeLocation(location) {

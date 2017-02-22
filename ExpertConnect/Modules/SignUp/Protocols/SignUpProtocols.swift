@@ -8,6 +8,5 @@
 
 import Foundation
 protocol SignUpProtocols {
-    
     func signUp(data:SignUpInputDomainModel,callback: @escaping (ECallbackResultType) -> Void)
 }

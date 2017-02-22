@@ -8,6 +8,5 @@
 
 import Foundation
 protocol verifyEmailAndMobileNoProtocols {
-    
     func verifyEmailAndMobileNo(data:verifyEmailAndMobileNoInputDomainModel,callback: @escaping (ECallbackResultType) -> Void)
 }

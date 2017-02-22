@@ -14,7 +14,6 @@ class BrowseExpertsCustomCell: UITableViewCell {
     @IBOutlet var coachingStaticLabel: UILabel!
     @IBOutlet var feeStaticLabel: UILabel!
     @IBOutlet var locationStaticLabel: UILabel!
-    
     @IBOutlet var mainView: UIView!
     @IBOutlet var profileImageview: UIImageView!
     @IBOutlet var teacherNameLabel: UILabel!
@@ -29,6 +28,7 @@ class BrowseExpertsCustomCell: UITableViewCell {
         super.awakeFromNib()
         self.makeProfileImageCircular()
     }
+    
     private func makeProfileImageCircular() {
         self.profileImageview.layer.cornerRadius = 15.0
         self.profileImageview.clipsToBounds = true
@@ -37,9 +37,6 @@ class BrowseExpertsCustomCell: UITableViewCell {
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
+        super.setSelected(selected, animated: animated)        // Configure the view for the selected state
     }
-    
 }

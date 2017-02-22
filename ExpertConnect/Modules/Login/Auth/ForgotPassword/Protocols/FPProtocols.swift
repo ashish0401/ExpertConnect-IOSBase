@@ -8,7 +8,5 @@
 
 import Foundation
 protocol FPProtocols {
-    
     func getStatusAndMessage(callback: @escaping (ECallbackResultType) -> Void)
-    
 }

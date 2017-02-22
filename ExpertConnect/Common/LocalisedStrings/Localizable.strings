@@ -1,11 +1,13 @@
 /* 
   Localizable.strings
-  Mezuka
-
-  Created by Hasan H. Topcu on 20/10/2016.
-  Copyright © 2016 Mezuka. All rights reserved.
+ //  ExpertConnect
+ //
+ //  Created by Redbytes on 21/01/17.
+ //  Copyright © 2017 user. All rights reserved.
+ //
 */
 "Ok" = "Ok";
 "Success" = "Success";
 "Error" = "Error";
+"Alert" = "Alert";
 "Your request has been sent successfully." = "Your request has been sent successfully.";

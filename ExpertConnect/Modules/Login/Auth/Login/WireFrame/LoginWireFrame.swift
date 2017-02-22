@@ -1,6 +1,6 @@
 //
-// Created by hhtopcu.
-// Copyright (c) 2016 hhtopcu. All rights reserved.
+// Created by Redbytes.
+// Copyright (c) 2016 Redbytes. All rights reserved.
 //
 
 import Foundation
@@ -34,8 +34,6 @@ final class LoginWireFrame: LoginWireFrameProtocol {
         interactor.APIDataManager = APIDataManager
         interactor.localDataManager = localDataManager
         
-//        let navigationController = UINavigationController(rootViewController: view as! UIViewController)
-//        return navigationController as UINavigationController
         return view as! UIViewController
     }
     

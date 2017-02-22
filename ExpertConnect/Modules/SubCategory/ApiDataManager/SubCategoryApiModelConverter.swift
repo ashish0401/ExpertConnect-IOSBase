@@ -19,8 +19,6 @@ class SubCategoryApiModelConverter {
      */
     func fromJson(json: JSON) -> SubCategoryOutputDomainModel {
         let subCategories = json["sub_categories"].arrayObject
-        
-        // Form the model to be sent
         let model: SubCategoryOutputDomainModel = SubCategoryOutputDomainModel()
         model.subCategories = subCategories! as NSArray
         return model

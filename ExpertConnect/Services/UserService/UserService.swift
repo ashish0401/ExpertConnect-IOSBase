@@ -1,9 +1,9 @@
 //
 //  UserService.swift
-//  Mezuka
+//  ExpertConnect
 //
-//  Created by Hasan H. Topcu on 27/09/2016.
-//  Copyright © 2016 Mezuka. All rights reserved.
+//  Created by Redbytes on 27/09/2016.
+//  Copyright © 2016 ExpertConnect. All rights reserved.
 //
 
 import Foundation
@@ -57,7 +57,7 @@ class UserService: UserServiceProtocol {
         if(dictionary?.isEmpty == false) {
             let username = dictionary?["username"]
             let token = dictionary?["token"]
-            let fullname = "Hasan H. Topcu"
+            let fullname = "Ramesh G. Manageni"
             
             return User(username: username as! String, token: token as! String, fullname: fullname)
         }

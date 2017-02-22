@@ -320,24 +320,28 @@
         
         if (indexPath.row ==0) {
             CGFloat titleX = item.icon ? CGRectGetMaxX(imageViewIcon.frame) + 12 : 12;
-            title = [[UILabel alloc] initWithFrame:CGRectMake(20, contentTopBottomPadding+75, cell.frame.size.width-60, contentHeight+10)];
+            title = [[UILabel alloc] initWithFrame:CGRectMake(20, contentTopBottomPadding+75, self.size - 25, contentHeight+10)];
             UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, 132, self.view.bounds.size.width, 1)];
             lineView.backgroundColor = [UIColor whiteColor];
             [cell.contentView addSubview:lineView];
             
+            [cell.contentView addSubview:[self addButton:nil : CGRectMake(self.size - 44, contentTopBottomPadding, 44, 44) :@selector(btnAction:) :[UIImage imageNamed:@"sidemenu_edit_btn"] :indexPath]];
+            
+            [title setFont:[UIFont fontWithName:@"Raleway-Medium" size:17]];
         }
         else if (indexPath.row !=0)
         {
             CGFloat titleX = item.icon ? CGRectGetMaxX(imageViewIcon.frame) + 12 : 12;
             title = [[UILabel alloc] initWithFrame:CGRectMake(titleX+10, contentTopBottomPadding, cell.frame.size.width - titleX - 12, contentHeight)];
+            [title setFont:[UIFont fontWithName:@"Raleway-Light" size:17]];
+
         }
         title.tag  = 200;
-        title.font = [UIFont systemFontOfSize:18.0];
         //title.adjustsFontSizeToFitWidth = YES;
         [cell.contentView addSubview:title];
+
     }
     
-    [title setFont:[UIFont fontWithName:@"Raleway-Light" size:18]];
     //title.adjustsFontSizeToFitWidth = YES;
 
     title.text      = item.title;
@@ -345,7 +349,34 @@
     
     return cell;
 }
+    
+-(UIButton *)addButton:(NSString *)title :(CGRect)frame : (SEL)selector :(UIImage *)image :(NSIndexPath *)indexPath
+{
+    UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+    btn.frame = frame;
+    [btn addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
+    [btn setTitle:title forState:UIControlStateNormal];
+    [btn setImage:image forState:UIControlStateNormal];
+    btn.backgroundColor = [UIColor clearColor];
+    btn.tag = indexPath.row;
+    return btn;
+}
 
+-(void)btnAction:(UIButton *) sender
+{
+     NSLog(@"button clicked");
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:sender.tag inSection:0];
+
+    if (_delegate && [_delegate respondsToSelector:@selector(sideMenu:didSelectRowAtIndexPath:)])
+    [_delegate sideMenu:self didSelectRowAtIndexPath:indexPath];
+    
+    if (self.automaticallyDeselectRow)
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
+    if (self.hideOnSelection)
+    [self hide];
+}
+    
 #pragma mark - UITableViewDelegate
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath

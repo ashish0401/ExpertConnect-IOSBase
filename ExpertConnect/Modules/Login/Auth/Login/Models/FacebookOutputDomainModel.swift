@@ -1,6 +1,6 @@
 //
-// Created by hhtopcu.
-// Copyright (c) 2016 hhtopcu. All rights reserved.
+// Created by Redbytes.
+// Copyright (c) 2016 Redbytes. All rights reserved.
 //
 
 import Foundation
@@ -13,6 +13,5 @@ final class FacebookOutputDomainModel {
     var email: String = ""
     var profilePicUrl: String = ""
     var gender: String = ""
-
    // var rememberMe: Bool = false
 }

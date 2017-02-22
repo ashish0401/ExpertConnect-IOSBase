@@ -19,34 +19,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     var objTabbarMain = TabbarMainVC()
     var selectedCountryCode = String()
     var deviceToken = String()
-
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
-        
+        application.applicationIconBadgeNumber = 0
+
+        let pushNotificationStatus = UserDefaults.standard.value(forKey: "PushNotificationStatus")
+        if(pushNotificationStatus == nil) {
+            UserDefaults.standard.set(true, forKey: "PushNotificationStatus")
+        }
         // Google PlacePicker
         GMSPlacesClient.provideAPIKey("AIzaSyCHghGMhFROKnppb6LINQXJdXsXGtMgamo")
         GMSServices.provideAPIKey("AIzaSyCHghGMhFROKnppb6LINQXJdXsXGtMgamo")
-
+        
         UserDefaults.standard.setValue("com.ExpertConnect.devicetoken", forKey: "com.ExpertConnect.devicetoken")
-
         registerForPushNotifications(application: application)
         
-        //self.window?.rootViewController = LoginWireFrame.setupLoginModule()
         if let font = UIFont(name: "Raleway-Medium", size: 22) {
-           // UINavigationBar.appearance().titleTextAttributes = attributes
             UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName : UIColor.ExpertConnectRed, NSFontAttributeName: font]
-
-        } else {
-            // The font "Raleway-SemiBold" is not found
         }
         self.setInitialViewController()
-        
         //FeceBook Login
         return FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
-        
         return true
     }
-
+    
     func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and invalidate graphics rendering callbacks. Games should use this method to pause the game.
@@ -61,6 +58,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     
     func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the active state; here you can undo many of the changes made on entering the background.
+        application.applicationIconBadgeNumber = 0
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "com.ExpertConnect.UpdateBadgeFromBackground"), object: nil, userInfo:nil)
     }
     
     func applicationDidBecomeActive(_ application: UIApplication) {
@@ -120,24 +119,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
             }
         }
     }
-
+    
     func setInitialViewController() {
         objTabbarMain = UIStoryboard(name:"Main", bundle:nil).instantiateViewController(withIdentifier:"TabbarMainVC") as! UITabBarController as! TabbarMainVC
-//        var navigationArray: [UIViewController] = [objTabbarMain.viewControllers]
-//        var navigationArray = [objTabbarMain.viewControllers]
-//        
-//        
-//        let nc1 : UIViewController = navigationArray[0]
         let navigationBarAppearace = UINavigationBar.appearance()
-        
         navigationBarAppearace.tintColor = UIColor.ExpertConnectRed
         navigationBarAppearace.backgroundColor = UIColor.ExpertConnectRed
-//        navigationBarAppearace.barTintColor = uicolorFromHex(0x034517)
         UITabBar.appearance().tintColor = UIColor.ExpertConnectRed
-
         self.window?.rootViewController = objTabbarMain
         self.window?.makeKeyAndVisible()
-        
     }
     
     func registerForPushNotifications(application: UIApplication) {
@@ -155,67 +145,105 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         self.deviceToken = deviceTokenString
         UserDefaults.standard.setValue(self.deviceToken, forKey: "com.ExpertConnect.devicetoken")
         print("deviceToken \(self.deviceToken)")
-
+        
     }
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         UserDefaults.standard.setValue("com.ExpertConnect.devicetoken", forKey: "com.ExpertConnect.devicetoken")
         print("i am not available in simulator \(error)")
         
     }
-    
-    
+    // Push notification received
+    func application(_ application: UIApplication, didReceiveRemoteNotification data: [AnyHashable : Any]) {
+        // Print notification payload data
+        print("Push notification received: \(data)")
+        application.applicationIconBadgeNumber = 0
+
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: "com.ExpertConnect.UpdateBadgeFromBackground"), object: nil, userInfo:nil)
+       /* if let aps = data["aps"] as? NSDictionary {
+            if let alert = aps["alert"] as? NSDictionary {
+                if let type = alert["notification_type"] as? NSString {
+                   
+                    if(type == "request") {
+                        let tabArray = self.objTabbarMain.tabBar.items as NSArray!
+                        let browseEnquiryTabItem = tabArray?.object(at: 2) as! UITabBarItem
+                        if let badgeValue = browseEnquiryTabItem.badgeValue {
+                            browseEnquiryTabItem.badgeValue = String((Int(badgeValue) ?? 0) + 1)
+                        } else {
+                            browseEnquiryTabItem.badgeValue = "1"
+                        }
+                    } else if(type == "accept") {
+                        let tabArray = self.objTabbarMain.tabBar.items as NSArray!
+                        let myAssignmentTabItem = tabArray?.object(at: 1) as! UITabBarItem
+                        if let badgeValue = myAssignmentTabItem.badgeValue {
+                            myAssignmentTabItem.badgeValue = String((Int(badgeValue) ?? 0) + 1)
+                        } else {
+                            myAssignmentTabItem.badgeValue = "1"
+                        }
+                    } else if(type == "confirm") {
+                        let tabArray = self.objTabbarMain.tabBar.items as NSArray!
+                        let myAssignmentTabItem = tabArray?.object(at: 1) as! UITabBarItem
+                        if let badgeValue = myAssignmentTabItem.badgeValue {
+                            myAssignmentTabItem.badgeValue = String((Int(badgeValue) ?? 0) + 1)
+                        } else {
+                            myAssignmentTabItem.badgeValue = "1"
+                        }
+                    }
+                }
+            }
+        }*/
+    }
     
     /* swift 3 version stack
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        // Override point for customization after application launch.
-        
-        let settings = UIUserNotificationSettings(forTypes: [.Alert, .Badge, .Sound], categories: nil)
-        
-        application.registerUserNotificationSettings(settings)
-        application.registerForRemoteNotifications()
-        
-        return true
-    }
-    
-    
-    func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
-        let characterSet = CharacterSet(charactersIn: "<>")
-        let deviceTokenString = deviceToken.description.trimmingCharacters(in: characterSet).replacingOccurrences(of: " ", with: "");
-        print(deviceTokenString)
-    }
+     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+     // Override point for customization after application launch.
+     
+     let settings = UIUserNotificationSettings(forTypes: [.Alert, .Badge, .Sound], categories: nil)
+     
+     application.registerUserNotificationSettings(settings)
+     application.registerForRemoteNotifications()
+     
+     return true
+     }
+     
+     
+     func application(application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: NSData) {
+     let characterSet = CharacterSet(charactersIn: "<>")
+     let deviceTokenString = deviceToken.description.trimmingCharacters(in: characterSet).replacingOccurrences(of: " ", with: "");
+     print(deviceTokenString)
+     }
      */
     
     
     /*
-    func application(_ application: UIApplication, didRegister notificationSettings: UNNotificationSetting) {
-        if notificationSettings.types != .none {
-            application.registerForRemoteNotifications()
-        }
-    }
-    */
+     func application(_ application: UIApplication, didRegister notificationSettings: UNNotificationSetting) {
+     if notificationSettings.types != .none {
+     application.registerForRemoteNotifications()
+     }
+     }
+     */
     
     
-//    // Called when APNs has assigned the device a unique token
-//    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-//        // Convert token to string
-//        let deviceTokenString = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
-//        
-//        // Print it to console
-//        print("APNs device token: \(deviceTokenString)")
-//        
-//        // Persist it in your backend in case it's new
-//    }
-//    
-//    // Called when APNs failed to register the device for push notifications
-//    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
-//        // Print the error to console (you should alert the user that registration failed)
-//        print("APNs registration failed: \(error)")
-//    }
-//    
-//    // Push notification received
-//    func application(_ application: UIApplication, didReceiveRemoteNotification data: [AnyHashable : Any]) {
-//        // Print notification payload data
-//        print("Push notification received: \(data)")
-//    }
+    //    // Called when APNs has assigned the device a unique token
+    //    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+    //        // Convert token to string
+    //        let deviceTokenString = deviceToken.reduce("", {$0 + String(format: "%02X", $1)})
+    //
+    //        // Print it to console
+    //        print("APNs device token: \(deviceTokenString)")
+    //
+    //        // Persist it in your backend in case it's new
+    //    }
+    //
+    //    // Called when APNs failed to register the device for push notifications
+    //    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+    //        // Print the error to console (you should alert the user that registration failed)
+    //        print("APNs registration failed: \(error)")
+    //    }
+    //
+    //    // Push notification received
+    //    func application(_ application: UIApplication, didReceiveRemoteNotification data: [AnyHashable : Any]) {
+    //        // Print notification payload data
+    //        print("Push notification received: \(data)")
+    //    }
 }
 

@@ -9,7 +9,7 @@
 import UIKit
 
 class MyAssignmentVC: UIViewController, UITableViewDelegate, UITableViewDataSource {
-
+    
     @IBOutlet var tableview: UITableView!
     var myAssignmentArray = NSMutableArray()
     var userId = String()
@@ -17,7 +17,10 @@ class MyAssignmentVC: UIViewController, UITableViewDelegate, UITableViewDataSour
     var requestId = String()
     let alertView = CustomIOS7AlertView()
     var tempExpertId = Int()
-
+    var noDataLabel = UILabel()
+    var categoryId = String()
+    var subCategoryId = String()
+    
     var studentNameHeight = CGFloat()
     var inProgressStaticHeight = CGFloat()
     var subjectStaticHeight = CGFloat()
@@ -30,7 +33,7 @@ class MyAssignmentVC: UIViewController, UITableViewDelegate, UITableViewDataSour
     var contactNoHeight = CGFloat()
     let blankView = UIView.init(frame: CGRect(x: 0, y: 0, width: 0, height:0))
     let blankAttribute = NSLayoutAttribute(rawValue: 0)
-
+    
     let studentNameWidth : CGFloat =  (UIScreen.main.bounds.size.width-(32+24+60+59))
     let inProgressStaticWidth : CGFloat =  111
     let subjectStaticWidth : CGFloat =  52
@@ -48,19 +51,23 @@ class MyAssignmentVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.navigationController?.navigationBar.backgroundColor = UIColor.white
         self.tableview.separatorStyle = UITableViewCellSeparatorStyle.none
         self.makeTableSeperatorColorClear()
+        let message = "AssignmentUnavailable".localized(in: "MyAssignmentVC")
+        self.noDataLabel = self.showStickyErrorMessage(message: message)
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        let tabArray = self.tabBarController?.tabBar.items as NSArray!
+        let myAssignmentTabItem = tabArray?.object(at: 1) as! UITabBarItem
+        myAssignmentTabItem.badgeValue = nil
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.objTabbarMain.tabBar.isHidden = false
         self.navigationController?.setNavigationBarHidden(false, animated: true)
-        
         if (!self.isInternetAvailable()) {
-            let message = "No Internet Connection".localized(in: "ExpertDetails")
+            let message = "No Internet Connection".localized(in: "MyAssignmentVC")
             self.displayErrorMessage(message: message)
             return
         }
-        let message = "Processing".localized(in: "SignUp")
+        let message = "Loading Assignments".localized(in: "MyAssignmentVC")
         self.displayProgress(message: message)
         
         self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
@@ -82,7 +89,15 @@ class MyAssignmentVC: UIViewController, UITableViewDelegate, UITableViewDataSour
             }
         })
     }
-
+    
+    override func viewDidAppear(_ animated: Bool) {
+        NotificationCenter.default.addObserver(self, selector: #selector(self.onUpdateNotificationBadgeFromBackground), name: NSNotification.Name(rawValue: "com.ExpertConnect.UpdateBadgeFromBackground"), object: nil)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
+    }
+    
     private func makeTableSeperatorColorClear() {
         self.tableview.separatorColor = UIColor.clear
     }
@@ -93,25 +108,22 @@ class MyAssignmentVC: UIViewController, UITableViewDelegate, UITableViewDataSour
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
-//        let  cell:MyAssignmentCustomCell = tableView.dequeueReusableCell(withIdentifier: "MyAssignmentCustomCell", for: indexPath) as! MyAssignmentCustomCell
- 
         let identifier = "MyAssignmentCustomCell"
         var cell: MyAssignmentCustomCell! = tableView.dequeueReusableCell(withIdentifier: identifier) as? MyAssignmentCustomCell
         if cell == nil {
             tableView.register(MyAssignmentCustomCell.self, forCellReuseIdentifier: identifier)
             cell = tableView.dequeueReusableCell(withIdentifier: identifier) as? MyAssignmentCustomCell
         }
-
+        
         var dic = NSDictionary()
         dic = self.myAssignmentArray[indexPath.row] as! NSDictionary
-
         cell.confirmButton.tag = indexPath.row
         cell.rejectButton.tag = indexPath.row
         self.setExpertConnectRedButtonTheme(button: cell.confirmButton)
         self.setExpertConnectRedButtonTheme(button: cell.rejectButton)
         cell.confirmButton.addTarget(self, action: #selector(confirmButtonClicked(button:)), for: .touchUpInside)
         cell.rejectButton.addTarget(self, action: #selector(rejectButtonClicked(button:)), for: .touchUpInside)
-      
+        
         if(dic.value(forKey: "type") != nil) {
             let type = dic.value(forKey: "type") as! String
             
@@ -152,6 +164,7 @@ class MyAssignmentVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         }
         
         cell.locationLabel.text = dic.value(forKey: "location") as! String?
+        cell.subjectLabel.text = dic.value(forKey: "sub_category") as! String?
         
         // collecting venues in coachingVenueArray
         let coachingDetails : NSArray = dic.value(forKey: "coaching_details") as! NSArray
@@ -177,7 +190,7 @@ class MyAssignmentVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         let countryCodeWithSpace = countryCode.appending(" ")
         let mobileNoWithCountryCode = countryCodeWithSpace.appending(mobileNo)
         cell.contactNoLabel.text = mobileNoWithCountryCode
-
+        
         cell.studentNameLabel.removeConstraints(cell.studentNameLabel.constraints)
         cell.inProgressStaticLabel.removeConstraints(cell.inProgressStaticLabel.constraints)
         cell.subjectStaticLabel.removeConstraints(cell.subjectStaticLabel.constraints)
@@ -245,11 +258,12 @@ class MyAssignmentVC: UIViewController, UITableViewDelegate, UITableViewDataSour
             verticalLineView.backgroundColor = UIColor.white
             cell.rejectButton.addSubview(verticalLineView)
         }
-
+        
         self.setECTableViewCellShadowTheme(view: cell.mainView)
         cell.selectionStyle = UITableViewCellSelectionStyle.none
         return cell
     }
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
         
     }
@@ -303,6 +317,8 @@ class MyAssignmentVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         dic = self.myAssignmentArray[index] as! NSDictionary
         self.requestId = dic.value(forKey: "user_id") as! String
         self.expertId = dic.value(forKey: "expert_id") as! String
+        self.categoryId = dic.value(forKey: "category_id") as! String
+        self.subCategoryId = dic.value(forKey: "sub_category_id") as! String
         
         if (!self.isInternetAvailable()) {
             let message = "No Internet Connection".localized(in: "ExpertDetails")
@@ -313,7 +329,7 @@ class MyAssignmentVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.displayProgress(message: message)
         
         self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
-        let sendConfirmRejectDomainModel = SendConfirmRejectDomainModel.init(fromId: self.userId, toId: self.requestId, type: "confirm", expertId: self.expertId)
+        let sendConfirmRejectDomainModel = SendConfirmRejectDomainModel.init(fromId: self.userId, toId: self.requestId, type: "confirm", expertId: self.expertId, categoryId: self.categoryId, subCategoryId: self.subCategoryId)
         self.tempExpertId = Int(self.expertId)!
         let APIDataManager : ConfirmRequestProtocols = SendConfirmRejectAPIDataManager()
         APIDataManager.sendConfirmRejectRequest(data: sendConfirmRejectDomainModel, callback:{(result) in
@@ -338,7 +354,7 @@ class MyAssignmentVC: UIViewController, UITableViewDelegate, UITableViewDataSour
                 break
             }
         })
- 
+        
     }
     
     // MARK: Reject Button Click methods
@@ -349,6 +365,8 @@ class MyAssignmentVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         dic = self.myAssignmentArray[index] as! NSDictionary
         self.requestId = dic.value(forKey: "user_id") as! String
         self.expertId = dic.value(forKey: "expert_id") as! String
+        self.categoryId = dic.value(forKey: "category_id") as! String
+        self.subCategoryId = dic.value(forKey: "sub_category_id") as! String
         
         if (!self.isInternetAvailable()) {
             let message = "No Internet Connection".localized(in: "ExpertDetails")
@@ -359,7 +377,8 @@ class MyAssignmentVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.displayProgress(message: message)
         
         self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
-        let sendConfirmRejectDomainModel = SendConfirmRejectDomainModel.init(fromId: self.userId, toId: self.requestId, type: "reject", expertId: self.expertId)
+        let sendConfirmRejectDomainModel = SendConfirmRejectDomainModel.init(fromId: self.userId, toId: self.requestId, type: "reject", expertId: self.expertId, categoryId: self.categoryId, subCategoryId: self.subCategoryId)
+        
         self.tempExpertId = Int(self.expertId)!
         let APIDataManager : ConfirmRequestProtocols = SendConfirmRejectAPIDataManager()
         APIDataManager.sendConfirmRejectRequest(data: sendConfirmRejectDomainModel, callback:{(result) in
@@ -390,6 +409,7 @@ class MyAssignmentVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.dismissProgress()
         if data.status {
             self.myAssignmentArray = NSMutableArray.init(array: data.myAssignments as! [Any])
+            noDataLabel.isHidden = self.myAssignmentArray.count == 0 ? false : true
             self.tableview.reloadData()
         } else {
             self.displayErrorMessage(message: data.message)
@@ -409,7 +429,7 @@ class MyAssignmentVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.tableview.reloadData()
         self.displayErrorMessage(message: data.message)
     }
-
+    
     //hide accept & reject and unhide main button and title them on request success
     // MARK: AcceptOrReject API Response methods
     func onConfirmOrRejectSucceeded(data: SendConfirmRejectOutputDomainModel) {
@@ -432,16 +452,17 @@ class MyAssignmentVC: UIViewController, UITableViewDelegate, UITableViewDataSour
         self.dismissProgress()
         self.displayErrorMessage(message: data.message)
     }
-
+    
     // MARK: Alert methods
     func displayErrorMessage(message: String) {
-        self.showErrorMessage(message: message)
+        // self.showErrorMessage(message: message)
+        noDataLabel.isHidden = self.myAssignmentArray.count == 0 ? false : true
     }
     
     func displaySuccessMessage(message: String){
         self.showSuccessMessage(message: message)
     }
-
+    
     // MARK: Custom Alert view method
     func createContainerView(acceptOrRejectSuccessMessage: String) -> UIView {
         let View=UIView(frame: CGRect(x: 0, y: 0, width: 290, height: 150))
@@ -479,9 +500,63 @@ class MyAssignmentVC: UIViewController, UITableViewDelegate, UITableViewDataSour
     func alertViewCloseButtonClicked(button: UIButton) {
         alertView.close()
     }
-
+    
+    
+    @objc func onUpdateNotificationBadgeFromBackground(notification: Notification) {
+        if !UserDefaults.standard.bool(forKey: "UserLoggedInStatus") {
+            return
+        }
+        self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
+        let notificationsDomainModel = NotificationsDomainModel.init(userId: self.userId)
+        let APIDataManager : NotificationCountProtocols = NotificationsAPIDataManager()
+        APIDataManager.getNotificationCount(model: notificationsDomainModel, callback:{(result) in
+            print("result : ", result)
+            switch result {
+            case .Failure(let error):
+                self.onGetNotificationsDetailsFailed(error: error)
+            case .Success(let data as NotificationCountOutputDomainModel):
+                do {
+                    self.onGetNotificationsDetailsSucceeded(data: data)
+                } catch {
+                    self.onGetNotificationsDetailsFailed(data: data)
+                }
+            default:
+                break
+            }
+        })
+    }
+    
+    // MARK: BrowseEnquiryReceivedNotification API Response methods
+    func onGetNotificationsDetailsSucceeded(data: NotificationCountOutputDomainModel) {
+        //self.dismissProgress()
+        if data.status {
+            
+            let tabArray = self.tabBarController?.tabBar.items as NSArray!
+            let browseEnquiryTabItem = tabArray?.object(at: 2) as! UITabBarItem
+            
+            if(data.browseEnquiryCount != "0") {
+                browseEnquiryTabItem.badgeValue = "\(data.browseEnquiryCount)"
+            }
+            
+            let myAssignmentTabItem = tabArray?.object(at: 1) as! UITabBarItem
+            if(data.myAssignmentCount != "0") {
+                myAssignmentTabItem.badgeValue = "\(data.myAssignmentCount)"
+            }
+            
+        } else {
+        }
+    }
+    
+    func onGetNotificationsDetailsFailed(error: EApiErrorType) {
+        //self.dismissProgress()
+    }
+    
+    func onGetNotificationsDetailsFailed(data: NotificationCountOutputDomainModel) {
+        //self.dismissProgress()
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
- }
+}

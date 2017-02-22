@@ -1,0 +1,20 @@
+/* 
+  SettingsView.strings
+  ExpertConnect
+
+  Created by Redbytes on 20/10/2016.
+  Copyright © 2016 ExpertConnect. All rights reserved.
+*/
+"No Internet Connection" = "No Internet Connection";
+"Notification" = "Notification";
+"CoachingDetails" = "Coaching Details";
+"AddCategory" = "Add Category";
+"UpgradeToTeacher" = "Upgrade to Teacher";
+"PaymentDetails" = "Payment Details";
+"ChangeNumber" = "Change Number";
+"DeleteAccount" = "Delete My Account";
+"PasswordReset" = "Password Reset";
+"HelpSupport" = "Help & Support";
+"Updating notification settings" = "Updating notification settings";
+"Updating notification to on" = "Updating notification to on";
+"Updating notification to off" = "Updating notification to off";

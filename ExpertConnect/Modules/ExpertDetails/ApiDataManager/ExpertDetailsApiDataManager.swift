@@ -12,10 +12,10 @@ import SwiftyJSON
 final class ExpertDetailsApiDataManager: ExpertDetailsProtocol {
     init() {}
     
-    func expertDetails(data: ExpertDetailsInputDomainModel,  callback: @escaping (ECallbackResultType) -> Void) {
+    func expertDetails(apiEndPoint: String, data: ExpertDetailsInputDomainModel,  callback: @escaping (ECallbackResultType) -> Void) {
         do {
             let api: ApiServiceProtocol = ApiService()
-            let url: String = try api.constructApiEndpoint(base: "http://182.72.44.11/expert_connect", params: "register_expert_details.php")
+            let url: String = try api.constructApiEndpoint(base: "http://182.72.44.11/expert_connect", params: apiEndPoint)
             let headers = try api.constructHeader(withCsrfToken: true, cookieDictionary: nil)
             
             var parameters = ["user_id" :data.userId as String] as [String : Any]

@@ -1,9 +1,9 @@
 /* 
-  Login.strings
-  Mezuka
+  ExpertDetails.strings
+  ExpertConnect
 
-  Created by Hasan H. Topcu on 20/10/2016.
-  Copyright © 2016 Mezuka. All rights reserved.
+  Created by Redbytes on 20/10/2016.
+  Copyright © 2016 ExpertConnect. All rights reserved.
 */
 "Processing" = "Processing";
 "Username or password is incorrect" = "Username or password is incorrect";
@@ -32,5 +32,5 @@
 "Beginner Lectures Cannot Be Zero" = "Beginner Lectures Cannot Be Zero";
 "Intermediate Lectures Cannot Be Zero" = "Intermediate Lectures Cannot Be Zero";
 "Advance Lectures Cannot Be Zero" = "Advance Lectures Cannot Be Zero";
-
 "Adding New Expertise Details" = "Adding New Expertise Details";
+"Upgrading to teacher" = "Upgrading to teacher";

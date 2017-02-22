@@ -1,5 +1,5 @@
 //
-//  SubCategoryOutputDomainModel.swift
+//  MyAssignmentOutputDomainModel.swift
 //  ExpertConnect
 //
 //  Created by Redbytes on 21/11/16.

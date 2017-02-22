@@ -8,29 +8,29 @@
 
 import UIKit
 
-class CoachingDetailsVC: UIViewController, AKSSegmentedSliderControlDelegate {
-
+class CoachingDetailsVC: UIViewController, AKSSegmentedSliderControlDelegate, UIPickerViewDelegate, UIPickerViewDataSource {
+    
     var expertDetailsInputDomainModel: ExpertDetailsInputDomainModel!
     var signUpInputDomainModel: SignUpInputDomainModel!
-
+    
     @IBOutlet var travelKmButton: UIButton!
     @IBOutlet var joinExpertConnectButton: UIButton!
     @IBOutlet var twoLineLabel: UILabel!
     @IBOutlet weak var onlineSkypeLabel: UILabel!
-    
+    @IBOutlet weak var distanceLabel: UILabel!
     @IBOutlet var homeCheckboxButton: UIButton!
     @IBOutlet var instituteCheckboxButton: UIButton!
     @IBOutlet var travelCheckboxButton: UIButton!
     @IBOutlet var otherLibraryCheckboxButton: UIButton!
     @IBOutlet var onlineSkypeCheckboxButton: UIButton!
     @IBOutlet var termsAndConditionsCheckboxButton: UIButton!
-    @IBOutlet var customSliderView: UIView!
+    @IBOutlet weak var distanceTextfield: UITextField!
     
     let checkboxDeselected = UIImage(named:"unselected_check_boc")
     let checkboxSelected = UIImage(named:"selected_check_box")
-
+    var pickerviewExpertDetails = UIPickerView()
+    var distanceArray = NSMutableArray()
     var userId: String = ""
-    
     enum UIAlertControllerStyle : Int {
         case ActionSheet
         case Alert
@@ -39,22 +39,15 @@ class CoachingDetailsVC: UIViewController, AKSSegmentedSliderControlDelegate {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.activateBackIcon()
-       // print("signup data %@",signUpInputDomainModel.userType)
-       // print("signup data %@",expertDetailsInputDomainModel.categoryId)
-
         self.navigationController?.setNavigationBarHidden(false, animated: true)
         self.navigationItem.hidesBackButton = true;
-//        self.twoLineLabel.font = UIFont (name: "Helvetica", size: 18)
-        self.twoLineLabel.font =  UIFont(name: "Raleway-Light", size: 18)
-        self.twoLineLabel.text = NSString(format: "%@", "Other - Library, Community center etc.") as String
-  
-        self.onlineSkypeLabel.font =  UIFont(name: "Raleway-Light", size: 18)
-        self.onlineSkypeLabel.text = NSString(format: "%@", "Online - Skype, Messanger etc") as String
-
         self.navigationItem.title = "Coaching Details"
         self.navigationController?.navigationBar.backgroundColor = UIColor.white
-       // self.navigationController?.navigationBar.titleTextAttributes = [NSForegroundColorAttributeName : UIColor(red: 247/255, green: 67/255, blue: 0.0, alpha: 1.0)]
-        self.travelKmButton.contentEdgeInsets = UIEdgeInsets(top: 0.0, left: 8.0, bottom: 0.0, right: 8.0)
+        
+        self.twoLineLabel.font =  UIFont(name: "Raleway-Light", size: 18)
+        self.twoLineLabel.text = NSString(format: "%@", "Other - Library, Community center etc.") as String
+        self.onlineSkypeLabel.font =  UIFont(name: "Raleway-Light", size: 18)
+        self.onlineSkypeLabel.text = NSString(format: "%@", "Online - Skype, Messanger etc") as String
         self.travelKmButton.setTitle("10", for: UIControlState.normal)
         
         self.homeCheckboxButton.setImage(checkboxDeselected, for: UIControlState.normal)
@@ -63,14 +56,20 @@ class CoachingDetailsVC: UIViewController, AKSSegmentedSliderControlDelegate {
         self.otherLibraryCheckboxButton.setImage(checkboxDeselected, for: UIControlState.normal)
         self.onlineSkypeCheckboxButton.setImage(checkboxDeselected, for: UIControlState.normal)
         self.termsAndConditionsCheckboxButton.setImage(checkboxDeselected, for: UIControlState.normal)
-        self.setUpDistanceSlider()
+        self.distanceArray.addObjects(from: ["10","20","30","40","50"])
+        self.setupInputViewForTextField(textField: self.distanceTextfield)
     }
     
     override func viewWillAppear(_ animated: Bool) {
     }
+    
     override func viewDidAppear(_ animated: Bool) {
-        self.setExpertConnectRedButtonTheme(button: self.travelKmButton)
         self.setExpertConnectRedButtonTheme(button: self.joinExpertConnectButton)
+    }
+    
+    @IBAction func distanceButtonClicked(_ sender: UIButton) {
+        self.distanceTextfield.becomeFirstResponder()
+        self.pickerviewExpertDetails.reloadAllComponents()
     }
     
     //MARK: Join ExprtConnect
@@ -114,70 +113,72 @@ class CoachingDetailsVC: UIViewController, AKSSegmentedSliderControlDelegate {
             let defaults = UserDefaults.standard
             let teacherStudentValue = defaults.string(forKey: "teacherStudentValue")
             if teacherStudentValue! == NSString(format:"%@","3") as String {
+                //Teacher Details
                 url = "user_register.php"
-                 registerUserInputDomainModel = RegisterUserInputDomainModel.init(userType: signUpInputDomainModel.userType,
-                                                                                     firstName: signUpInputDomainModel.firstName,
-                                                                                     lastName: signUpInputDomainModel.lastName,
-                                                                                     emailId: signUpInputDomainModel.emailId,
-                                                                                     password: signUpInputDomainModel.password,
-                                                                                     countryCode: signUpInputDomainModel.countryCode,
-                                                                                     mobileNo: signUpInputDomainModel.mobileNo,
-                                                                                     dob: signUpInputDomainModel.dob,
-                                                                                     gender: signUpInputDomainModel.gender,
-                                                                                     profilePic: signUpInputDomainModel.profilePic,
-                                                                                     deviceToken: signUpInputDomainModel.deviceToken,
-                                                                                     osType: signUpInputDomainModel.osType,
-                                                                                     latitude: signUpInputDomainModel.latitude,
-                                                                                     longitude: signUpInputDomainModel.longitude,
-                                                                                     location: signUpInputDomainModel.location,
-                                                                                     regType: signUpInputDomainModel.regType,
-                                                                                     socialId: signUpInputDomainModel.socialId,
-                                                                                     categoryId: expertDetailsInputDomainModel.categoryId,
-                                                                                     subCategoryId: expertDetailsInputDomainModel.subCategoryId,
-                                                                                     qualification: expertDetailsInputDomainModel.qualification,
-                                                                                     about: expertDetailsInputDomainModel.about,
-                                                                                     basePrice: expertDetailsInputDomainModel.basePrice,
-                                                                                     beginner : expertDetailsInputDomainModel.beginner,
-                                                                                     intermediate : expertDetailsInputDomainModel.intermediate,
-                                                                                     advance : expertDetailsInputDomainModel.advance,
-                                                                                     coachingVenue : coachingVenue)
-
+                registerUserInputDomainModel = RegisterUserInputDomainModel.init(userType: signUpInputDomainModel.userType,
+                                                                                 firstName: signUpInputDomainModel.firstName,
+                                                                                 lastName: signUpInputDomainModel.lastName,
+                                                                                 emailId: signUpInputDomainModel.emailId,
+                                                                                 password: signUpInputDomainModel.password,
+                                                                                 countryCode: signUpInputDomainModel.countryCode,
+                                                                                 mobileNo: signUpInputDomainModel.mobileNo,
+                                                                                 dob: signUpInputDomainModel.dob,
+                                                                                 gender: signUpInputDomainModel.gender,
+                                                                                 profilePic: signUpInputDomainModel.profilePic,
+                                                                                 deviceToken: signUpInputDomainModel.deviceToken,
+                                                                                 osType: signUpInputDomainModel.osType,
+                                                                                 latitude: signUpInputDomainModel.latitude,
+                                                                                 longitude: signUpInputDomainModel.longitude,
+                                                                                 location: signUpInputDomainModel.location,
+                                                                                 regType: signUpInputDomainModel.regType,
+                                                                                 socialId: signUpInputDomainModel.socialId,
+                                                                                 categoryId: expertDetailsInputDomainModel.categoryId,
+                                                                                 subCategoryId: expertDetailsInputDomainModel.subCategoryId,
+                                                                                 qualification: expertDetailsInputDomainModel.qualification,
+                                                                                 about: expertDetailsInputDomainModel.about,
+                                                                                 basePrice: expertDetailsInputDomainModel.basePrice,
+                                                                                 beginner : expertDetailsInputDomainModel.beginner,
+                                                                                 intermediate : expertDetailsInputDomainModel.intermediate,
+                                                                                 advance : expertDetailsInputDomainModel.advance,
+                                                                                 coachingVenue : coachingVenue)
+                
             }
             else if teacherStudentValue! == NSString(format:"%@","2") as String {
+                //Student Details
                 url = "user_register.php"
-                 registerUserInputDomainModel = RegisterUserInputDomainModel.init(userType: signUpInputDomainModel.userType,
-                                                                                     firstName: signUpInputDomainModel.firstName,
-                                                                                     lastName: signUpInputDomainModel.lastName,
-                                                                                     emailId: signUpInputDomainModel.emailId,
-                                                                                     password: signUpInputDomainModel.password,
-                                                                                     countryCode: signUpInputDomainModel.countryCode,
-                                                                                     mobileNo: signUpInputDomainModel.mobileNo,
-                                                                                     dob: signUpInputDomainModel.dob,
-                                                                                     gender: signUpInputDomainModel.gender,
-                                                                                     profilePic: signUpInputDomainModel.profilePic,
-                                                                                     deviceToken: signUpInputDomainModel.deviceToken,
-                                                                                     osType: signUpInputDomainModel.osType,
-                                                                                     latitude: signUpInputDomainModel.latitude,
-                                                                                     longitude: signUpInputDomainModel.longitude,
-                                                                                     location: signUpInputDomainModel.location,
-                                                                                     regType: signUpInputDomainModel.regType,
-                                                                                     socialId: signUpInputDomainModel.socialId,
-                                                                                     categoryId: "",
-                                                                                     subCategoryId: "",
-                                                                                     qualification: "",
-                                                                                     about: "",
-                                                                                     basePrice: "",
-                                                                                     beginner : [],
-                                                                                     intermediate : [],
-                                                                                     advance : [],
-                                                                                     coachingVenue : coachingVenue)
+                registerUserInputDomainModel = RegisterUserInputDomainModel.init(userType: signUpInputDomainModel.userType,
+                                                                                 firstName: signUpInputDomainModel.firstName,
+                                                                                 lastName: signUpInputDomainModel.lastName,
+                                                                                 emailId: signUpInputDomainModel.emailId,
+                                                                                 password: signUpInputDomainModel.password,
+                                                                                 countryCode: signUpInputDomainModel.countryCode,
+                                                                                 mobileNo: signUpInputDomainModel.mobileNo,
+                                                                                 dob: signUpInputDomainModel.dob,
+                                                                                 gender: signUpInputDomainModel.gender,
+                                                                                 profilePic: signUpInputDomainModel.profilePic,
+                                                                                 deviceToken: signUpInputDomainModel.deviceToken,
+                                                                                 osType: signUpInputDomainModel.osType,
+                                                                                 latitude: signUpInputDomainModel.latitude,
+                                                                                 longitude: signUpInputDomainModel.longitude,
+                                                                                 location: signUpInputDomainModel.location,
+                                                                                 regType: signUpInputDomainModel.regType,
+                                                                                 socialId: signUpInputDomainModel.socialId,
+                                                                                 categoryId: "",
+                                                                                 subCategoryId: "",
+                                                                                 qualification: "",
+                                                                                 about: "",
+                                                                                 basePrice: "",
+                                                                                 beginner : [],
+                                                                                 intermediate : [],
+                                                                                 advance : [],
+                                                                                 coachingVenue : coachingVenue)
                 
                 
             }
             
-            let message = "Processing".localized(in: "Login")
+            let message = "Registering to ExpertConnect".localized(in: "CoachingDetails")
             self.displayProgress(message: message)
-
+            
             let APIDataManager: CoachingDetailsProtocol = CoachingDetailsApiDataManager()
             APIDataManager.coachingDetails(endpoint: url, data:registerUserInputDomainModel!,callback: { (result) in
                 print(result)
@@ -198,11 +199,10 @@ class CoachingDetailsVC: UIViewController, AKSSegmentedSliderControlDelegate {
     }
     
     func showHomeController() -> Void {
-        
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.setInitialViewController()
     }
-
+    
     @IBAction func homeCheckboxButtonClicked(_ sender: UIButton) {
         if self.homeCheckboxButton.image(for: UIControlState.normal) == checkboxDeselected {
             self.homeCheckboxButton.setImage(checkboxSelected, for: UIControlState.normal)
@@ -253,13 +253,9 @@ class CoachingDetailsVC: UIViewController, AKSSegmentedSliderControlDelegate {
     
     // MARK: CoachingDetail Delegate
     func onUserCoachingDetailsSucceeded(data: CoachingDetailsOutputDomainModel) {
-        // Convert Domain Model to View Model
-        // Send to wireframe to route somewhere else
         self.dismissProgress()
-        
         print("signup data %@",data.message)
         print("signup data %@",data.status)
-        
         let userInfo = ["CoachingDetailsOutputDomainModel": data] as [String: Any]
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "com.ExpertConnect.Signup"), object: nil, userInfo:userInfo)
         UserDefaults.standard.set(true, forKey: "UserLoggedInStatus")
@@ -267,6 +263,24 @@ class CoachingDetailsVC: UIViewController, AKSSegmentedSliderControlDelegate {
         UserDefaults.standard.set(userId, forKey: "UserId")
         let location = String(data.location)
         UserDefaults.standard.set(location, forKey: "Location")
+        let userType = String(data.userType)
+        UserDefaults.standard.set(userType, forKey: "teacherStudentValue")
+        let notificationStatus = String(data.notificationStatus)
+        if(notificationStatus == "1") {
+            UserDefaults.standard.set(true, forKey: "PushNotificationStatus")
+        } else if(notificationStatus == "0") {
+            UserDefaults.standard.set(false, forKey: "PushNotificationStatus")
+        }
+        let currentPassword = String(data.currentPassword)
+        UserDefaults.standard.set(currentPassword, forKey: "CurrentPassword")
+        let firstname = String(data.firstName)
+        UserDefaults.standard.set(firstname, forKey: "firstname")
+        let lastname = String(data.lastName)
+        UserDefaults.standard.set(lastname, forKey: "lastname")
+        let email = String(data.email)
+        UserDefaults.standard.set(email, forKey: "email_id")
+        let dob = String(data.dob)
+        UserDefaults.standard.set(dob, forKey: "dob")
         self.navigateBackToHomeViewController()
     }
     
@@ -274,7 +288,7 @@ class CoachingDetailsVC: UIViewController, AKSSegmentedSliderControlDelegate {
         self.dismissProgress()
         self.displayErrorMessage(message: "Failed to register the user")
     }
-        
+    
     // MARK: Alert methods
     func displayErrorMessage(message: String) {
         self.showErrorMessage( message: message)
@@ -296,91 +310,99 @@ class CoachingDetailsVC: UIViewController, AKSSegmentedSliderControlDelegate {
         appDelegate.setInitialViewController()
     }
     
-    func setUpDistanceSlider() {
-        
-        let screenSize = UIScreen.main.bounds
-        let screenWidth = screenSize.width
-        //let screenHeight = screenSize.height
-        if(screenWidth == 320) {
-            let tempXPosition : Float = Float((self.view.frame.width * 12)/100)
-            let xPosition : Int = Int(tempXPosition)
-            let yPosition = 20
-            
-            let tempWidth : Float = Float((self.view.frame.width * 88)/100)
-            let width : Int = Int(tempWidth)
-            let height = 20
-            
-            let tempSpaceBetweenPoints : Float = Float((self.view.frame.width * 14)/100)
-            let spaceBetweenPoints = tempSpaceBetweenPoints
-            let radiusPoint = 8
-            let sliderLineWidth = 5
-            
-            var sliderConrolFrame: CGRect = CGRect.null
-            sliderConrolFrame = CGRect(x: xPosition-4, y: (yPosition), width: width, height: height)
-            //let sliderControl :  AKSSegmentedSliderControl = AKSSegmentedSliderControl(frame: sliderConrolFrame)
-            let sliderControl :  AKSSegmentedSliderControl = AKSSegmentedSliderControl.init(frame: sliderConrolFrame)
-
-            sliderControl.delegate = self
-            sliderControl.move(to: 0)
-            sliderControl.spaceBetweenPoints = Float(spaceBetweenPoints)
-            sliderControl.radiusPoint = Float(radiusPoint)
-            sliderControl.heightLine = Float(sliderLineWidth)
-            sliderControl.numberOfPoints = 5
-            self.customSliderView.addSubview(sliderControl)
-        } else {
-
-        let tempXPosition : Float = Float((self.view.frame.width * 12)/100)
-        let xPosition : Int = Int(tempXPosition)
-        let yPosition = 20
-        
-        let tempWidth : Float = Float((self.view.frame.width * 88)/100)
-        let width : Int = Int(tempWidth)
-        let height = 20
-        
-        let tempSpaceBetweenPoints : Float = Float((self.view.frame.width * 15)/100)
-        let spaceBetweenPoints = tempSpaceBetweenPoints
-        let radiusPoint = 8
-        let sliderLineWidth = 5
-        
-        var sliderConrolFrame: CGRect = CGRect.null
-        sliderConrolFrame = CGRect(x: xPosition-4, y: (yPosition), width: width, height: height)
-       // let sliderControl :  AKSSegmentedSliderControl = AKSSegmentedSliderControl(frame: sliderConrolFrame)
-        let sliderControl :  AKSSegmentedSliderControl = AKSSegmentedSliderControl.init(frame: sliderConrolFrame)
-        sliderControl.delegate = self
-        sliderControl.move(to: 0)
-        sliderControl.spaceBetweenPoints = Float(spaceBetweenPoints)
-        sliderControl.radiusPoint = Float(radiusPoint)
-        sliderControl.heightLine = Float(sliderLineWidth)
-        sliderControl.numberOfPoints = 5
-        self.customSliderView.addSubview(sliderControl)
+    func setupInputViewForTextField(textField: UITextField) {
+        let str = NSString(format:"%@", "0")
+        let defaults = UserDefaults.standard
+        defaults.set(str, forKey: "pickerviewExpertDetailsCoaching")
+        self.pickerviewExpertDetails.delegate = self
+        self.pickerviewExpertDetails.dataSource = self
+        self.pickerviewExpertDetails.backgroundColor = UIColor.white
+        self.pickerviewExpertDetails.tag = 101
+        textField.inputView = pickerviewExpertDetails
+        var cell = SignupDateCell()
+        cell = Bundle.main.loadNibNamed("SignupDateCell", owner: nil, options: nil)?[0] as! SignupDateCell
+        cell.doneButton.addTarget(self, action: #selector(inputAccessoryViewDidFinishForDoneButton(button:)), for: .touchUpInside)
+        cell.cancelButton.addTarget(self, action: #selector(inputAccessoryViewDidFinishForDoneButton(button:)), for: .touchUpInside)
+        cell.doneButton.tag = 101
+        cell.cancelButton.tag = 102
+        cell.centerLabel.textColor = UIColor.ExpertConnectBlack
+        cell.centerLabel.font = UIFont(name: "Raleway-Light", size: 18)
+        let myToolbar = UIToolbar(frame: CGRect(x: 0, y: 0, width: self.view.frame.size.width, height: 44))
+        cell.frame = myToolbar.frame
+        myToolbar.addSubview(cell)
+        textField.inputAccessoryView = myToolbar;
+        textField.inputAccessoryView?.backgroundColor=UIColor.darkGray
+        if textField == self.distanceTextfield {
+            cell.centerLabel.text = "Distance in Km"
         }
     }
     
-    func timeSlider(_ timeSlider: AKSSegmentedSliderControl! , didSelectPointAtIndex index:Int) -> Void  {
-        print(index)
-        var sliderIntValue = Int()
-        if index == 0 {
-            sliderIntValue = 10
-        }
-        if index == 1 {
-            sliderIntValue = 20
-        }
-        if index == 2 {
-            sliderIntValue = 30
-        }
-        if index == 3 {
-            sliderIntValue = 40
-        }
-        if index == 4 {
-            sliderIntValue = 50
-        }
-        self.travelKmButton.setTitle(NSString(format:"%d", sliderIntValue) as String , for: UIControlState.normal)
+    // MARK: pickerview datasource
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
     }
-
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        if self.pickerviewExpertDetails.tag == 101 {
+            return distanceArray.count
+        }
+        return 0
+    }
+    
+    // MARK: pickerview delegates
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        var title = String()
+        if self.pickerviewExpertDetails.tag == 101 {
+            title = self.distanceArray[row] as! String
+        }
+        return title as String
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, viewForRow row: Int, forComponent component: Int, reusing view: UIView?) -> UIView
+    {
+        if self.pickerviewExpertDetails.tag == 101 {
+            let pickerLabel = UILabel()
+            pickerLabel.textColor = UIColor.ExpertConnectBlack
+            pickerLabel.text = self.distanceArray[row] as? String
+            pickerLabel.font = UIFont(name: "Raleway-Light", size: 18) // In this use your custom font
+            pickerLabel.textAlignment = NSTextAlignment.center
+            return pickerLabel
+        }
+        let pickerLabel = UILabel()
+        pickerLabel.textColor = UIColor.ExpertConnectBlack
+        pickerLabel.text = ""
+        pickerLabel.font = UIFont(name: "Raleway-Light", size: 18) // In this use your custom font
+        pickerLabel.textAlignment = NSTextAlignment.center
+        return pickerLabel
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        let str = NSString(format:"%d", row)
+        let defaults = UserDefaults.standard
+        defaults.set(str, forKey: "pickerviewExpertDetailsCoaching")
+    }
+    
+    func inputAccessoryViewDidFinishForDoneButton(button : UIButton) {
+        self.view.endEditing(true)
+        if button.tag == 101 {
+            let defaults = UserDefaults.standard
+            let pickerviewExpertDetails = defaults.string(forKey: "pickerviewExpertDetailsCoaching")
+            let intValue = Int(pickerviewExpertDetails!)
+            
+            if self.pickerviewExpertDetails.tag == 101 {
+                let title = self.distanceArray[intValue!] as! String
+                self.travelKmButton.setTitle(NSString(format:"%@", title) as String , for: UIControlState.normal)
+                let str = NSString(format:"%@", "0")
+                let defaults = UserDefaults.standard
+                defaults.set(str, forKey: "pickerviewExpertDetailsCoaching")
+                self.pickerviewExpertDetails.reloadAllComponents()
+                self.pickerviewExpertDetails.selectRow(0, inComponent: 0, animated: true)
+            }
+        }
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    
 }

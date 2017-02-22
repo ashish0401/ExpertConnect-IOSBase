@@ -8,6 +8,5 @@
 
 import Foundation
 protocol ConfirmRequestProtocols {
-    
     func sendConfirmRejectRequest(data:SendConfirmRejectDomainModel,callback: @escaping (ECallbackResultType) -> Void)
 }

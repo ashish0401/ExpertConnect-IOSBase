@@ -1,9 +1,9 @@
 //
 //  LoginOutputDomainModel.swift
-//  Mezuka
+//  ExpertConnect
 //
-//  Created by Hasan H. Topcu on 20/10/2016.
-//  Copyright © 2016 Mezuka. All rights reserved.
+//  Created by Redbytes on 20/10/2016.
+//  Copyright © 2016 ExpertConnect. All rights reserved.
 //
 
 import Foundation
@@ -15,11 +15,14 @@ class LoginOutputDomainModel {
     
     var firstName: String = ""
     var lastName: String = ""
+    var email: String = ""
     var mobileNo: String = ""
     var gender: String = ""
     var profilePic: String = ""
     var dob: String = ""
     var userType: String = ""
+    var notificationStatus: String = ""
+    var currentPassword: String = ""
     
     var regType: String = ""
     var latitude: String = ""

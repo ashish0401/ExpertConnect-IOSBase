@@ -18,8 +18,8 @@ final class SendRequestApiDataManager: SendRequestProtocols {
             let api: ApiServiceProtocol = ApiService()
             let url: String = try api.constructApiEndpoint(base: "http://182.72.44.11/expert_connect", params: "notification_request.php")
             let headers = try api.constructHeader(withCsrfToken: true, cookieDictionary: nil)
-            let parameters = ["from_id" : data.fromId, "to_id" : data.toId, "type" : data.type, "expert_id" : data.expertId] as [String : Any]
-           
+            let parameters = ["from_id" : data.fromId, "to_id" : data.toId, "type" : data.type, "expert_id" : data.expertId, "category_id": data.categoryId, "sub_category_id": data.subCategoryId] as [String : Any]
+            
             let apiConverter = SendRequestApiModelConverter()
             api.createForgotPassword(url,
                                      parameters: parameters as [String : AnyObject]?,
@@ -38,7 +38,7 @@ final class SendRequestApiDataManager: SendRequestProtocols {
             let api: ApiServiceProtocol = ApiService()
             let url: String = try api.constructApiEndpoint(base: "http://182.72.44.11/expert_connect", params: "accept_reject_notification.php")
             let headers = try api.constructHeader(withCsrfToken: true, cookieDictionary: nil)
-            let parameters = ["from_id" : data.fromId, "to_id" : data.toId, "type" : data.type, "expert_id" : data.expertId] as [String : Any]
+            let parameters = ["from_id" : data.fromId, "to_id" : data.toId, "type" : data.type, "expert_id" : data.expertId, "category_id": data.categoryId, "sub_category_id": data.subCategoryId] as [String : Any]
             
             let apiConverter = SendRequestApiModelConverter()
             api.createForgotPassword(url,
@@ -52,5 +52,4 @@ final class SendRequestApiDataManager: SendRequestProtocols {
             callback(.Failure(.UnknownError))
         }
     }
-
 }

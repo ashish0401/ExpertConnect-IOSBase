@@ -1,6 +1,6 @@
 //
-// Created by hhtopcu.
-// Copyright (c) 2016 hhtopcu. All rights reserved.
+// Created by Redbytes.
+// Copyright (c) 2016 Redbytes. All rights reserved.
 //
 
 import Foundation
@@ -14,7 +14,7 @@ final class LoginPresenter: LoginPresenterProtocol, LoginInteractorOutputProtoco
     
     func notifyLoginButtonTapped() {
         let viewModel = view?.getLoginViewModel()
-
+        
         if(viewModel != nil) {
             let model = LoginDomainModel(email: (viewModel?.email)!, password: (viewModel?.password)!, deviceToken:(viewModel?.deviceToken)!, operatingSysType: (viewModel?.operatingSysType)!)
             
@@ -30,12 +30,12 @@ final class LoginPresenter: LoginPresenterProtocol, LoginInteractorOutputProtoco
         if(viewModel != nil) {
             let model = LoginWithFacebookDomainModel(regType: (viewModel?.regType)!, socialId: (viewModel?.socialId)!, deviceToken:(viewModel?.deviceToken)!, operatingSysType: (viewModel?.operatingSysType)!)
             
-            let message = "Processing".localized(in: "Login")
+            let message = "Authenticating via Facebook".localized(in: "Login")
             view?.displayProgress(message: message)
             interactor?.authenticateUserWithFacebook(model: model)
         }
     }
-
+    
     func notifyForgotPasswordButtonTapped() {
         let viewModel = view?.getForgotPasswordModel()
         if(viewModel != nil) {
@@ -43,10 +43,10 @@ final class LoginPresenter: LoginPresenterProtocol, LoginInteractorOutputProtoco
             interactor?.forgotPasswordButtonTapped(model: model)
         }
     }
-
+    
     /**
-        This method will handle the typing, if one of the text fields are empty, login button should be deactivated
-    */
+     This method will handle the typing, if one of the text fields are empty, login button should be deactivated
+     */
     func notifyTextChangedInTextFields() {
         let viewModel = view?.getLoginViewModel()
         
@@ -55,9 +55,9 @@ final class LoginPresenter: LoginPresenterProtocol, LoginInteractorOutputProtoco
             let password = viewModel?.password
             
             if ((email?.isEmpty)! == false && (password?.isEmpty)! == false) {
-              //  view?.activateLoginButton()
+                //  view?.activateLoginButton()
             } else {
-              //  view?.deactivateLoginButton()
+                //  view?.deactivateLoginButton()
             }
         }
     }
@@ -72,11 +72,11 @@ final class LoginPresenter: LoginPresenterProtocol, LoginInteractorOutputProtoco
     func notifyHamburgerMenuBarTapped() {
         wireFrame?.openMenu()
     }
-
+    
     func onUserLoginSucceeded(data: LoginOutputDomainModel) {
         // Convert Domain Model to View Model
         // Send to wireframe to route somewhere else
-       // print("Hey you logged in: \(data.fullName)")
+        // print("Hey you logged in: \(data.fullName)")
         
         let userInfo = ["LoginOutputDomainModel": data] as [String: Any]
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: "com.ExpertConnect.loggedIn"), object: nil, userInfo:userInfo)
@@ -85,6 +85,27 @@ final class LoginPresenter: LoginPresenterProtocol, LoginInteractorOutputProtoco
         UserDefaults.standard.set(userId, forKey: "UserId")
         let location = String(data.location)
         UserDefaults.standard.set(location, forKey: "Location")
+        let userType = String(data.userType)
+        UserDefaults.standard.set(userType, forKey: "teacherStudentValue")
+        
+        let notificationStatus = String(data.notificationStatus)
+        if(notificationStatus == "1") {
+            UserDefaults.standard.set(true, forKey: "PushNotificationStatus")
+        } else if(notificationStatus == "0") {
+            UserDefaults.standard.set(false, forKey: "PushNotificationStatus")
+        }
+        let currentPassword = String(data.currentPassword)
+        UserDefaults.standard.set(currentPassword, forKey: "CurrentPassword")
+        
+        let firstname = String(data.firstName)
+        UserDefaults.standard.set(firstname, forKey: "firstname")
+        let lastname = String(data.lastName)
+        UserDefaults.standard.set(lastname, forKey: "lastname")
+        let email = String(data.email)
+        UserDefaults.standard.set(email, forKey: "email_id")
+        let dob = String(data.dob)
+        UserDefaults.standard.set(dob, forKey: "dob")
+        
         view?.dismissProgress()
         view?.navigateBackToViewController()
     }
@@ -110,6 +131,30 @@ final class LoginPresenter: LoginPresenterProtocol, LoginInteractorOutputProtoco
         UserDefaults.standard.set(userId, forKey: "UserId")
         let location = String(data.location)
         UserDefaults.standard.set(location, forKey: "Location")
+        let userType = String(data.userType)
+        UserDefaults.standard.set(userType, forKey: "teacherStudentValue")
+        
+        let notificationStatus = String(data.notificationStatus)
+        if(notificationStatus == "1") {
+            UserDefaults.standard.set(true, forKey: "PushNotificationStatus")
+            
+        } else if(notificationStatus == "0") {
+            UserDefaults.standard.set(false, forKey: "PushNotificationStatus")
+        }
+        
+        let currentPassword = String(data.currentPassword)
+        UserDefaults.standard.set(currentPassword, forKey: "CurrentPassword")
+        
+        let firstname = String(data.firstName)
+        UserDefaults.standard.set(firstname, forKey: "firstname")
+        let lastname = String(data.lastName)
+        UserDefaults.standard.set(lastname, forKey: "lastname")
+        let email = String(data.email)
+        UserDefaults.standard.set(email, forKey: "email_id")
+        let dob = String(data.dob)
+        UserDefaults.standard.set(dob, forKey: "dob")
+        
+        
         view?.dismissProgress()
         view?.navigateBackToViewController()
     }
@@ -121,7 +166,7 @@ final class LoginPresenter: LoginPresenterProtocol, LoginInteractorOutputProtoco
         view?.dismissProgress()
         view?.navigateToSignup()
     }
-
+    
     func onForgotPasswordSucceeded(data: FPOutputDomainModel) {
         if data.status == true {
             //show alert of success
@@ -140,4 +185,4 @@ final class LoginPresenter: LoginPresenterProtocol, LoginInteractorOutputProtoco
         let message = "email send failure".localized(in: "Login")
         view?.displayErrorMessage(message: message)
     }
-  }
+}

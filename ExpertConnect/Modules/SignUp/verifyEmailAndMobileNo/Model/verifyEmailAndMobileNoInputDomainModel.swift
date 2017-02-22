@@ -13,7 +13,6 @@ final class verifyEmailAndMobileNoInputDomainModel {
     var mobileNo: String = ""
     
     init(emailId: String, mobileNo : String) {
-        
         self.emailId = emailId
         self.mobileNo = mobileNo
     }

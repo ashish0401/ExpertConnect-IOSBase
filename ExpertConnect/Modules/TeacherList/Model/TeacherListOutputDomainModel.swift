@@ -8,7 +8,7 @@
 
 import Foundation
 class TeacherListOutputDomainModel {
-    //    var categories: NSArray = [NSDictionary]() as NSArray
+
     var status: Bool = false
     var categories: NSArray = [NSDictionary]() as NSArray
     var message: String = ""

@@ -1,9 +1,9 @@
 //
 //  UIViewController+AlertController.swift
-//  Mezuka
+//  ExpertConnect
 //
-//  Created by Hasan H. Topcu on 20/10/2016.
-//  Copyright © 2016 Mezuka. All rights reserved.
+//  Created by Ramesh.M on 06/12/16.
+//  Copyright © 2016 user. All rights reserved.
 //
 
 import UIKit
@@ -57,7 +57,7 @@ extension UIViewController {
     
     func showErrorMessage(message: String, callback: @escaping () -> Void) {
         
-        let title = NSLocalizedString("Error", comment : "Error")
+        let title = NSLocalizedString("Alert", comment : "Alert")
         let action = NSLocalizedString("Ok", comment : "Ok")
         
         // Warn the user
@@ -77,9 +77,14 @@ extension UIViewController {
     
     func showStylishSuccessMessage(message: String) {
         let progressHUD: MBProgressHUD? = MBProgressHUD.showAdded(to: self.view, animated: true)
-        progressHUD!.label.text = message
-        progressHUD!.label.tintColor = UIColor.white
-        progressHUD!.bezelView.color = UIColor.mezukaSuccessGreen
+        //progressHUD!.label.text = message
+        progressHUD!.detailsLabel.text = message
+        //progressHUD!.detailsLabel.font = UIFont(name: "Raleway-Light", size: 14.0)
+        progressHUD!.margin = 10;
+        progressHUD!.offset.y = 100;
+        progressHUD!.detailsLabel.tintColor = UIColor.white
+        progressHUD!.bezelView.color = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 150)
+        progressHUD!.contentColor = UIColor.white
         progressHUD!.mode = .text
         progressHUD?.hide(animated: true, afterDelay: 2.0)
     }
@@ -90,7 +95,7 @@ extension UIViewController {
      - message: The message to be displayed in the alert view
      */
     func showErrorMessage(message: String) {
-        let title = NSLocalizedString("Error", comment : "Error")
+        let title = NSLocalizedString("Alert", comment : "Alert")
         let action = NSLocalizedString("Ok", comment : "Ok")
         
         // Warn the user
@@ -103,9 +108,14 @@ extension UIViewController {
     
     func showStylishErrorMessage(message: String) {
         let progressHUD: MBProgressHUD? = MBProgressHUD.showAdded(to: self.view, animated: true)
-        progressHUD!.label.text = message
-        progressHUD!.label.tintColor = UIColor.white
-        progressHUD!.bezelView.color = UIColor.mezukaErrorRed
+        //progressHUD!.label.text = message
+        progressHUD!.detailsLabel.text = message
+        //progressHUD!.detailsLabel.font = UIFont(name: "Raleway-Light", size: 14.0)
+        progressHUD!.margin = 10;
+        progressHUD!.offset.y = 200;
+        progressHUD!.detailsLabel.tintColor = UIColor.white
+        progressHUD!.bezelView.color = UIColor.init(colorLiteralRed: 0, green: 0, blue: 0, alpha: 150)
+        progressHUD!.contentColor = UIColor.white
         progressHUD!.mode = .text
         progressHUD?.hide(animated: true, afterDelay: 2.0)
     }
@@ -119,6 +129,22 @@ extension UIViewController {
         MBProgressHUD.hide(for: self.view, animated: true)
     }
     
+    func showStickyErrorMessage(message: String) -> UILabel {
+        let noDataLabel = UILabel()
+
+        noDataLabel.frame = CGRect(x: 20, y: 0, width: self.view.frame.width-40, height: 100)
+        noDataLabel.center = self.view.center
+        noDataLabel.textAlignment = .center
+        noDataLabel.numberOfLines = 0
+        noDataLabel.lineBreakMode = .byWordWrapping
+        
+        noDataLabel.text = message
+        noDataLabel.font =  UIFont(name: "Raleway-SemiBold", size: 19)
+        noDataLabel.textColor = UIColor.ExpertConnectGray
+        self.view.addSubview(noDataLabel)
+        noDataLabel.isHidden = true
+        return noDataLabel
+    }
     func setExpertConnectRedButtonTheme(button:UIButton) {
         button.layer.cornerRadius=3
         button.layer.masksToBounds = true
@@ -158,6 +184,14 @@ extension UIViewController {
         textfield.backgroundColor=UIColor.clear
     }
     
+    func setExpertConnectDisabledTextFieldTheme(textfield:UITextField) {
+        textfield.layer.cornerRadius=3;
+        textfield.layer.masksToBounds = true;
+        textfield.layer.borderColor = UIColor.ExpertConnectDisabled.cgColor
+        textfield.layer.borderWidth = 1.0;
+        textfield.backgroundColor=UIColor.clear
+    }
+
     func setCustomAlertTextFieldTheme(textfield:UITextField) {
         textfield.layer.cornerRadius=3;
         textfield.layer.masksToBounds = true;
@@ -200,19 +234,85 @@ extension UIViewController {
                         textField.layer.shadowOpacity = 0.4
                         textField.layer.shadowRadius = 0.3
                         textField.layer.cornerRadius = 3
-                        textField.font = UIFont(name: "Raleway-Light", size: 17)
+                        textField.font = UIFont(name: "Raleway-Medium", size: 16)
                         textField.textColor = UIColor.ExpertConnectBlack
+                        
+                        //                        let image:UIImage = UIImage(named: "search_icon")!
+                        //                        let imageView:UIImageView = UIImageView.init(image: image)
+                        //                        textField.placeholder = "Search"
+                        //                        textField.rightView = nil
+                        //                        textField.leftView = imageView
+                        //                        textField.leftViewMode = UITextFieldViewMode.always
+                        
+                        if let glassIconView = textField.leftView as? UIImageView {
+                            glassIconView.image = glassIconView.image?.withRenderingMode(UIImageRenderingMode.alwaysTemplate)
+                            glassIconView.tintColor = UIColor.ExpertConnectRed
+                        }
+                    }
+                }
+            }
+        }
+    }
 
+    func setExpertConnectHomeSeacrhBarTheme(searchBar: UISearchBar) {
+
+        //searchBar.searchTextPositionAdjustment = UIOffsetMake(10, 0)
+        if let searchTextField = searchBar.value(forKey: "_searchField") as? UITextField, let clearButton = searchTextField.value(forKey: "_clearButton") as? UIButton {
+            // Create a template copy of the original button image
+            let templateImage =  clearButton.imageView?.image?.withRenderingMode(.alwaysTemplate)
+            // Set the template image copy as the button image
+            clearButton.setImage(templateImage, for: .normal)
+            // Finally, set the image color
+            clearButton.tintColor = .white
+        }
+        
+        var textField : UITextField
+        for subview in searchBar.subviews {
+            if (subview.isKind(of:UIView.self)) {
+                for subviewOfSubview in subview.subviews {
+                    if (subviewOfSubview.isKind(of:UITextField.self)) {
+                        textField = subviewOfSubview as! UITextField
+                        
+                        var bounds: CGRect
+                        bounds = textField.frame
+                        bounds.size.height = 44 //(set height whatever you want)
+                        textField.bounds = bounds
+
+                        textField.borderStyle = .none
+                        textField.layer.borderWidth = 0.2
+                        textField.layer.borderColor = UIColor.lightGray.cgColor
+                        textField.background = nil;
+                        textField.backgroundColor = UIColor.ExpertConnectRed
+                        textField.layer.shadowColor = UIColor.black.cgColor
+                        textField.layer.shadowOffset = CGSize(width: 0, height: 1.0)
+                        textField.layer.shadowOpacity = 0.2
+                        textField.layer.shadowRadius = 0.3
+                        textField.layer.cornerRadius = 3
+                        textField.font = UIFont(name: "Raleway-Medium", size: 17)
+                        textField.textColor = UIColor.white
+                        textField.attributedPlaceholder = NSAttributedString(string: "What you want to learn today?",
+                                                                               attributes: [NSForegroundColorAttributeName: UIColor.ExpertConnectOffWhite])
 //                        let image:UIImage = UIImage(named: "search_icon")!
 //                        let imageView:UIImageView = UIImageView.init(image: image)
 //                        textField.placeholder = "Search"
 //                        textField.rightView = nil
 //                        textField.leftView = imageView
 //                        textField.leftViewMode = UITextFieldViewMode.always
+                        
+//                        let leftImageView = UIImageView()
+//                        leftImageView.image = UIImage(named: "search_icon")
+//                        leftImageView.tintColor = UIColor.white
+//
+//                        let leftView = UIView()
+//                        leftView.addSubview(leftImageView)
+//                        leftView.frame = CGRect(x: 0, y: 0, width: 40, height: 40)
+//                        leftImageView.frame = CGRect(x: 10, y: 10, width: 16, height: 16)
+//                        textField.leftViewMode = .always
+//                        textField.leftView = leftView
 
                         if let glassIconView = textField.leftView as? UIImageView {
                             glassIconView.image = glassIconView.image?.withRenderingMode(UIImageRenderingMode.alwaysTemplate)
-                            glassIconView.tintColor = UIColor.ExpertConnectRed
+                            glassIconView.tintColor = UIColor.white
                         }
                     }
                 }

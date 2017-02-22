@@ -1,9 +1,9 @@
 //
 //  LoginApiModelConverter.swift
-//  Mezuka
+//  ExpertConnect
 //
-//  Created by Hasan H. Topcu on 20/10/2016.
-//  Copyright © 2016 Mezuka. All rights reserved.
+//  Created by Redbytes on 20/10/2016.
+//  Copyright © 2016 ExpertConnect. All rights reserved.
 //
 
 import Foundation
@@ -28,19 +28,24 @@ class LoginApiModelConverter {
         let profilePic = json["profile_pic"].stringValue
         let dob = json["dob"].stringValue
         let userType = json["usertype"].stringValue
-        
+        let email = json["email_id"].stringValue
+
         let regType = json["reg_type"].stringValue
         let latitude = json["latitude"].stringValue
         let longitude = json["longitude"].stringValue
         let location = json["location"].stringValue
         let countryCode = json["country_code"].stringValue
-        
+        let notificationStatus = json["notification_status"].stringValue
+        let currentPassword = json["password"].stringValue
+
         // Form the model to be sent
         let model: LoginOutputDomainModel = LoginOutputDomainModel()
         model.userId = userId
         model.socialId = socialId
         model.firstName = firstName
         model.lastName = lastName
+        model.email = email
+
         model.mobileNo = mobileNo
         model.gender = gender
         model.profilePic = profilePic
@@ -51,6 +56,8 @@ class LoginApiModelConverter {
         model.longitude = longitude
         model.location = location
         model.countryCode = countryCode
+        model.notificationStatus = notificationStatus
+        model.currentPassword = currentPassword
         
         return model
     }
@@ -82,5 +89,4 @@ class LoginApiModelConverter {
 
         return model
     }
-
 }

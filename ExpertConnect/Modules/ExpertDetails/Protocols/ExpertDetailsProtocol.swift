@@ -9,5 +9,5 @@
 import Foundation
 
 protocol ExpertDetailsProtocol {
-    func expertDetails(data:ExpertDetailsInputDomainModel,  callback: @escaping (ECallbackResultType) -> Void)
+    func expertDetails(apiEndPoint: String, data:ExpertDetailsInputDomainModel,  callback: @escaping (ECallbackResultType) -> Void)
 }

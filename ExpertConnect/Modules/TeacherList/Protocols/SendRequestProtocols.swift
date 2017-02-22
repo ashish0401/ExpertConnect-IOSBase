@@ -11,5 +11,4 @@ protocol SendRequestProtocols {
     
     func sendRequest(data:SendRequestDomainModel,callback: @escaping (ECallbackResultType) -> Void)
     func sendAcceptRejectRequest(data:SendRequestDomainModel,callback: @escaping (ECallbackResultType) -> Void)
-
 }

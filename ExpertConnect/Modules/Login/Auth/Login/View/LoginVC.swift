@@ -23,7 +23,7 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
     @IBOutlet var signUpButton: UIButton!
     @IBOutlet var facebookButton: UIButton!
     var facebookOutputDomainModel: FacebookOutputDomainModel = FacebookOutputDomainModel()
-
+    
     /**
      This member shows this field is required or not
      */
@@ -32,7 +32,7 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
     let buttonsForForgotPassword = ["SEND EMAIL"]
     
     var userDataDictFB : [String : AnyObject]!
-
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         let backgroundImage = UIImageView(frame: UIScreen.main.bounds)
@@ -40,14 +40,22 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
         self.view.insertSubview(backgroundImage, at: 0)
         self.hideKeyboardWhenTappedAround()
         self.emailTextfield.delegate = self
-        //self.emailTextfield.text = "Genius@gmail.com"
-       // self.passwordTextfield.text = "123456"
     }
     
     override func viewWillAppear(_ animated: Bool) {
         self.navigationController?.setNavigationBarHidden(true, animated: true)
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.objTabbarMain.tabBar.isHidden = true
+        
+        let isAccountDeleted = UserDefaults.standard.value(forKey: "isAccountDeleted")
+        if(isAccountDeleted == nil) {
+            UserDefaults.standard.set(false, forKey: "isAccountDeleted")
+        }
+        if(UserDefaults.standard.bool(forKey: "isAccountDeleted")) {
+            let message = "Your account deleted successfully".localized(in: "DeleteAccountView")
+            self.showStylishSuccessMessage(message: message)
+            UserDefaults.standard.set(false, forKey: "isAccountDeleted")
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -97,11 +105,6 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
         alertView.containerView = createContainerView()
         // Set self as the delegate
         alertView.delegate = self
-        // Or, use a closure
-//        alertView.onButtonTouchUpInside = { (alertView: CustomIOS7AlertView, buttonIndex: Int) -> Void in
-//            print("CLOSURE: Button '\(self.buttons[buttonIndex])' touched")
-//        }
-        // Show time!
         alertView.catchString(withString: "2")
         alertView.show()
     }
@@ -109,7 +112,6 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
     @IBAction func forgotPasswordButtonClicked(_ sender: UIButton) {
         self.emailTextfield.resignFirstResponder()
         self.passwordTextfield.resignFirstResponder()
-
         //        self.view.endEditing(true)
         alertActionType = "forgotPasswordAction"
         alertView.buttonTitles = buttonsForForgotPassword
@@ -117,11 +119,6 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
         alertView.containerView = createContainerViewForForgotPassword()
         // Set self as the delegate
         alertView.delegate = self
-        // Or, use a closure
-//        alertView.onButtonTouchUpInside = { (alertView: CustomIOS7AlertView, buttonIndex: Int) -> Void in
-//            print("CLOSURE: Button '\(self.buttons[buttonIndex])' touched")
-//        }
-        
         // Show time!
         alertView.catchString(withString: "3")
         alertView.show()
@@ -172,32 +169,32 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
     
     // MARK: Custom Alert Delegates
     func customIOS7AlertViewButtonTouchUpInside(_ alertView: CustomIOS7AlertView, buttonIndex: Int) {
-      //  print("DELEGATE: Button '\(buttons[buttonIndex])' touched")
+        //  print("DELEGATE: Button '\(buttons[buttonIndex])' touched")
         if alertActionType == "signupAction"  {
             
             let signupView : SignUpVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SignUpVC") as UIViewController as! SignUpVC
             if (buttonIndex==1)
             {
-                //
+                //Teacher
                 let str = NSString(format:"%@", "3")
                 let defaults = UserDefaults.standard
                 defaults.set(str, forKey: "teacherStudentValue")
                 alertView.close()
-
+                
             } else if(buttonIndex == 0) {
-                //
+                //Student
                 let str = NSString(format:"%@", "2")
                 let defaults = UserDefaults.standard
                 defaults.set(str, forKey: "teacherStudentValue")
                 alertView.close()
             }
-
+            
             if(UserDefaults.standard.bool(forKey: "UserSignupFromFB"))
             {
                 signupView.facebookOutputDomainModel = self.facebookOutputDomainModel
             }
             self.navigationController!.pushViewController(signupView, animated: true)
-
+            
         } else if alertActionType == "forgotPasswordAction" {
             
             if (self.OTPTextfield.text == nil || (self.OTPTextfield.text?.characters.count)! == 0){
@@ -206,7 +203,7 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
                 self.displayErrorMessageWithCallback(message: message)
                 return
             }
-
+            
             presenter?.notifyForgotPasswordButtonTapped()
             print("send email code")
             alertView.close()
@@ -237,7 +234,7 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
         label.lineBreakMode = .byWordWrapping // or NSLineBreakMode.ByWordWrapping
         label.numberOfLines = 2
         label.textAlignment = NSTextAlignment.center;
-
+        
         label.font =  UIFont(name: "Raleway-Light", size: 18)
         label.textColor = UIColor.ExpertConnectBlack
         label.textAlignment = NSTextAlignment.center
@@ -322,7 +319,7 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
             self.alertView.show()
         })
     }
-
+    
     func displaySuccessMessage(message: String){
         self.showSuccessMessage(message: message)
     }
@@ -336,7 +333,7 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
     func navigateToSignup() {
         self.setupSignupOptionView()
     }
-
+    
     /**
      Validates the given text according to input type which can be Phone, Email or Default, if input text is empty returns valid(true)
      - returns: returns whether it is valid(true) or not(false)
@@ -349,24 +346,24 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
     }
     
     func userPasswordValidation(string: String) -> Bool {
-        if string.characters.count>=6 {
+        if string.characters.count > 0 {
             return true
         }
         return false
     }
-
     
-//    /**
-//     Checks the given text is empty or not if it is required
-//     - returns: returns whether it is empty(true) or not(false)
-//     */
-//    func isEmpty() -> Bool {
-//        if self.isRequired && self.getText().isEmpty {
-//            return true
-//        } else {
-//            return false
-//        }
-//    }
+    
+    //    /**
+    //     Checks the given text is empty or not if it is required
+    //     - returns: returns whether it is empty(true) or not(false)
+    //     */
+    //    func isEmpty() -> Bool {
+    //        if self.isRequired && self.getText().isEmpty {
+    //            return true
+    //        } else {
+    //            return false
+    //        }
+    //    }
     
     /**
      Get text of the MapiaTextField
@@ -384,5 +381,4 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
         let model = FPDomainModel.init(email: self.OTPTextfield.text!)
         return model
     }
-
 }

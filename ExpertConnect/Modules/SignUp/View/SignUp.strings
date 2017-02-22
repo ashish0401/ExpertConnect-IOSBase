@@ -1,9 +1,9 @@
 /* 
-  Login.strings
-  Mezuka
+  SignUp.strings
+  ExpertConnect
 
-  Created by Hasan H. Topcu on 20/10/2016.
-  Copyright © 2016 Mezuka. All rights reserved.
+  Created by Redbytes on 20/10/2016.
+  Copyright © 2016 ExpertConnect. All rights reserved.
 */
 "Processing" = "Processing";
 "Username or password is incorrect" = "Username or password is incorrect";
@@ -21,3 +21,6 @@
 "Please Enter Date Of Birth" = "Please Enter Date Of Birth";
 "Please Select Gender" = "Please Select Gender";
 "Mobile No should be minimum 9 digits" = "Mobile No should be minimum 9 digits";
+"Getting Locations" = "Getting Locations";
+"Updating Location" = "Updating Location";
+"Please Enter New Password With Minimum 6 Characters" = "Please Enter New Password With Minimum 6 Characters";

@@ -1,5 +1,5 @@
 //
-//  BrowseEnquiryReceivedNotificationProtocols.swift
+//  ManageExpertiseProtocols.swift
 //  ExpertConnect
 //
 //  Created by Redbytes on 21/11/16.
@@ -9,7 +9,5 @@
 import Foundation
 
 protocol ManageExpertiseProtocols {
-
     func getMyExpertiseDetails(model: ManageExpertiseDomainModel, callback: @escaping (ECallbackResultType) -> Void)
-
 }

@@ -9,10 +9,8 @@
 import UIKit
 
 class TabbarMainVC: UITabBarController {
-
     override func viewDidLoad() {
         super.viewDidLoad()
-
         // Do any additional setup after loading the view.
     }
 
@@ -20,8 +18,6 @@ class TabbarMainVC: UITabBarController {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-
     /*
     // MARK: - Navigation
 
@@ -31,5 +27,4 @@ class TabbarMainVC: UITabBarController {
         // Pass the selected object to the new view controller.
     }
     */
-
 }

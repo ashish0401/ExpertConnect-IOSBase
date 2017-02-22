@@ -8,68 +8,32 @@
 
 import UIKit
 
+@objc protocol AddExpertiseProtocol {
+    @objc optional func addExpertiseSucceded(showAlert:Bool) -> Void
+    @objc optional func upgradeSucceded(showAlert:Bool, message: String) -> Void
+}
 
 class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource, AKSSegmentedSliderControlDelegate  {
-  
+    
+    var delegate:AddExpertiseProtocol!
+    
     var signUpInputDomainModel: SignUpInputDomainModel!
     var expertDetailsInputDomainModel: ExpertDetailsInputDomainModel!
     var beginnerArray = ["Beginner"]
     var intermediateArray = ["Intermediate"]
     var advanceArray = ["Advance"]
     var isAddExpertise: Bool = false
-
-    @IBOutlet var scrollview: UIScrollView!
-    @IBOutlet var mainCategoryTextfield: UITextField!
-    @IBOutlet var subCategoryTextfield: UITextField!
-    @IBOutlet var qualificationTextfield: UITextField!
-    @IBOutlet var mainCategoryButton: UIButton!
-    @IBOutlet var subCategoryButton: UIButton!
-    
-    @IBOutlet weak var chargesLabel: UILabel!
-    @IBOutlet weak var chargesTextField: UITextField!
-    
-    @IBOutlet weak var intermediateTextField: UITextField!
-    @IBOutlet weak var advanceTextField: UITextField!
-    @IBOutlet weak var beginerTextField: UITextField!
-    
-    @IBOutlet var nextButton: UIButton!
-    
-    @IBOutlet weak var beginerPriceLabel: UILabel!
-    @IBOutlet weak var intermediatePriceLabel: UILabel!
-    @IBOutlet weak var advancePriceLabel: UILabel!
-    
-    @IBOutlet weak var advanceLabel: UILabel!
-    @IBOutlet weak var intermediateLabel: UILabel!
-    @IBOutlet weak var beginerLabel: UILabel!
-    
+    var isUpgradeToTeacher: Bool = false
     var userId: String = ""
-    
-    @IBOutlet var expertLevelButton: UIButton!
-    @IBOutlet weak var textviewBackgroundView: UIView!
-    @IBOutlet weak var textview: UITextView!
-    
-    @IBOutlet var customSliderView: UIView!
-
-    @IBOutlet var expertLevelView: UIView!
-    
-    @IBAction func mainCategoryButtonClicked(_ sender: UIButton) {
-        
-    }
-    @IBAction func subCategoryButtonClicked(_ sender: UIButton) {
-        
-    }
-    
+    var userType: String = ""
     var pickerviewExpertDetails = UIPickerView()
-    
     let backItem = UIButton()
     var sliderIntValue = Int()
-    
     var mainCategoryValue = String()
     var subCategoryValue = String()
     var beginnerMiddleValue = String()
     var intermediateMiddleValue = String()
     var advanceMiddleValue = String()
-    
     var categoryArray: NSArray = [NSDictionary]() as NSArray
     var subCategoryArray: NSArray = [NSDictionary]() as NSArray
     
@@ -78,31 +42,45 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
         case Alert
     }
     
+    @IBOutlet var scrollview: UIScrollView!
+    @IBOutlet var mainCategoryTextfield: UITextField!
+    @IBOutlet var subCategoryTextfield: UITextField!
+    @IBOutlet var qualificationTextfield: UITextField!
+    @IBOutlet var mainCategoryButton: UIButton!
+    @IBOutlet var subCategoryButton: UIButton!
+    @IBOutlet weak var chargesLabel: UILabel!
+    @IBOutlet weak var chargesTextField: UITextField!
+    @IBOutlet weak var intermediateTextField: UITextField!
+    @IBOutlet weak var advanceTextField: UITextField!
+    @IBOutlet weak var beginerTextField: UITextField!
+    @IBOutlet weak var beginnerButton: UIButton!
+    @IBOutlet weak var intermediateButton: UIButton!
+    @IBOutlet weak var advanceButton: UIButton!
+    @IBOutlet var nextButton: UIButton!
+    @IBOutlet weak var beginerPriceLabel: UILabel!
+    @IBOutlet weak var intermediatePriceLabel: UILabel!
+    @IBOutlet weak var advancePriceLabel: UILabel!
+    @IBOutlet weak var advanceLabel: UILabel!
+    @IBOutlet weak var intermediateLabel: UILabel!
+    @IBOutlet weak var beginerLabel: UILabel!
+    @IBOutlet weak var textviewBackgroundView: UIView!
+    @IBOutlet weak var textview: UITextView!
+    @IBOutlet var customSliderView: UIView!
+    @IBOutlet var expertLevelView: UIView!
+    @IBOutlet weak var categoryBaseView: UIView!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        if(isAddExpertise) {
-            self.activateTextualCancelIcon()
-            self.activateTextualAddIcon(delegate: self)
-            self.nextButton.isHidden = true
-        } else {
-            self.activateBackIcon()
-            self.nextButton.isHidden = false
-        }
-
-       // print("signup data %@",signUpInputDomainModel.userType)
-        
         self.scrollview.frame = CGRect(x: 0, y: 0, width: 600, height: 600)
         let size = CGSize(width: 600, height: 800)
         self.scrollview.contentSize = size
         
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        appDelegate.objTabbarMain.tabBar.isHidden = true
         self.navigationController?.setNavigationBarHidden(false, animated: true)
         self.navigationItem.hidesBackButton = true;
         self.navigationItem.title = "Expert Details"
         self.navigationController?.navigationBar.backgroundColor = UIColor.white
-        self.expertLevelButton.contentEdgeInsets = UIEdgeInsets(top: 0.0, left: 8.0, bottom: 0.0, right: 8.0)
-        self.expertLevelButton.setTitle("BEGINNER", for: UIControlState.normal)
-        
         self.textview.textColor = UIColor.ExpertConnectBlack
         
         self.beginerTextField.adjustsFontSizeToFitWidth = true
@@ -111,11 +89,10 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
         
         self.intermediateTextField.isEnabled = false
         self.advanceTextField.isEnabled = false
-
+        
         self.textview.text = "Write about yourself..."
         self.textview.textColor = UIColor.lightGray
         //setup UI
-        self.setExpertConnectRedButtonTheme(button: self.expertLevelButton)
         self.setExpertConnectRedButtonTheme(button: self.nextButton)
         
         self.setExpertConnectTextFieldTheme(textfield: self.mainCategoryTextfield)
@@ -124,23 +101,73 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
         self.setExpertConnectTextFieldTheme(textfield: self.chargesTextField)
         
         self.setCustomAlertTextFieldTheme(textfield: self.beginerTextField)
-        self.setExpertConnectTextFieldTheme(textfield: self.intermediateTextField)
-        self.setExpertConnectTextFieldTheme(textfield: self.advanceTextField)
+        self.setExpertConnectDisabledTextFieldTheme(textfield: self.intermediateTextField)
+        self.setExpertConnectDisabledTextFieldTheme(textfield: self.advanceTextField)
         
         self.beginerLabel.textColor = UIColor.ExpertConnectRed
         self.beginerPriceLabel.textColor = UIColor.ExpertConnectRed
         self.beginerTextField.textColor = UIColor.ExpertConnectRed
-
+        self.intermediateLabel.textColor = UIColor.ExpertConnectDisabled
+        self.intermediatePriceLabel.textColor = UIColor.ExpertConnectDisabled
+        self.advanceLabel.textColor = UIColor.ExpertConnectDisabled
+        self.advancePriceLabel.textColor = UIColor.ExpertConnectDisabled
+        
         self.mainCategoryTextfield.setLeftPaddingPoints(10)
         self.subCategoryTextfield.setLeftPaddingPoints(10)
         self.qualificationTextfield.setLeftPaddingPoints(10)
         self.chargesLabel.sizeToFit()
-
+        
         //API
-        self.setUpExpertLevelSlider()
         self.callMainCategoryListApi()
         self.setupInputViewForTextField(textField: self.mainCategoryTextfield)
         self.setupInputViewForTextField(textField: self.subCategoryTextfield)
+        
+        if(isAddExpertise) {
+            self.activateTextualCancelIcon()
+            self.activateTextualAddIcon(delegate: self)
+            self.nextButton.isHidden = true
+        } else if(isUpgradeToTeacher) {
+            self.activateBackIcon()
+            self.nextButton.isHidden = false
+            self.navigationItem.title = "Upgrade To Teacher"
+            self.nextButton.setTitle("UPGRADE",for: .normal)
+        } else {
+            self.activateBackIcon()
+            self.nextButton.isHidden = false
+            self.nextButton.setTitle("NEXT",for: .normal)
+        }
+        self.configureExpertLevelButton()
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        self.resetExpertDetails()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        self.setExpertConnectShadowTheme(view: self.categoryBaseView)
+        self.setExpertConnectShadowTheme(view: self.expertLevelView)
+        self.setExpertConnectShadowTheme(view: self.textviewBackgroundView)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        isAddExpertise = false
+        isUpgradeToTeacher = false
+    }
+    
+    @IBAction func mainCategoryButtonClicked(_ sender: UIButton) {
+        
+    }
+    @IBAction func subCategoryButtonClicked(_ sender: UIButton) {
+        
+    }
+    
+    func configureExpertLevelButton() {
+        self.beginnerButton.setImage(UIImage(named:"selected_beginner_btn"), for: UIControlState.normal)
+        self.intermediateButton.setImage(UIImage(named:"unselected_intermediate_btn"), for: UIControlState.normal)
+        self.advanceButton.setImage(UIImage(named:"unselected_advance_btn"), for: UIControlState.normal)
+        self.beginnerButton.setTitleColor(.ExpertConnectRed, for: .normal)
+        self.intermediateButton.setTitleColor(.ExpertConnectBlack, for: .normal)
+        self.advanceButton.setTitleColor(.ExpertConnectBlack, for: .normal)
     }
     
     func callMainCategoryListApi() {
@@ -149,10 +176,8 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
             self.displayErrorMessage(message: message)
             return
         }
-        
         let message = "Processing".localized(in: "Login")
         self.displayProgress(message: message)
-        
         let APIDataManager: HomeProtocols = HomeAPIDataManager()
         APIDataManager.getCategoryDetails(callback: { (result) in
             switch result {
@@ -168,15 +193,6 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
                 break
             }
         })
-    }
-    
-    override func viewWillAppear(_ animated: Bool) {
-        self.resetExpertDetails()
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        self.setExpertConnectShadowTheme(view: self.expertLevelView)
-        self.setExpertConnectShadowTheme(view: self.textviewBackgroundView)
     }
     
     func resetExpertDetails() {
@@ -216,7 +232,7 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
             self.displayErrorMessage(message: message)
             return
         }
-
+        
         if (sliderIntValue == 0) {
             if (self.beginerTextField.text == nil || (self.beginerTextField.text?.characters.count)! == 0) {
                 let message = "Please Enter Beginner Lectures Required".localized(in: "ExpertDetails")
@@ -228,7 +244,7 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
                 self.displayErrorMessage(message: message)
                 return
             }
-
+            
         }
         if (sliderIntValue == 1) {
             if (self.beginerTextField.text == nil || (self.beginerTextField.text?.characters.count)! == 0) {
@@ -241,7 +257,7 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
                 self.displayErrorMessage(message: message)
                 return
             }
-
+            
             if (self.intermediateTextField.text == nil || (self.intermediateTextField.text?.characters.count)! == 0){
                 let message = "Please Enter Intermediate Lectures Required".localized(in: "ExpertDetails")
                 self.displayErrorMessage(message: message)
@@ -252,7 +268,7 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
                 self.displayErrorMessage(message: message)
                 return
             }
-
+            
         }
         if (sliderIntValue == 2) {
             if (self.beginerTextField.text == nil || (self.beginerTextField.text?.characters.count)! == 0) {
@@ -265,7 +281,7 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
                 self.displayErrorMessage(message: message)
                 return
             }
-
+            
             if (self.intermediateTextField.text == nil || (self.intermediateTextField.text?.characters.count)! == 0){
                 let message = "Please Enter Intermediate Lectures Required".localized(in: "ExpertDetails")
                 self.displayErrorMessage(message: message)
@@ -276,7 +292,7 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
                 self.displayErrorMessage(message: message)
                 return
             }
-
+            
             if (self.advanceTextField.text == nil || (self.advanceTextField.text?.characters.count)! == 0) {
                 let message = "Please Enter Advance Lectures Required".localized(in: "ExpertDetails")
                 self.displayErrorMessage(message: message)
@@ -308,7 +324,7 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
                 let lastTextBeginer = fullBeginerArray[1]
                 beginnerArray.append(lastTextBeginer)
                 beginnerArray.append(self.beginerTextField.text!)
-
+                
                 let fullTextIntermediate = self.intermediatePriceLabel.text!
                 let fullIntermediateArray = fullTextIntermediate.components(separatedBy: " ")
                 let lastTextIntermediate = fullIntermediateArray[1]
@@ -327,34 +343,57 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
                 let lastTextIntermediate = fullIntermediateArray[1]
                 intermediateArray.append(lastTextIntermediate)
                 intermediateArray.append(self.intermediateTextField.text!)
-
+                
                 let fullTextAdvance = self.advancePriceLabel.text!
                 let fullAdvanceArray = fullTextAdvance.components(separatedBy: " ")
                 let lastTextAdvance = fullAdvanceArray[1]
                 advanceArray.append(lastTextAdvance)
                 advanceArray.append(self.advanceTextField.text!)
             }
-
+            
             if(isAddExpertise) {
-            self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
+                self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
+            } else if(isUpgradeToTeacher) {
+                self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
+                self.userType = UserDefaults.standard.value(forKey: "teacherStudentValue") as! String
             }
-
+            
             expertDetailsInputDomainModel = ExpertDetailsInputDomainModel.init(userId: self.userId,
-                                                                        categoryId: mainCategoryValue,
-                                                                        subCategoryId: subCategoryValue,
-                                                                        qualification: self.qualificationTextfield.text!,
-                                                                        about: self.textview.text,
-                                                                        basePrice: self.chargesTextField.text!,
-                                                                        beginner: beginnerArray,
-                                                                        intermediate:intermediateArray,
-                                                                        advance: advanceArray)
-
+                                                                               categoryId: mainCategoryValue,
+                                                                               subCategoryId: subCategoryValue,
+                                                                               qualification: self.qualificationTextfield.text!,
+                                                                               about: self.textview.text,
+                                                                               basePrice: self.chargesTextField.text!,
+                                                                               beginner: beginnerArray,
+                                                                               intermediate:intermediateArray,
+                                                                               advance: advanceArray)
+            
             if(isAddExpertise) {
                 let message = "Adding New Expertise Details".localized(in: "ExpertDetails")
                 self.displayProgress(message: message)
                 
                 let APIDataManager: ExpertDetailsProtocol = ExpertDetailsApiDataManager()
-                APIDataManager.expertDetails(data:expertDetailsInputDomainModel,callback: { (result) in
+                APIDataManager.expertDetails(apiEndPoint: "register_expert_details.php", data:expertDetailsInputDomainModel,callback: { (result) in
+                    print(result)
+                    switch result {
+                    case .Failure(let error):
+                        self.onUserExpertDetailsFailed(error: error)
+                    case .Success(let data as OTPOutputDomainModel):
+                        do {
+                            self.onUserExpertDetailsSucceeded(data: data)
+                        } catch {
+                            self.onUserExpertDetailsFailed(data: data)
+                        }
+                    default:
+                        break
+                    }
+                })
+            } else if(isUpgradeToTeacher) {
+                let message = "Upgrading to teacher".localized(in: "ExpertDetails")
+                self.displayProgress(message: message)
+                
+                let APIDataManager: ExpertDetailsProtocol = ExpertDetailsApiDataManager()
+                APIDataManager.expertDetails(apiEndPoint: "upgrade_to_teacher.php", data:expertDetailsInputDomainModel,callback: { (result) in
                     print(result)
                     switch result {
                     case .Failure(let error):
@@ -371,14 +410,13 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
                 })
             } else {
                 let addECreditVC : AddECreditVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddECreditVC") as UIViewController as! AddECreditVC
-                // expertDetailsVC.userId = self.userId
                 addECreditVC.expertDetailsInputDomainModel = expertDetailsInputDomainModel
                 addECreditVC.signUpInputDomainModel = signUpInputDomainModel
                 self.navigationController?.pushViewController(addECreditVC, animated: true)
             }
-         }
+        }
     }
-   
+    
     //MARK: TextField Delegate
     @IBAction func textFieldEditingDidChange(_ sender: AnyObject) {
         if(sender as! UITextField == self.chargesTextField)
@@ -427,7 +465,7 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
                 intermediateLectureCount = 0
             }
             self.intermediatePriceLabel.text =  "AU$ \(chargesPerLecture! * intermediateLectureCount!)"
-
+            
         } else if (sender as! UITextField == self.advanceTextField) {
             var chargesPerLecture:Int? = Int(self.chargesTextField.text!)
             if(chargesPerLecture == nil)
@@ -455,7 +493,7 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
                     let message = "No Internet Connection".localized(in: "SignUp")
                     self.displayErrorMessage(message: message)
                     return false
-
+                    
                 } else {
                     let message = "Processing".localized(in: "Login")
                     self.displayProgress(message: message)
@@ -489,7 +527,6 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
     }
     
     // MARK: pickerview datasource
-    
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
@@ -505,7 +542,6 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
     }
     
     // MARK: pickerview delegates
-    
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         var title = String()
         if self.pickerviewExpertDetails.tag == 101 {
@@ -545,8 +581,8 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
                 let defaults = UserDefaults.standard
                 defaults.set(str, forKey: "pickerviewExpertDetails")
                 
-                 self.pickerviewExpertDetails.reloadAllComponents()
-                 self.pickerviewExpertDetails.selectRow(0, inComponent: 0, animated: true)
+                self.pickerviewExpertDetails.reloadAllComponents()
+                self.pickerviewExpertDetails.selectRow(0, inComponent: 0, animated: true)
             }
             if self.pickerviewExpertDetails.tag == 102 {
                 let subCategoryDict = self.subCategoryArray[intValue!] as? [String:AnyObject]
@@ -627,8 +663,16 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
         print("signup data %@",data.message)
         print("signup data %@",data.status)
         if data.status {
-            self.view.endEditing(true)
-            self.dismiss(animated: true, completion: nil)
+            if(isAddExpertise) {
+                self.delegate.addExpertiseSucceded!(showAlert: true)
+                self.view.endEditing(true)
+                self.dismiss(animated: true, completion: nil)
+            } else if(isUpgradeToTeacher) {
+                self.delegate.upgradeSucceded!(showAlert: true, message: data.message)
+                let userType = String(3)
+                UserDefaults.standard.set(userType, forKey: "teacherStudentValue")
+                _ = self.navigationController?.popViewController(animated: true)
+            }
         } else {
             self.displayErrorMessage(message: data.message)
         }
@@ -636,14 +680,18 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
     
     func onUserExpertDetailsFailed(error: EApiErrorType) {
         self.dismissProgress()
-        self.displayErrorMessage(message: "Failed to register expert details")
+        if(isAddExpertise) {
+            self.displayErrorMessage(message: "Failed to register expert details")
+        } else if(isUpgradeToTeacher) {
+            self.displayErrorMessage(message: "Failed to upgrade")
+        }
     }
     
     func onUserExpertDetailsFailed(data:OTPOutputDomainModel) {
         self.dismissProgress()
         self.displayErrorMessage(message: data.message)
     }
-
+    
     func callPickerViewMehod(_ textField: UITextField, tag: NSInteger) {
     }
     
@@ -717,124 +765,6 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
         return pickerLabel
     }
     
-    func setUpExpertLevelSlider() {
-        
-        let screenSize = UIScreen.main.bounds
-        let screenWidth = screenSize.width
-        //let screenHeight = screenSize.height
-        if(screenWidth == 320) {
-            let tempXPosition : Float = Float((self.view.frame.width * 5)/100)
-            let xPosition : Int = Int(tempXPosition)
-            let yPosition = 30
-            
-            let tempWidth : Float = Float((self.view.frame.width * 85)/100)
-            let width : Int = Int(tempWidth)
-            let height = 20
-            
-            let tempSpaceBetweenPoints : Float = Float((self.view.frame.width * 35)/100)
-            let spaceBetweenPoints = tempSpaceBetweenPoints
-            let radiusPoint = 8
-            let sliderLineWidth = 5
-            
-            var sliderConrolFrame: CGRect = CGRect.null
-            sliderConrolFrame = CGRect(x: xPosition-4, y: (yPosition), width: width, height: height)
-            //let sliderControl :  AKSSegmentedSliderControl = AKSSegmentedSliderControl(frame: sliderConrolFrame)
-            let sliderControl :  AKSSegmentedSliderControl = AKSSegmentedSliderControl.init(frame: sliderConrolFrame)
-
-            sliderControl.delegate = self
-            sliderControl.move(to: 0)
-            sliderControl.spaceBetweenPoints = Float(spaceBetweenPoints)
-            sliderControl.radiusPoint = Float(radiusPoint)
-            sliderControl.heightLine = Float(sliderLineWidth)
-            sliderControl.numberOfPoints = 3
-            self.customSliderView.addSubview(sliderControl)
-        } else {
-
-            let tempXPosition : Float = Float((self.view.frame.width * 5)/100)
-            let xPosition : Int = Int(tempXPosition)
-            let yPosition = 30
-            
-            let tempWidth : Float = Float((self.view.frame.width * 85)/100)
-            let width : Int = Int(tempWidth)
-            let height = 20
-            
-            let tempSpaceBetweenPoints : Float = Float((self.view.frame.width * 36.5)/100)
-            let spaceBetweenPoints = tempSpaceBetweenPoints
-            let radiusPoint = 8
-            let sliderLineWidth = 5
-            
-            var sliderConrolFrame: CGRect = CGRect.null
-            sliderConrolFrame = CGRect(x: xPosition-4, y: (yPosition), width: width+7, height: height)
-            //let sliderControl :  AKSSegmentedSliderControl = AKSSegmentedSliderControl(frame: sliderConrolFrame)
-            let sliderControl :  AKSSegmentedSliderControl = AKSSegmentedSliderControl.init(frame: sliderConrolFrame)
-
-            sliderControl.delegate = self
-            sliderControl.move(to: 0)
-            sliderControl.spaceBetweenPoints = Float(spaceBetweenPoints)
-            sliderControl.radiusPoint = Float(radiusPoint)
-            sliderControl.heightLine = Float(sliderLineWidth)
-            sliderControl.numberOfPoints = 3
-            self.customSliderView.addSubview(sliderControl)
-        }
-    }
-    
-    func timeSlider(_ timeSlider: AKSSegmentedSliderControl! , didSelectPointAtIndex index:Int) -> Void  {
-        self.resetExpertDetails()
-        sliderIntValue = index
-
-        if index == 0 {
-            self.expertLevelButton.setTitle("BEGINNER", for: UIControlState.normal)
-            //            self.beginnerMiddleTextfield.tintColor = UIColor.red
-            self.intermediateTextField.isEnabled = false
-            self.advanceTextField.isEnabled = false
-            self.intermediateTextField.text = ""
-            self.advanceTextField.text = ""
-            self.intermediatePriceLabel.text = "AU$ 0"
-            self.advancePriceLabel.text = "AU$ 0"
-          
-            self.setExpertConnectTextFieldTheme(textfield: self.intermediateTextField)
-            self.setExpertConnectTextFieldTheme(textfield: self.advanceTextField)
-            self.beginerTextField.textColor = UIColor.ExpertConnectRed
-            self.intermediateTextField.textColor = UIColor.ExpertConnectBlack
-            self.advanceTextField.textColor = UIColor.ExpertConnectBlack
-            self.intermediateLabel.textColor = UIColor.ExpertConnectBlack
-            self.intermediatePriceLabel.textColor = UIColor.ExpertConnectBlack
-            self.advanceLabel.textColor = UIColor.ExpertConnectBlack
-            self.advancePriceLabel.textColor = UIColor.ExpertConnectBlack
-
-        }
-        else if index == 1 {
-            self.expertLevelButton.setTitle("INTERMEDIATE", for: UIControlState.normal)
-            self.intermediateTextField.isEnabled = true
-            self.advanceTextField.isEnabled = false
-            self.advanceTextField.text = ""
-            self.advancePriceLabel.text = "AU$ 0"
-
-            self.setCustomAlertTextFieldTheme(textfield: self.intermediateTextField)
-            self.setExpertConnectTextFieldTheme(textfield: self.advanceTextField)
-            self.intermediateTextField.textColor = UIColor.ExpertConnectRed
-            self.advanceTextField.textColor = UIColor.ExpertConnectBlack
-            self.intermediateLabel.textColor = UIColor.ExpertConnectRed
-            self.intermediatePriceLabel.textColor = UIColor.ExpertConnectRed
-            self.advanceLabel.textColor = UIColor.ExpertConnectBlack
-            self.advancePriceLabel.textColor = UIColor.ExpertConnectBlack
-        }
-        else if index == 2 {
-            self.expertLevelButton.setTitle("ADVANCE", for: UIControlState.normal)
-            self.intermediateTextField.isEnabled = true
-            self.advanceTextField.isEnabled = true
-            
-            self.setCustomAlertTextFieldTheme(textfield: self.intermediateTextField)
-            self.setCustomAlertTextFieldTheme(textfield: self.advanceTextField)
-            self.intermediateTextField.textColor = UIColor.ExpertConnectRed
-            self.advanceTextField.textColor = UIColor.ExpertConnectRed
-            self.intermediateLabel.textColor = UIColor.ExpertConnectRed
-            self.intermediatePriceLabel.textColor = UIColor.ExpertConnectRed
-            self.advanceLabel.textColor = UIColor.ExpertConnectRed
-            self.advancePriceLabel.textColor = UIColor.ExpertConnectRed
-        }
-    }
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -851,7 +781,7 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
         
         self.mainCategoryTextfield.inputView = self.pickerviewExpertDetails
         self.subCategoryTextfield.inputView = self.pickerviewExpertDetails
-
+        
         var cell = SignupDateCell()
         cell = Bundle.main.loadNibNamed("SignupDateCell", owner: nil, options: nil)?[0] as! SignupDateCell
         
@@ -875,5 +805,114 @@ class ExpertDetailsVC: UIViewController,  UITextFieldDelegate, UITextViewDelegat
         } else if textField == self.subCategoryTextfield {
             cell.centerLabel.text = "Select sub Category"
         }
+    }
+    
+    @IBAction func beginnerButtonClicked(_ sender: UIButton) {
+        sliderIntValue = 0
+        self.setupBeginnerLevelButtons()
+        self.intermediateTextField.isEnabled = false
+        self.advanceTextField.isEnabled = false
+        self.intermediateTextField.text = ""
+        self.advanceTextField.text = ""
+        self.intermediatePriceLabel.text = "AU$ 0"
+        self.advancePriceLabel.text = "AU$ 0"
+        
+        self.setExpertConnectDisabledTextFieldTheme(textfield: self.intermediateTextField)
+        self.setExpertConnectDisabledTextFieldTheme(textfield: self.advanceTextField)
+        self.beginerTextField.textColor = UIColor.ExpertConnectRed
+        self.intermediateTextField.textColor = UIColor.ExpertConnectBlack
+        self.advanceTextField.textColor = UIColor.ExpertConnectBlack
+        self.intermediateLabel.textColor = UIColor.ExpertConnectDisabled
+        self.intermediatePriceLabel.textColor = UIColor.ExpertConnectDisabled
+        self.advanceLabel.textColor = UIColor.ExpertConnectDisabled
+        self.advancePriceLabel.textColor = UIColor.ExpertConnectDisabled
+    }
+    
+    @IBAction func intermediateButtonClicked(_ sender: UIButton) {
+        sliderIntValue = 1
+        self.setupIntermediateLevelButtons()
+        self.intermediateTextField.isEnabled = true
+        self.advanceTextField.isEnabled = false
+        self.advanceTextField.text = ""
+        self.advancePriceLabel.text = "AU$ 0"
+        
+        self.setCustomAlertTextFieldTheme(textfield: self.intermediateTextField)
+        self.setExpertConnectDisabledTextFieldTheme(textfield: self.advanceTextField)
+        self.intermediateTextField.textColor = UIColor.ExpertConnectRed
+        self.advanceTextField.textColor = UIColor.ExpertConnectBlack
+        self.intermediateLabel.textColor = UIColor.ExpertConnectRed
+        self.intermediatePriceLabel.textColor = UIColor.ExpertConnectRed
+        self.advanceLabel.textColor = UIColor.ExpertConnectDisabled
+        self.advancePriceLabel.textColor = UIColor.ExpertConnectDisabled
+    }
+    
+    @IBAction func advanceButtonClicked(_ sender: UIButton) {
+        sliderIntValue = 2
+        self.setupAdvanceLevelButtons()
+        self.intermediateTextField.isEnabled = true
+        self.advanceTextField.isEnabled = true
+        
+        self.setCustomAlertTextFieldTheme(textfield: self.intermediateTextField)
+        self.setCustomAlertTextFieldTheme(textfield: self.advanceTextField)
+        self.intermediateTextField.textColor = UIColor.ExpertConnectRed
+        self.advanceTextField.textColor = UIColor.ExpertConnectRed
+        self.intermediateLabel.textColor = UIColor.ExpertConnectRed
+        self.intermediatePriceLabel.textColor = UIColor.ExpertConnectRed
+        self.advanceLabel.textColor = UIColor.ExpertConnectRed
+        self.advancePriceLabel.textColor = UIColor.ExpertConnectRed
+    }
+    
+    func setupBeginnerLevelButtons() {
+        self.beginnerButton.setImage(UIImage(named:"selected_beginner_btn"), for: UIControlState.normal)
+        self.intermediateButton.setImage(UIImage(named:"unselected_intermediate_btn"), for: UIControlState.normal)
+        self.advanceButton.setImage(UIImage(named:"unselected_advance_btn"), for: UIControlState.normal)
+        UIView.transition(with: self.beginnerButton, duration: 0.4, options: .transitionCrossDissolve, animations: {
+            self.beginnerButton.titleLabel!.font =  UIFont(name: "Raleway-Light", size: 15)
+            self.beginnerButton.setTitleColor(.ExpertConnectRed, for: .normal)
+        }, completion: nil)
+        UIView.transition(with: self.intermediateButton, duration: 0.4, options: .transitionCrossDissolve, animations: {
+            self.intermediateButton.titleLabel!.font =  UIFont(name: "Raleway-Light", size: 14)
+            self.intermediateButton.setTitleColor(.ExpertConnectBlack, for: .normal)
+        }, completion: nil)
+        UIView.transition(with: self.advanceButton, duration: 0.4, options: .transitionCrossDissolve, animations: {
+            self.advanceButton.titleLabel!.font =  UIFont(name: "Raleway-Light", size: 14)
+            self.advanceButton.setTitleColor(.ExpertConnectBlack, for: .normal)
+        }, completion: nil)
+    }
+    
+    func setupIntermediateLevelButtons() {
+        self.beginnerButton.setImage(UIImage(named:"unselected_beginner_btn"), for: UIControlState.normal)
+        self.intermediateButton.setImage(UIImage(named:"selected_intermediate_btn"), for: UIControlState.normal)
+        self.advanceButton.setImage(UIImage(named:"unselected_advance_btn"), for: UIControlState.normal)
+        UIView.transition(with: self.beginnerButton, duration: 0.4, options: .transitionCrossDissolve, animations: {
+            self.beginnerButton.titleLabel!.font =  UIFont(name: "Raleway-Light", size: 14)
+            self.beginnerButton.setTitleColor(.ExpertConnectBlack, for: .normal)
+        }, completion: nil)
+        UIView.transition(with: self.intermediateButton, duration: 0.4, options: .transitionCrossDissolve, animations: {
+            self.intermediateButton.titleLabel!.font =  UIFont(name: "Raleway-Light", size: 15)
+            self.intermediateButton.setTitleColor(.ExpertConnectRed, for: .normal)
+        }, completion: nil)
+        UIView.transition(with: self.advanceButton, duration: 0.4, options: .transitionCrossDissolve, animations: {
+            self.advanceButton.titleLabel!.font =  UIFont(name: "Raleway-Light", size: 14)
+            self.advanceButton.setTitleColor(.ExpertConnectBlack, for: .normal)
+        }, completion: nil)
+    }
+    
+    func setupAdvanceLevelButtons() {
+        self.beginnerButton.setImage(UIImage(named:"unselected_beginner_btn"), for: UIControlState.normal)
+        self.intermediateButton.setImage(UIImage(named:"unselected_intermediate_btn"), for: UIControlState.normal)
+        self.advanceButton.setImage(UIImage(named:"selected_advance_btn"), for: UIControlState.normal)
+        UIView.transition(with: self.beginnerButton, duration: 0.4, options: .transitionCrossDissolve, animations: {
+            self.beginnerButton.titleLabel!.font =  UIFont(name: "Raleway-Light", size: 14)
+            self.beginnerButton.setTitleColor(.ExpertConnectBlack, for: .normal)
+        }, completion: nil)
+        UIView.transition(with: self.intermediateButton, duration: 0.4, options: .transitionCrossDissolve, animations: {
+            self.intermediateButton.titleLabel!.font =  UIFont(name: "Raleway-Light", size: 14)
+            self.intermediateButton.setTitleColor(.ExpertConnectBlack, for: .normal)
+        }, completion: nil)
+        UIView.transition(with: self.advanceButton, duration: 0.4, options: .transitionCrossDissolve, animations: {
+            self.advanceButton.titleLabel!.font =  UIFont(name: "Raleway-Light", size: 15)
+            self.advanceButton.setTitleColor(.ExpertConnectRed, for: .normal)
+        }, completion: nil)
     }
 }

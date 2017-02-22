@@ -16,6 +16,5 @@ class CoachingDetailsInputDomainModel {
     init(userId: String, coachingVenue : Array<Any>) {
         self.userId = userId
         self.coachingVenue = coachingVenue
-        
     }
 }

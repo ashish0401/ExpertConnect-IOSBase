@@ -1,9 +1,9 @@
 //
 //  UILabel+ InsetLabel.swift
-//  Mezuka
+//  ExpertConnect
 //
-//  Created by Supriya on 17/10/16.
-//  Copyright © 2016 Mezuka. All rights reserved.
+//  Created by Ramesh.M on 06/12/16.
+//  Copyright © 2016 user. All rights reserved.
 //
 
 import UIKit

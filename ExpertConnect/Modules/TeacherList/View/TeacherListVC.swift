@@ -11,8 +11,11 @@ import UIKit
 import Kingfisher
 import Cosmos
 class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSource, filteredTeacherListTransferProtocol {
-
+    
     @IBOutlet var tableview: UITableView!
+    @IBOutlet weak var lineView: UIView!
+    @IBOutlet weak var totalCountBaseView: UIView!
+    @IBOutlet weak var totalCountLabel: UILabel!
     
     var teacherListArray = NSMutableArray()
     var filteredTeacherListArray = NSMutableArray()
@@ -22,7 +25,6 @@ class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
     var expertId = String()
     var requestId = String()
     let alertView = CustomIOS7AlertView()
-    
     var teacherNameHeight = CGFloat()
     var expertiseStaticHeight = CGFloat()
     var expertiseHeight = CGFloat()
@@ -34,13 +36,11 @@ class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
     var locationHeight = CGFloat()
     let blankView = UIView.init(frame: CGRect(x: 0, y: 0, width: 0, height:0))
     let blankAttribute = NSLayoutAttribute(rawValue: 0)
-    
     var categoryId = String()
     var subCategoryId = String()
     var expertLevel = String()
     var expertiseString = String()
     var tempExpertId = Int()
-    
     let teacherNameWidth : CGFloat = (UIScreen.main.bounds.size.width-(32+24+60+59))
     let expertiseStaticWidth : CGFloat = 62
     let expertiseWidth : CGFloat = (UIScreen.main.bounds.size.width-(32+24+8+146))
@@ -55,42 +55,38 @@ class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
         super.viewDidLoad()
         self.activateBackIcon()
         self.activateFilterIcon()
-
         print(teacherListArray)
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.objTabbarMain.tabBar.isHidden = true
         self.makeTableSeperatorColorClear()
-//        self.makeProfileImageCircular()
-
+        self.totalCountLabel.textColor = UIColor.ExpertConnectGray
+        self.lineView.backgroundColor = UIColor.clear
     }
     
     override func viewWillAppear(_ animated: Bool) {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.objTabbarMain.tabBar.isHidden = true
-        
         self.navigationController?.setNavigationBarHidden(false, animated: true)
         self.navigationItem.title = "Teacher List"
         self.navigationController?.navigationBar.backgroundColor = UIColor.white
-        
         if(self.filteredTeacherListArray.count == 0 && isFiltered) {
             self.displayErrorMessage(message: "No teacher list found in the database")
             self.isFiltered = Bool.init(false)
         }
-
     }
+    
     override func viewDidAppear(_ animated: Bool) {
+        self.setExpertConnectShadowTheme(view: self.totalCountBaseView)
     }
     
     // MARK: Add Filter Button method
     func activateFilterIcon() {
         let rightButton: UIBarButtonItem = UIBarButtonItem(image: UIImage(named: "filter_btn")!, style: UIBarButtonItemStyle.plain, target: self, action: #selector(filterButtonClicked(button:)))
-        
         if var items = self.navigationItem.rightBarButtonItems {
             items.append(rightButton)
         } else {
             self.navigationItem.rightBarButtonItem = rightButton
         }
-        
         self.navigationItem.rightBarButtonItem?.tintColor = UIColor.ExpertConnectRed
     }
     
@@ -130,7 +126,7 @@ class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
         self.tableview.reloadData()
         //self.displayErrorMessage(message: "Notifications are not available")
     }
-
+    
     private func makeTableSeperatorColorClear() {
         self.tableview.separatorColor = UIColor.clear
     }
@@ -138,23 +134,29 @@ class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
     // MARK: tableview datasource methods
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         if isFiltered {
+            let aStr = String(format: "%d Expert(s) available to connect with",self.filteredTeacherListArray.count)
+            self.totalCountLabel.text = aStr
+            
             return self.filteredTeacherListArray.count
         }
+        let aStr = String(format: "%d Expert(s) available to connect with",self.teacherListArray.count)
+        self.totalCountLabel.text = aStr
+        
         return self.teacherListArray.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
+        
         let identifier = "TeacherListCell"
         var cell: TeacherListCell! = tableView.dequeueReusableCell(withIdentifier: identifier) as? TeacherListCell
         if cell == nil {
             tableView.register(TeacherListCell.self, forCellReuseIdentifier: "TeacherListCell")
             cell = tableView.dequeueReusableCell(withIdentifier: identifier) as? TeacherListCell
         }
-
+        
         var dic = NSDictionary()
         if isFiltered {
-             dic = self.filteredTeacherListArray[indexPath.row] as! NSDictionary
+            dic = self.filteredTeacherListArray[indexPath.row] as! NSDictionary
         }
         else {
             dic = self.teacherListArray[indexPath.row] as! NSDictionary
@@ -166,9 +168,9 @@ class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
         } else {
             self.setExpertConnectGrayButtonTheme(button: cell.requestButton)
         }
- 
+        
         cell.requestButton.addTarget(self, action: #selector(requestButtonClicked(button:)), for: .touchUpInside)
-
+        
         let firstName: String = dic.value(forKey: "firstname") as! String
         let lastName: String = dic.value(forKey: "lastname") as! String
         let firstNameWithSpace = firstName.appending(" ")
@@ -203,7 +205,7 @@ class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
             }
         }
         cell.coachingLabel.text = venueString
-
+        
         teacherNameHeight = (cell.teacherNameLabel.text?.heightForView(text: cell.teacherNameLabel.text!, font: UIFont(name: "Raleway-Light", size: 17)!, width: teacherNameWidth))!
         expertiseStaticHeight = (cell.expertiseStaticLabel.text?.heightForView(text: cell.expertiseStaticLabel.text!, font: UIFont(name: "Raleway-Light", size: 14)!, width: expertiseStaticWidth))!
         expertiseHeight = (cell.expertiseLabel.text?.heightForView(text: (cell.expertiseLabel.text)!, font: UIFont(name: "Raleway-Light", size: 14)!, width: expertiseWidth))!
@@ -226,7 +228,7 @@ class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
         cell.feeLabel.removeConstraints(cell.feeLabel.constraints)
         cell.locationStaticLabel.removeConstraints(cell.locationStaticLabel.constraints)
         cell.locationLabel.removeConstraints(cell.locationLabel.constraints)
-
+        
         self.setConstraints(actualView: cell.teacherNameLabel, leadingView: cell.profileImageview, leadingAttributeForActualView: NSLayoutAttribute.leading, leadingAttributeForLeadingView: NSLayoutAttribute.trailing, leadingViewConstant: 59, trailingView: cell.mainView, trailingAttributeForActualView: NSLayoutAttribute.trailing, trailingAttributeForTrailingView: NSLayoutAttribute.trailing, trailingViewConstant: 16, upperView: cell.mainView, upperAttributeForActualView: .top, upperAttributeForUpperView: .top, upperViewConstant: 13, height: teacherNameHeight, width: teacherNameWidth, upperSpaceConstraint: true, leadingMarginConstraint: true, trailingMarginConstraint: true)
         
         self.setConstraints(actualView: cell.starView, leadingView: cell.profileImageview, leadingAttributeForActualView: NSLayoutAttribute.leading, leadingAttributeForLeadingView: NSLayoutAttribute.trailing, leadingViewConstant: 59, trailingView: blankView, trailingAttributeForActualView: blankAttribute!, trailingAttributeForTrailingView: blankAttribute!, trailingViewConstant: 0, upperView: cell.teacherNameLabel, upperAttributeForActualView: .top, upperAttributeForUpperView: .bottom, upperViewConstant: 10, height: 25, width: 90, upperSpaceConstraint: true, leadingMarginConstraint: true, trailingMarginConstraint: false)
@@ -256,7 +258,7 @@ class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
         self.setConstraints(actualView: cell.locationStaticLabel, leadingView: cell.mainView, leadingAttributeForActualView: NSLayoutAttribute.leading, leadingAttributeForLeadingView: NSLayoutAttribute.leading, leadingViewConstant: 16, trailingView: blankView, trailingAttributeForActualView: blankAttribute!, trailingAttributeForTrailingView: blankAttribute!, trailingViewConstant: 0, upperView: cell.feeStaticLabel, upperAttributeForActualView: .top, upperAttributeForUpperView: .bottom, upperViewConstant: 4, height: locationStaticHeight, width: locationStaticWidth, upperSpaceConstraint: true, leadingMarginConstraint: true, trailingMarginConstraint: false)
         
         self.setConstraints(actualView: cell.locationLabel, leadingView: cell.locationStaticLabel, leadingAttributeForActualView: NSLayoutAttribute.leading, leadingAttributeForLeadingView: NSLayoutAttribute.trailing, leadingViewConstant: 8, trailingView: cell.mainView, trailingAttributeForActualView: NSLayoutAttribute.trailing, trailingAttributeForTrailingView: NSLayoutAttribute.trailing, trailingViewConstant: 16, upperView: cell.feeLabel, upperAttributeForActualView: .top, upperAttributeForUpperView: .bottom, upperViewConstant: 4, height: locationHeight, width: locationWidth, upperSpaceConstraint: true, leadingMarginConstraint: true, trailingMarginConstraint: true)
-       
+        
         self.setECTableViewCellShadowTheme(view: cell.mainView)
         cell.selectionStyle = UITableViewCellSelectionStyle.none
         return cell
@@ -267,7 +269,7 @@ class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
         let height = (28)+(teacherNameHeight)+(10)+(25)+(16)+(expertiseHeight)+(4)+(coachingHeight)+(4)+(feeHeight)+(4)+(locationHeight)+(59)
         return height
     }
-
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath){
         
     }
@@ -279,6 +281,8 @@ class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
         let dic : NSDictionary = teacherListArray[index] as! NSDictionary
         self.requestId = dic.value(forKey: "user_id") as! String
         self.expertId = dic.value(forKey: "expert_id") as! String
+        self.categoryId = dic.value(forKey: "category_id") as! String
+        self.subCategoryId = dic.value(forKey: "sub_category_id") as! String
         
         if (!self.isInternetAvailable()) {
             let message = "No Internet Connection".localized(in: "ExpertDetails")
@@ -289,7 +293,7 @@ class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
         self.displayProgress(message: message)
         
         self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
-        let sendRequestModel = SendRequestDomainModel.init(fromId: self.userId, toId: self.requestId, type: "request", expertId: self.expertId)
+        let sendRequestModel = SendRequestDomainModel.init(fromId: self.userId, toId: self.requestId, type: "request", expertId: self.expertId, categoryId: self.categoryId, subCategoryId: self.subCategoryId)
         self.tempExpertId = Int(self.expertId)!
         let APIDataManager : SendRequestProtocols = SendRequestApiDataManager()
         APIDataManager.sendRequest(data: sendRequestModel, callback:{(result) in
@@ -299,21 +303,7 @@ class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
                 self.onSendRequestFailed(error: error)
             case .Success(let data as SendRequestOutputDomainModel):
                 do {
-                  
-                    if self.isFiltered {
-                        let dic : NSDictionary = self.filteredTeacherListArray[index] as! NSDictionary
-                        let foundationDictionary = NSMutableDictionary(dictionary: dic)
-                        foundationDictionary["flag"] = 1
-                        self.filteredTeacherListArray[index] = foundationDictionary
-                    }
-                    else {
-                        let dic : NSDictionary = self.teacherListArray[index] as! NSDictionary
-                        let foundationDictionary = NSMutableDictionary(dictionary: dic)
-                        foundationDictionary["flag"] = 1
-                        self.teacherListArray[index] = foundationDictionary
-                    }
-                    self.tableview.reloadData()
-                    self.onRequSendestSucceeded(data: data)
+                    self.onRequSendestSucceeded(data: data, button: button)
                 } catch {
                     self.onSendRequestFailed(data: data)
                 }
@@ -324,46 +314,30 @@ class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
     }
     
     // MARK: Request API Response methods
-    func onRequSendestSucceeded(data: SendRequestOutputDomainModel) {
+    func onRequSendestSucceeded(data: SendRequestOutputDomainModel, button: UIButton) {
         self.dismissProgress()
+        
         if data.status {
+            let index = button.tag
+            if self.isFiltered {
+                let dic : NSDictionary = self.filteredTeacherListArray[index] as! NSDictionary
+                let foundationDictionary = NSMutableDictionary(dictionary: dic)
+                foundationDictionary["flag"] = 1
+                self.filteredTeacherListArray[index] = foundationDictionary
+            }
+            else {
+                let dic : NSDictionary = self.teacherListArray[index] as! NSDictionary
+                let foundationDictionary = NSMutableDictionary(dictionary: dic)
+                foundationDictionary["flag"] = 1
+                self.teacherListArray[index] = foundationDictionary
+            }
+            self.tableview.reloadData()
+            
             let alertMessage = "Your request has been sent successfully.".localized(in: "Localizable")
             alertView.containerView = createContainerView(requestSuccessMessage: alertMessage)
             alertView.catchString(withString: "AlertForRequest/Accept/Reject")
             alertView.show()
             
-//            if (!self.isInternetAvailable()) {
-//                let message = "No Internet Connection".localized(in: "ExpertDetails")
-//                self.displayErrorMessage(message: message)
-//                return
-//            }
-//            let message = "Processing".localized(in: "SignUp")
-//            self.displayProgress(message: message)
-//            print(UserDefaults.standard.value(forKey: "UserId") as! String)
-//            self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
-//            let teacherListModel = TeacherListDomainModel.init(userId: self.userId, categoryId: self.categoryId, subCategoryId: self.subCategoryId, level: self.expertLevel)
-//            let defaults = UserDefaults.standard
-//            var array = defaults.array(forKey: "ExpertIdArray")  as? [Int] ?? [Int]()
-//            array.append(self.tempExpertId)
-//            defaults.set(array, forKey: "ExpertIdArray")
-//            
-//            let APIDataManager : TeacherListProtocols = TeacherListApiDataManager()
-//            APIDataManager.getTeacherList(data: teacherListModel, callback:{(result) in
-//                print("result : ", result)
-//                switch result {
-//                case .Failure(let error):
-//                    self.ongetTeacherListFailed(error: error)
-//                case .Success(let data as TeacherListOutputDomainModel):
-//                    do {
-//                        self.ongetTeacherListSucceeded(data: data)
-//                    } catch {
-//                        self.ongetTeacherListFailed(data: data)
-//                    }
-//                default:
-//                    break
-//                }
-//            })
-//            self.tableview.reloadData()
         } else {
             self.displayErrorMessage(message: data.message)
         }
@@ -446,7 +420,6 @@ class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
         /** end - remove constraints of reusable cell*/
         
         print("height : %d", height)
-//        NSLayoutConstraint(it)
         let heightConstraint = NSLayoutConstraint(item: actualView, attribute: NSLayoutAttribute.height, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: CGFloat(height))
         
         print("heightConstraint : %d", heightConstraint)
@@ -454,7 +427,6 @@ class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
         let widthConstraint = NSLayoutConstraint(item: actualView, attribute: NSLayoutAttribute.width, relatedBy: NSLayoutRelation.equal, toItem: nil, attribute: NSLayoutAttribute.notAnAttribute, multiplier: 1, constant: width)
         
         
-//        NSLayoutConstraint.activate([heightConstraint,widthConstraint])
         actualView.addConstraints([heightConstraint,widthConstraint])
         
         var leadingMargin : NSLayoutConstraint!
@@ -462,14 +434,14 @@ class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
         var upperSpace : NSLayoutConstraint!
         if leadingMarginConstraint {
             leadingMargin = NSLayoutConstraint(item: actualView, attribute: leadingAttributeForActualView,
-                                                   relatedBy: NSLayoutRelation.equal, toItem: leadingView,
-                                                   attribute: leadingAttributeForLeadingView, multiplier: 1, constant: leadingViewConstant)
+                                               relatedBy: NSLayoutRelation.equal, toItem: leadingView,
+                                               attribute: leadingAttributeForLeadingView, multiplier: 1, constant: leadingViewConstant)
             NSLayoutConstraint.activate([leadingMargin])
         }
         if trailingMarginConstraint {
             trailingMargin = NSLayoutConstraint(item: trailingView, attribute: trailingAttributeForTrailingView,
-                                                    relatedBy: NSLayoutRelation.equal, toItem: actualView,
-                                                    attribute: trailingAttributeForActualView, multiplier: 1, constant: trailingViewConstant)
+                                                relatedBy: NSLayoutRelation.equal, toItem: actualView,
+                                                attribute: trailingAttributeForActualView, multiplier: 1, constant: trailingViewConstant)
             NSLayoutConstraint.activate([trailingMargin])
         }
         if upperSpaceConstraint {
@@ -478,9 +450,7 @@ class TeacherListVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
         }
         print("y : %d", upperSpace)
         print("y : %d , height : %d", actualView.frame.origin.y, actualView.frame.size.height)
-//        actualView.addConstraints([leadingMargin, trailingMargin, upperSpace, widthConstraint, heightConstraint])
     }
-    
     
     func setConstraints(actualView:UIView, leadingView:UIView, leadingAttributeForActualView:NSLayoutAttribute, leadingAttributeForLeadingView:NSLayoutAttribute, leadingViewConstant:CGFloat, trailingView:UIView, trailingAttributeForActualView:NSLayoutAttribute, trailingAttributeForTrailingView:NSLayoutAttribute, trailingViewConstant:CGFloat, upperView:UIView, upperAttributeForActualView:NSLayoutAttribute, upperAttributeForUpperView:NSLayoutAttribute, upperViewConstant:CGFloat, height:CGFloat, width:CGFloat, upperSpaceConstraint:Bool, leadingMarginConstraint:Bool, trailingMarginConstraint:Bool) {
         

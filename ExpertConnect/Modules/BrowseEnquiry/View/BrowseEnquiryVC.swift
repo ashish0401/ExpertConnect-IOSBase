@@ -9,14 +9,16 @@
 import UIKit
 
 class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSource, SearchBrowseListTransferProtocol {
-
+    
     @IBOutlet var browseEnquirySegmentedControl: UISegmentedControl!
     @IBOutlet var tableview: UITableView!
     
     var receivedNotificationListArray = NSMutableArray()
     var receivedNotificationfilteredListArray = NSMutableArray()
     var sentNotificationListArray = NSMutableArray()
-    
+    var noDataLabel = UILabel()
+    var categoryId = String()
+    var subCategoryId = String()
     var userId = String()
     var location = String()
     var expertId = String()
@@ -26,7 +28,6 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     var selectedSegment = String()
     var isFiltered: Bool = false
     var isBackFromSearch: Bool = false
-    
     var nameHeight = CGFloat()
     var locationStaticHeight = CGFloat()
     var locationHeight = CGFloat()
@@ -35,10 +36,8 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     var subCategoryHeight = CGFloat()
     var feeStaticHeight = CGFloat()
     var feeHeight = CGFloat()
-
     let blankView = UIView.init(frame: CGRect(x: 0, y: 0, width: 0, height:0))
     let blankAttribute = NSLayoutAttribute(rawValue: 0)
-    
     let nameWidth : CGFloat = (UIScreen.main.bounds.size.width-(32+24+60+59))
     let locationStaticWidth : CGFloat = 58
     let locationWidth : CGFloat = (UIScreen.main.bounds.size.width-(32+24+8+58))
@@ -52,38 +51,34 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         super.viewDidLoad()
         self.navigationItem.title = "Browse Enquiry"
         self.navigationController?.navigationBar.backgroundColor = UIColor.white
-        self.activateSearchIcon(delegate: self)
         self.browseEnquirySegmentedControl.setTitleTextAttributes([ NSFontAttributeName: UIFont(name: "Raleway-Light", size: 18.0)! ], for: .normal)
-
         self.makeTableSeperatorColorClear()
         self.makeProfileImageCircular()
         self.makeProfileImageTappable()
-     }
+        let message = "EnquiriesUnavailable".localized(in: "BrowseEnquiryVC")
+        self.noDataLabel = self.showStickyErrorMessage(message: message)
+    }
     
     private func makeTableSeperatorColorClear() {
         self.tableview.separatorColor = UIColor.clear
     }
     
     private func makeProfileImageTappable() {
-//        let singleTap = UITapGestureRecognizer(target: self, action:#selector(MenuView.onProfileImageTapped))
-//        self.profileImageView.isUserInteractionEnabled = true
-//        self.profileImageView.addGestureRecognizer(singleTap)
     }
     
     private func makeProfileImageCircular() {
-//        self.profileImageView.layer.cornerRadius = 50.0
-//        self.profileImageView.clipsToBounds = true
-//        self.profileImageView.layer.borderWidth = CGFloat(3.0)
-//        self.profileImageView.layer.borderColor = UIColor.mezukaMenuText.cgColor
     }
-
+    
     override func viewWillAppear(_ animated: Bool) {
+        let tabArray = self.tabBarController?.tabBar.items as NSArray!
+        let browseEnquiryTabItem = tabArray?.object(at: 2) as! UITabBarItem
+        browseEnquiryTabItem.badgeValue = nil
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.objTabbarMain.tabBar.isHidden = false
         self.navigationController?.setNavigationBarHidden(false, animated: true)
-        
         if(self.receivedNotificationfilteredListArray.count == 0 && isFiltered) {
-            self.displayErrorMessage(message: "Notifications are not available")
+            //self.displayErrorMessage(message: "Notifications are not available")
+            noDataLabel.isHidden = self.receivedNotificationfilteredListArray.count == 0 ? false : true
             self.isFiltered = false
         }
         else if(!isFiltered) {
@@ -104,11 +99,11 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
             }
             
             if (!self.isInternetAvailable()) {
-                let message = "No Internet Connection".localized(in: "ExpertDetails")
+                let message = "No Internet Connection".localized(in: "BrowseEnquiryVC")
                 self.displayErrorMessage(message: message)
                 return
             }
-            let message = "Processing".localized(in: "SignUp")
+            let message = "Getting Enquiries".localized(in: "BrowseEnquiryVC")
             self.displayProgress(message: message)
             
             self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
@@ -134,7 +129,11 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        
+        NotificationCenter.default.addObserver(self, selector: #selector(self.onUpdateNotificationBadgeFromBackground), name: NSNotification.Name(rawValue: "com.ExpertConnect.UpdateBadgeFromBackground"), object: nil)
+    }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        NotificationCenter.default.removeObserver(self)
     }
     
     // MARK: browseEnquirySegmentedControl method
@@ -146,7 +145,6 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
                 view.tintColor = UIColor.ExpertConnectRed
             } else {
                 view.tintColor = UIColor.ExpertConnectBlack
-                
             }
         }
         switch browseEnquirySegmentedControl.selectedSegmentIndex
@@ -154,10 +152,13 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         case 0:
             self.selectedSegment = "First"
             if (!self.isInternetAvailable()) {
-                let message = "No Internet Connection".localized(in: "ExpertDetails")
+                let message = "No Internet Connection".localized(in: "BrowseEnquiryVC")
                 self.displayErrorMessage(message: message)
                 return
             }
+            let message = "Getting Enquiries".localized(in: "BrowseEnquiryVC")
+            self.displayProgress(message: message)
+            
             self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
             self.location = UserDefaults.standard.value(forKey: "Location") as! String
             let BrowseEnquiryReceivedNotificationModel = BrowseEnquiryReceivedNotificationDomainModel.init(userId: self.userId, categoryId: "0", subCategoryId: "0", isFilter: "no", ammount: "00")
@@ -181,10 +182,13 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         case 1:
             self.selectedSegment = "Second"
             if (!self.isInternetAvailable()) {
-                let message = "No Internet Connection".localized(in: "ExpertDetails")
+                let message = "No Internet Connection".localized(in: "BrowseEnquiryVC")
                 self.displayErrorMessage(message: message)
                 return
             }
+            let message = "Getting Enquiries".localized(in: "BrowseEnquiryVC")
+            self.displayProgress(message: message)
+            
             self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
             let BrowseEnquirySentNotificationModel = BrowseEnquirySentNotificationDomainModel.init(userId: self.userId)
             let APIDataManager : BrowseEnquirySentNotificationProtocols = BrowseEnquirySentNotificationAPIDataManager()
@@ -192,7 +196,7 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
                 print("result : ", result)
                 switch result {
                 case .Failure(let error):
-                    self.onGetBrowseEnquiryReceivedNotificationDetailsFailed(error: error)
+                    self.onGetBrowseEnquirySentNotificationDetailsFailed(error: error)
                 case .Success(let data as BrowseEnquirySentNotificationOutputDomainModel):
                     do {
                         self.onGetBrowseEnquirySentNotificationDetailsSucceeded(data: data)
@@ -209,7 +213,7 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         }
     }
     
-    // MARK: SearchBrowseListTransferProtocol delegate method
+    // MARK: Search Browse ListTransferProtocol delegate method
     func searchBrowseSucceded(SearchBrowseListArray:NSArray, isFiltered:Bool) {
         if SearchBrowseListArray.count != 0 {
             self.receivedNotificationfilteredListArray = NSMutableArray.init(array: SearchBrowseListArray)
@@ -229,6 +233,7 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         self.tableview.reloadData()
         //self.displayErrorMessage(message: "Notifications are not available")
     }
+    
     // MARK: tableview datasource methods
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int{
         if selectedSegment == "First" {
@@ -247,7 +252,7 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell{
-
+        
         if selectedSegment == "First" {
             let identifier = "BEReceivedNotification"
             var receivedNotificationCell: BrowseEnquiryReceivedNotificationCustomCell! = tableView.dequeueReusableCell(withIdentifier: identifier) as? BrowseEnquiryReceivedNotificationCustomCell
@@ -255,7 +260,7 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
                 tableView.register(BrowseEnquiryReceivedNotificationCustomCell.self, forCellReuseIdentifier: identifier)
                 receivedNotificationCell = tableView.dequeueReusableCell(withIdentifier: identifier) as? BrowseEnquiryReceivedNotificationCustomCell
             }
-
+            
             var dic = NSDictionary()
             if isFiltered {
                 dic = receivedNotificationfilteredListArray[indexPath.row] as! NSDictionary
@@ -273,7 +278,7 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
             receivedNotificationCell.rejectButton.addTarget(self, action: #selector(rejectButtonClicked(button:)), for: .touchUpInside)
             if(dic.value(forKey: "type") != nil) {
                 let type = dic.value(forKey: "type") as! String
-
+                
                 if (type == "request") {
                     receivedNotificationCell.mainButton.isHidden = true
                     receivedNotificationCell.acceptButton.isHidden = false
@@ -285,10 +290,10 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
                     receivedNotificationCell.acceptButton.isHidden = true
                     receivedNotificationCell.rejectButton.isHidden = true
                     receivedNotificationCell.mainButton.isHidden = false
-
+                    
                     self.setExpertConnectGrayButtonTheme(button: receivedNotificationCell.mainButton)
                     receivedNotificationCell.mainButton.setTitle("ACCEPTED", for: UIControlState.normal)
-
+                    
                 }
                 else if (type == "reject") {
                     receivedNotificationCell.acceptButton.isHidden = true
@@ -297,8 +302,8 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
                     self.setExpertConnectGrayButtonTheme(button: receivedNotificationCell.mainButton)
                     receivedNotificationCell.mainButton.setTitle("REJECTED", for: UIControlState.normal)
                 }
-              }
-
+            }
+            
             let firstName: String = dic.value(forKey: "firstname") as! String
             let lastName: String = dic.value(forKey: "lastname") as! String
             let firstNameWithSpace = firstName.appending(" ")
@@ -345,7 +350,7 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
             locationHeight = (receivedNotificationCell.locationLabel.text?.heightForView(text: receivedNotificationCell.locationLabel.text!, font: UIFont(name: "Raleway-Light", size: 14)!, width: locationWidth))!
             coachingStaticHeight = (receivedNotificationCell.coachingStaticLabel.text?.heightForView(text: receivedNotificationCell.coachingStaticLabel.text!, font: UIFont(name: "Raleway-Light", size: 14)!, width: coachingStaticWidth))!
             coachingHeight = (receivedNotificationCell.coachingLabel.text?.heightForView(text: receivedNotificationCell.coachingLabel.text!, font: UIFont(name: "Raleway-Light", size: 14)!, width:coachingWidth))!
-           
+            
             self.setConstraints(actualView: receivedNotificationCell.nameLabel, leadingView: receivedNotificationCell.profileImageview, leadingAttributeForActualView: NSLayoutAttribute.leading, leadingAttributeForLeadingView: NSLayoutAttribute.trailing, leadingViewConstant: 59, trailingView: receivedNotificationCell.mainView, trailingAttributeForActualView: NSLayoutAttribute.trailing, trailingAttributeForTrailingView: NSLayoutAttribute.trailing, trailingViewConstant: 16, upperView: receivedNotificationCell.mainView, upperAttributeForActualView: .top, upperAttributeForUpperView: .top, upperViewConstant: 13, height: nameHeight, width: nameWidth, upperSpaceConstraint: true, leadingMarginConstraint: true, trailingMarginConstraint: true)
             
             self.setConstraints(actualView: receivedNotificationCell.starView, leadingView: receivedNotificationCell.profileImageview, leadingAttributeForActualView: NSLayoutAttribute.leading, leadingAttributeForLeadingView: NSLayoutAttribute.trailing, leadingViewConstant: 59, trailingView: blankView, trailingAttributeForActualView: blankAttribute!, trailingAttributeForTrailingView: blankAttribute!, trailingViewConstant: 0, upperView: receivedNotificationCell.nameLabel, upperAttributeForActualView: .top, upperAttributeForUpperView: .bottom, upperViewConstant: 10, height: 25, width: 90, upperSpaceConstraint: true, leadingMarginConstraint: true, trailingMarginConstraint: false)
@@ -362,7 +367,7 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
             }
             
             self.setConstraints(actualView: receivedNotificationCell.coachingLabel, leadingView: receivedNotificationCell.coachingStaticLabel, leadingAttributeForActualView: NSLayoutAttribute.leading, leadingAttributeForLeadingView: NSLayoutAttribute.trailing, leadingViewConstant: 8, trailingView: receivedNotificationCell.mainView, trailingAttributeForActualView: NSLayoutAttribute.trailing, trailingAttributeForTrailingView: NSLayoutAttribute.trailing, trailingViewConstant: 16, upperView: receivedNotificationCell.locationLabel, upperAttributeForActualView: .top, upperAttributeForUpperView: .bottom, upperViewConstant: 4, height: coachingHeight, width: coachingWidth, upperSpaceConstraint: true, leadingMarginConstraint: true, trailingMarginConstraint: true)
- 
+            
             let verticalLineView = UIView()
             let screenSize = UIScreen.main.bounds
             let screenWidth = screenSize.width
@@ -383,7 +388,7 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
                 tableView.register(BrowseEnquirySentNotificationCustomCell.self, forCellReuseIdentifier: identifier)
                 sentNotificationCell = tableView.dequeueReusableCell(withIdentifier: identifier) as? BrowseEnquirySentNotificationCustomCell
             }
-
+            
             let dic : NSDictionary = sentNotificationListArray[indexPath.row] as! NSDictionary
             self.setECTableViewCellShadowTheme(view: sentNotificationCell.mainView)
             self.setExpertConnectGrayButtonTheme(button: sentNotificationCell.requestSentButton)
@@ -469,6 +474,8 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         }
         self.requestId = dic.value(forKey: "user_id") as! String
         self.expertId = dic.value(forKey: "expert_id") as! String
+        self.categoryId = dic.value(forKey: "category_id") as! String
+        self.subCategoryId = dic.value(forKey: "sub_category_id") as! String
         
         if (!self.isInternetAvailable()) {
             let message = "No Internet Connection".localized(in: "ExpertDetails")
@@ -479,7 +486,7 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         self.displayProgress(message: message)
         
         self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
-        let sendRequestModel = SendRequestDomainModel.init(fromId: self.userId, toId: self.requestId, type: "accept", expertId: self.expertId)
+        let sendRequestModel = SendRequestDomainModel.init(fromId: self.userId, toId: self.requestId, type: "accept", expertId: self.expertId, categoryId: self.categoryId, subCategoryId: self.subCategoryId)
         self.tempExpertId = Int(self.expertId)!
         let APIDataManager : SendRequestProtocols = SendRequestApiDataManager()
         APIDataManager.sendAcceptRejectRequest(data: sendRequestModel, callback:{(result) in
@@ -489,7 +496,7 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
                 self.onAcceptOrRejectFailed(error: error)
             case .Success(let data as SendRequestOutputDomainModel):
                 do {
-                   // self.setExpertConnectGrayButtonTheme(button: button)
+                    // self.setExpertConnectGrayButtonTheme(button: button)
                     if self.isFiltered {
                         let dic : NSDictionary = self.receivedNotificationfilteredListArray[index] as! NSDictionary
                         let foundationDictionary = NSMutableDictionary(dictionary: dic)
@@ -502,8 +509,8 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
                         foundationDictionary["type"] = "accept"
                         self.receivedNotificationListArray[index] = foundationDictionary
                     }
-                     self.tableview.reloadData()
-
+                    self.tableview.reloadData()
+                    
                     self.onAcceptOrRejectSucceeded(data: data)
                 } catch {
                     self.onAcceptOrRejectFailed(data: data)
@@ -527,6 +534,8 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         }
         self.requestId = dic.value(forKey: "user_id") as! String
         self.expertId = dic.value(forKey: "expert_id") as! String
+        self.categoryId = dic.value(forKey: "category_id") as! String
+        self.subCategoryId = dic.value(forKey: "sub_category_id") as! String
         
         if (!self.isInternetAvailable()) {
             let message = "No Internet Connection".localized(in: "ExpertDetails")
@@ -537,7 +546,7 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         self.displayProgress(message: message)
         
         self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
-        let sendRequestModel = SendRequestDomainModel.init(fromId: self.userId, toId: self.requestId, type: "reject", expertId: self.expertId)
+        let sendRequestModel = SendRequestDomainModel.init(fromId: self.userId, toId: self.requestId, type: "reject", expertId: self.expertId, categoryId: self.categoryId, subCategoryId: self.subCategoryId)
         self.tempExpertId = Int(self.expertId)!
         let APIDataManager : SendRequestProtocols = SendRequestApiDataManager()
         APIDataManager.sendAcceptRejectRequest(data: sendRequestModel, callback:{(result) in
@@ -547,7 +556,6 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
                 self.onAcceptOrRejectFailed(error: error)
             case .Success(let data as SendRequestOutputDomainModel):
                 do {
-                    //self.setExpertConnectGrayButtonTheme(button: button)
                     if self.isFiltered {
                         let dic : NSDictionary = self.receivedNotificationfilteredListArray[index] as! NSDictionary
                         let foundationDictionary = NSMutableDictionary(dictionary: dic)
@@ -561,7 +569,7 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
                         self.receivedNotificationListArray[index] = foundationDictionary
                     }
                     self.tableview.reloadData()
-
+                    
                     self.onAcceptOrRejectSucceeded(data: data)
                 } catch {
                     self.onAcceptOrRejectFailed(data: data)
@@ -577,9 +585,11 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         self.dismissProgress()
         if data.status {
             self.receivedNotificationListArray = NSMutableArray.init(array: data.browsedEnquiries as! [Any])
+            noDataLabel.isHidden = self.receivedNotificationListArray.count == 0 ? false : true
             self.tableview.reloadData()
         } else {
             self.displayErrorMessage(message: data.message)
+            noDataLabel.isHidden = self.receivedNotificationListArray.count == 0 ? false : true
         }
     }
     
@@ -587,14 +597,16 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         self.dismissProgress()
         self.receivedNotificationListArray.removeAllObjects()
         self.tableview.reloadData()
-        self.displayErrorMessage(message: "Notifications are not available")
+        //self.displayErrorMessage(message: "Notifications are not available")
+        noDataLabel.isHidden = self.receivedNotificationListArray.count == 0 ? false : true
     }
     
     func onGetBrowseEnquiryReceivedNotificationDetailsFailed(data: BrowseEnquiryReceivedNotificationOutputDomainModel) {
         self.dismissProgress()
         self.receivedNotificationListArray.removeAllObjects()
         self.tableview.reloadData()
-        self.displayErrorMessage(message: data.message)
+        //self.displayErrorMessage(message: data.message)
+        noDataLabel.isHidden = self.receivedNotificationListArray.count == 0 ? false : true
     }
     
     //hide accept & reject and unhide main button and title them on request success
@@ -605,39 +617,6 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
             alertView.containerView = createContainerView(acceptOrRejectSuccessMessage: data.message)
             alertView.catchString(withString: "AlertForRequest/Accept/Reject")
             alertView.show()
-//            
-//            if (!self.isInternetAvailable()) {
-//                let message = "No Internet Connection".localized(in: "ExpertDetails")
-//                self.displayErrorMessage(message: message)
-//                return
-//            }
-//            self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
-//            self.location = UserDefaults.standard.value(forKey: "Location") as! String
-//            let BrowseEnquiryReceivedNotificationModel = BrowseEnquiryReceivedNotificationDomainModel.init(userId: self.userId, categoryId: "0", subCategoryId: "0", isFilter: "no", ammount: "00")
-//            let APIDataManager : BrowseEnquiryReceivedNotificationProtocols = BrowseEnquiryReceivedNotificationAPIDataManager()
-//            APIDataManager.getBrowseEnquiryReceivedNotificationDetails(model: BrowseEnquiryReceivedNotificationModel, callback:{(result) in
-//                print("result : ", result)
-//                switch result {
-//                case .Failure(let error):
-//                    self.onGetBrowseEnquiryReceivedNotificationDetailsFailed(error: error)
-//                case .Success(let data as BrowseEnquiryReceivedNotificationOutputDomainModel):
-//                    do {
-//                        self.onGetBrowseEnquiryReceivedNotificationDetailsSucceeded(data: data)
-//                    } catch {
-//                        self.onGetBrowseEnquiryReceivedNotificationDetailsFailed(data: data)
-//                    }
-//                default:
-//                    break
-//                }
-//            })
-            
-            /*
-            let defaults = UserDefaults.standard
-            var array = defaults.array(forKey: "ExpertIdArray")  as? [Int] ?? [Int]()
-            array.append(self.tempExpertId)
-            defaults.set(array, forKey: "ExpertIdArray")
-            */
-            
         } else {
             self.displayErrorMessage(message: data.message)
         }
@@ -658,9 +637,11 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         self.dismissProgress()
         if data.status {
             self.sentNotificationListArray = NSMutableArray.init(array: data.browsedEnquiries as! [Any])
+            noDataLabel.isHidden = self.sentNotificationListArray.count == 0 ? false : true
             self.tableview.reloadData()
         } else {
             self.displayErrorMessage(message: data.message)
+            noDataLabel.isHidden = self.sentNotificationListArray.count == 0 ? false : true
         }
     }
     
@@ -668,14 +649,16 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         self.dismissProgress()
         self.sentNotificationListArray.removeAllObjects()
         self.tableview.reloadData()
-        self.displayErrorMessage(message: "Notifications are not available")
+        //self.displayErrorMessage(message: "Notifications are not available")
+        noDataLabel.isHidden = self.sentNotificationListArray.count == 0 ? false : true
     }
     
     func onGetBrowseEnquirySentNotificationDetailsFailed(data: BrowseEnquirySentNotificationOutputDomainModel) {
         self.dismissProgress()
         self.sentNotificationListArray.removeAllObjects()
         self.tableview.reloadData()
-        self.displayErrorMessage(message: data.message)
+        //self.displayErrorMessage(message: data.message)
+        noDataLabel.isHidden = self.sentNotificationListArray.count == 0 ? false : true
     }
     
     // MARK: Custom Alert view method
@@ -698,7 +681,7 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
         closeButton.backgroundColor = UIColor.white
         closeButton.setImage(UIImage(named: "cross_btn"), for: UIControlState.normal)
         closeButton.layer.cornerRadius = 3
-
+        
         View.addSubview(closeButton)
         
         view.layer.shadowColor = UIColor.black.cgColor
@@ -715,7 +698,7 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     func alertViewCloseButtonClicked(button: UIButton) {
         alertView.close()
     }
-
+    
     // MARK: Set Constraints method
     func setConstraints(actualView:UIView, leadingView:UIView, leadingAttributeForActualView:NSLayoutAttribute, leadingAttributeForLeadingView:NSLayoutAttribute, leadingViewConstant:CGFloat, trailingView:UIView, trailingAttributeForActualView:NSLayoutAttribute, trailingAttributeForTrailingView:NSLayoutAttribute, trailingViewConstant:CGFloat, upperView:UIView, upperAttributeForActualView:NSLayoutAttribute, upperAttributeForUpperView:NSLayoutAttribute, upperViewConstant:CGFloat, height:CGFloat, width:CGFloat, upperSpaceConstraint:Bool, leadingMarginConstraint:Bool, trailingMarginConstraint:Bool) {
         
@@ -760,8 +743,62 @@ class BrowseEnquiryVC: UIViewController, UITableViewDelegate, UITableViewDataSou
     func displaySuccessMessage(message: String){
         self.showSuccessMessage(message: message)
     }
+    
+    @objc func onUpdateNotificationBadgeFromBackground(notification: Notification) {
+        if !UserDefaults.standard.bool(forKey: "UserLoggedInStatus") {
+            return
+        }
+        self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
+        let notificationsDomainModel = NotificationsDomainModel.init(userId: self.userId)
+        let APIDataManager : NotificationCountProtocols = NotificationsAPIDataManager()
+        APIDataManager.getNotificationCount(model: notificationsDomainModel, callback:{(result) in
+            print("result : ", result)
+            switch result {
+            case .Failure(let error):
+                self.onGetNotificationsDetailsFailed(error: error)
+            case .Success(let data as NotificationCountOutputDomainModel):
+                do {
+                    self.onGetNotificationsDetailsSucceeded(data: data)
+                } catch {
+                    self.onGetNotificationsDetailsFailed(data: data)
+                }
+            default:
+                break
+            }
+        })
+    }
+    
+    // MARK: BrowseEnquiryReceivedNotification API Response methods
+    func onGetNotificationsDetailsSucceeded(data: NotificationCountOutputDomainModel) {
+        //self.dismissProgress()
+        if data.status {
+            
+            let tabArray = self.tabBarController?.tabBar.items as NSArray!
+            let browseEnquiryTabItem = tabArray?.object(at: 2) as! UITabBarItem
+            
+            if(data.browseEnquiryCount != "0") {
+                browseEnquiryTabItem.badgeValue = "\(data.browseEnquiryCount)"
+            }
+            
+            let myAssignmentTabItem = tabArray?.object(at: 1) as! UITabBarItem
+            if(data.myAssignmentCount != "0") {
+                myAssignmentTabItem.badgeValue = "\(data.myAssignmentCount)"
+            }
+            
+        } else {
+        }
+    }
+    
+    func onGetNotificationsDetailsFailed(error: EApiErrorType) {
+        //self.dismissProgress()
+    }
+    
+    func onGetNotificationsDetailsFailed(data: NotificationCountOutputDomainModel) {
+        //self.dismissProgress()
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
- }
+}

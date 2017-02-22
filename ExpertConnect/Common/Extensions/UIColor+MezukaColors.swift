@@ -1,9 +1,9 @@
 //
 //  UIColor+MezukaColors.swift
-//  Mezuka
+//  ExpertConnect
 //
-//  Created by Hasan H. Topcu on 18/09/2016.
-//  Copyright © 2016 Mezuka. All rights reserved.
+//  Created by Ramesh.M on 06/12/16.
+//  Copyright © 2016 user. All rights reserved.
 //
 
 import UIKit
@@ -57,6 +57,33 @@ extension UIColor {
     {
         return UIColor(red: 54/255, green: 54/255, blue: 54/255, alpha: 1.0)
     }
+    public class var ExpertConnectGray: UIColor
+    {
+        return UIColor(red: 100/255, green: 100/255, blue: 100/255, alpha: 1.0)
+    }
+    
+    public class var ExpertConnectLightGray: UIColor
+    {
+        return UIColor(red: 0/255, green: 0/255, blue: 0/255, alpha: 0.4)
+    }
 
-
+    public class var ExpertConnectOffWhite: UIColor
+    {
+        return UIColor(red: 250/255, green: 200/255, blue: 185/255, alpha: 1.0)
+    }
+    
+    public class var ExpertConnectTabbarIconColor: UIColor
+    {
+        return UIColor(red: 162/255, green: 162/255, blue: 162/255, alpha: 1.0)
+    }
+    
+    public class var ExpertConnectTabbarColor: UIColor
+    {
+        return UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1.0)
+    }
+    
+    public class var ExpertConnectDisabled: UIColor
+    {
+        return UIColor.black.withAlphaComponent(0.3)
+    }
 }

@@ -1,5 +1,5 @@
 //
-//  BrowseEnquiryReceivedNotificationAPIDataManager.swift
+//  ManageExpertiseAPIDataManager.swift
 //  ExpertConnect
 //
 //  Created by Redbytes on 21/11/16.
@@ -17,12 +17,10 @@ final class ManageExpertiseAPIDataManager: ManageExpertiseProtocols {
             let api: ApiServiceProtocol = ApiService() 
             let url: String = try api.constructApiEndpoint(base: "http://182.72.44.11/expert_connect", params: "my_expert_list.php")
             let headers = try api.constructHeader(withCsrfToken: true, cookieDictionary: nil)
-            //let model = model.toJSON()
             let parameters = ["user_id" : model.userId as AnyObject] as [String: AnyObject]
             
             let apiConverter = ManageExpertiseApiModelConverter()
             
-            //api.create(url: url, parameters: model, headers: headers, callback: callback)
             api.create(url,
                        parameters: parameters as [String : AnyObject]?,
                        headers: headers, converter: { (json) -> AnyObject in

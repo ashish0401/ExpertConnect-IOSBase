@@ -11,5 +11,4 @@ import Foundation
 protocol BrowseEnquiryReceivedNotificationProtocols {
 
     func getBrowseEnquiryReceivedNotificationDetails(model: BrowseEnquiryReceivedNotificationDomainModel, callback: @escaping (ECallbackResultType) -> Void)
-
 }

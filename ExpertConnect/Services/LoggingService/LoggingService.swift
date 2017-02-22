@@ -1,9 +1,9 @@
 //
 //  LoggingService.swift
-//  Mezuka
+//  ExpertConnect
 //
-//  Created by Hasan H. Topcu on 22/09/2016.
-//  Copyright © 2016 Mezuka. All rights reserved.
+//  Created by Redbytes on 22/09/2016.
+//  Copyright © 2016 ExpertConnect. All rights reserved.
 //
 
 import Foundation

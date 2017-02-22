@@ -439,7 +439,7 @@ class CustomIOS7AlertView: UIView {
             
             button.frame = CGRect(
                 x: CGFloat(90),
-                y: container.bounds.size.height-70,
+                y: container.bounds.size.height-60,
                 width: buttonWidth-180,
                 height: buttonHeight
             )

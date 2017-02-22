@@ -1,9 +1,9 @@
 //
 //  UIViewController+NavigationItems.swift
-//  Mezuka
+//  ExpertConnect
 //
-//  Created by Hasan H. Topcu on 18/09/2016.
-//  Copyright © 2016 Mezuka. All rights reserved.
+//  Created by Ramesh.M on 06/12/16.
+//  Copyright © 2016 user. All rights reserved.
 //
 
 import UIKit
@@ -13,6 +13,7 @@ private var browseViewDelegate: BrowseEnquiryVC?
 private var searchBrowseViewDelegate: BrowseEnquiryVC?
 private var manageExpertiseViewDelegate: ManageExpertiseView?
 private var expertDetailsViewDelegate: ExpertDetailsVC?
+private var updateProfileViewDelegate: UpdateProfileView?
 
 extension UIViewController {
     func activateHamburgerIcon(delegate: HomeVC) {
@@ -102,8 +103,16 @@ extension UIViewController {
         let cancelButton = UIBarButtonItem(title: "Cancel", style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.onCancelMenuBarTapped))
         cancelButton.setTitleTextAttributes([NSFontAttributeName: UIFont(name: "Raleway-Light", size: 19)!], for: UIControlState.normal)
         navigationItem.leftBarButtonItem = cancelButton
-            self.navigationItem.leftBarButtonItem?.tintColor = UIColor.ExpertConnectRed
-
+        self.navigationItem.leftBarButtonItem?.tintColor = UIColor.ExpertConnectRed
+        
+    }
+    
+    func activateRightTextualCancelIcon() {
+        let cancelButton = UIBarButtonItem(title: "Cancel", style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.onCancelMenuBarTapped))
+        cancelButton.setTitleTextAttributes([NSFontAttributeName: UIFont(name: "Raleway-Light", size: 19)!], for: UIControlState.normal)
+        navigationItem.rightBarButtonItem = cancelButton
+        self.navigationItem.leftBarButtonItem?.tintColor = UIColor.ExpertConnectRed
+        
     }
 
     func activateSearchBrouseBackIcon(delegate: BrowseEnquiryVC) {
@@ -112,6 +121,14 @@ extension UIViewController {
         self.navigationItem.leftBarButtonItem = leftButton
         self.navigationItem.leftBarButtonItem?.tintColor = UIColor.ExpertConnectRed
         searchBrowseViewDelegate = delegate
+    }
+
+    func activateUpdateProfileBackIcon(delegate: UpdateProfileView) {
+        let leftButton: UIBarButtonItem = UIBarButtonItem(image: UIImage(named: "back_btn")!, style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.onUpdateProfileBackMenuBarTapped))
+        
+        self.navigationItem.leftBarButtonItem = leftButton
+        self.navigationItem.leftBarButtonItem?.tintColor = UIColor.ExpertConnectRed
+        updateProfileViewDelegate = delegate
     }
 
     func activateMyOrderIcon() {
@@ -144,6 +161,7 @@ extension UIViewController {
         self.view.endEditing(true)
         let addExpertiseView : ExpertDetailsVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ExpertDetailsVC") as UIViewController as! ExpertDetailsVC
         addExpertiseView.isAddExpertise = true
+        addExpertiseView.delegate = manageExpertiseViewDelegate
         let navController = UINavigationController(rootViewController: addExpertiseView)
         self.present(navController, animated: true, completion: nil)
         addExpertiseView.modalTransitionStyle = UIModalTransitionStyle(rawValue: 0)!
@@ -151,6 +169,8 @@ extension UIViewController {
 
     func onNotificationMenuBarTapped() {
         self.view.endEditing(true)
+        let notificationsView : NotificationsView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "NotificationsView") as UIViewController as! NotificationsView
+        self.navigationController?.pushViewController(notificationsView, animated: true)
     }
     
     func onPromotionMenuBarTapped() {
@@ -161,6 +181,7 @@ extension UIViewController {
         self.view.endEditing(true)
         self.navigationController?.popViewController(animated: true)
     }
+    
     func onCancelMenuBarTapped() {
         self.view.endEditing(true)
         self.dismiss(animated: true, completion: nil)
@@ -177,6 +198,13 @@ extension UIViewController {
         self.navigationController?.popViewController(animated: true)
         searchBrowseViewDelegate?.searchBrouseBackMenuBarTapped()
     }
+
+    func onUpdateProfileBackMenuBarTapped() {
+        //self.view.endEditing(true)
+//        self.navigationController?.popViewController(animated: true)
+        updateProfileViewDelegate?.updateProfileBackMenuBarTapped()
+    }
+
 
     func onMyOrderMenuBarTapped() {
       //  MenuWireFrame.sharedInstance.presentMyOrderView()

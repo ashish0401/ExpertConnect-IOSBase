@@ -1,0 +1,10 @@
+/* 
+  MyCategoryView.strings
+  ExpertConnect
+
+  Created by Redbytes on 20/10/2016.
+  Copyright © 2017 user. All rights reserved.
+*/
+"Loading your categories" = "Loading your categories";
+"No Internet Connection" = "No Internet Connection";
+"MyCategoryUnavailable" = "Looks like you haven't added any new category";

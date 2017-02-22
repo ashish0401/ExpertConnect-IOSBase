@@ -1,5 +1,5 @@
 //
-//  BrowseEnquiryReceivedNotificationApiModelConverter.swift
+//  MyAssignmentApiModelConverter.swift
 //  ExpertConnect
 //
 //  Created by Redbytes on 21/11/16.

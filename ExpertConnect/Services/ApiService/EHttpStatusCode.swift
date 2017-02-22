@@ -1,9 +1,9 @@
 //
 //  EHttpStatusCode.swift
-//  Mezuka
+//  ExpertConnect
 //
-//  Created by Hasan H. Topcu on 16/12/15.
-//  Copyright © 2016 Kinetica. All rights reserved.
+//  Created by Redbytes on 16/12/15.
+//  Copyright © 2016 ExpertConnect. All rights reserved.
 //
 
 import Foundation
