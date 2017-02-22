@@ -1,0 +1,14 @@
+/* 
+  ChangeNumberView.strings
+  ExpertConnect
+
+  Created by Ramesh on 20/10/2016.
+  Copyright © 2016 ExpertConnect. All rights reserved.
+*/
+"Processing" = "Processing";
+"No Internet Connection" = "No Internet Connection";
+
+"Updating mobile number" = "Updating mobile number";
+"Your mobile number updated successfully" = "Your mobile number updated successfully";
+"Verifying mobile number" = "Verifying mobile number";
+"Verifying OTP" = "Verifying OTP";

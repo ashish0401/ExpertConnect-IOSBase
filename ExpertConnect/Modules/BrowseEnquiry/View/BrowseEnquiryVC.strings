@@ -1,0 +1,10 @@
+/* 
+  BrowseEnquiryVC.strings
+  ExpertConnect
+
+  Created by Redbytes on 20/10/2016.
+  Copyright © 2016 ExpertConnect. All rights reserved.
+*/
+"Getting Enquiries" = "Getting Enquiries";
+"No Internet Connection" = "No Internet Connection";
+"EnquiriesUnavailable" = "Looks like you haven’t received or sent any enquiries yet.";

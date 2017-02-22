@@ -1,0 +1,10 @@
+/* 
+  NotificationsView.strings
+  ExpertConnect
+
+  Created by Redbytes on 20/10/2016.
+  Copyright © 2016 ExpertConnect. All rights reserved.
+*/
+"Getting latest notifications" = "Getting latest notifications";
+"No Internet Connection" = "No Internet Connection";
+"NotificationUnavailable" = "You have no notifications";

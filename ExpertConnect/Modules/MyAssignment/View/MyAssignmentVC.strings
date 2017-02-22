@@ -1,0 +1,11 @@
+/* 
+  MyAssignmentVC.strings
+  ExpertConnect
+
+  Created by Redbytes on 20/10/2016.
+  Copyright © 2016 ExpertConnect. All rights reserved.
+*/
+"Loading Assignments" = "Loading Assignments";
+"No Internet Connection" = "No Internet Connection";
+"NotificationUnavailable" = "You haven't received any notifications yet.";
+"AssignmentUnavailable" = "Looks like you haven’t confirmed or completed an assignment yet.";
