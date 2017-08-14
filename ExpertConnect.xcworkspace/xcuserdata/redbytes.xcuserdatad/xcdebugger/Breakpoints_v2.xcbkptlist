@@ -297,7 +297,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "691"
             endingLineNumber = "691"
-            landmarkName = "onGetBrowseEnquirySentNotificationDetailsSucceeded(data:)"
+            landmarkName = "createContainerView(acceptOrRejectSuccessMessage:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -313,7 +313,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "703"
             endingLineNumber = "703"
-            landmarkName = "onGetBrowseEnquirySentNotificationDetailsFailed(error:)"
+            landmarkName = "setConstraints(actualView:leadingView:leadingAttributeForActualView:leadingAttributeForLeadingView:leadingViewConstant:trailingView:trailingAttributeForActualView:trailingAttributeForTrailingView:trailingViewConstant:upperView:upperAttributeForActualView:upperAttributeForUpperView:upperViewConstant:height:width:upperSpaceConstraint:leadingMarginConstraint:trailingMarginConstraint:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -329,7 +329,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "711"
             endingLineNumber = "711"
-            landmarkName = "onGetBrowseEnquirySentNotificationDetailsFailed(data:)"
+            landmarkName = "setConstraints(actualView:leadingView:leadingAttributeForActualView:leadingAttributeForLeadingView:leadingViewConstant:trailingView:trailingAttributeForActualView:trailingAttributeForTrailingView:trailingViewConstant:upperView:upperAttributeForActualView:upperAttributeForUpperView:upperViewConstant:height:width:upperSpaceConstraint:leadingMarginConstraint:trailingMarginConstraint:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -393,7 +393,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "615"
             endingLineNumber = "615"
-            landmarkName = "onGetBrowseEnquiryReceivedNotificationDetailsFailed(error:)"
+            landmarkName = "onAcceptOrRejectSucceeded(data:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -409,7 +409,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "604"
             endingLineNumber = "604"
-            landmarkName = "onGetBrowseEnquiryReceivedNotificationDetailsSucceeded(data:)"
+            landmarkName = "onGetBrowseEnquiryReceivedNotificationDetailsFailed(data:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -584,9 +584,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "934"
-            endingLineNumber = "934"
-            landmarkName = "onUpdateNotificationBadge(notification:)"
-            landmarkType = "7">
+            endingLineNumber = "934">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -600,9 +598,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "940"
-            endingLineNumber = "940"
-            landmarkName = "HomeVC"
-            landmarkType = "3">
+            endingLineNumber = "940">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -616,9 +612,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "1031"
-            endingLineNumber = "1031"
-            landmarkName = "searchBar(_:textDidChange:)"
-            landmarkType = "7">
+            endingLineNumber = "1031">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -649,8 +643,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "68"
             endingLineNumber = "68"
-            landmarkName = "applicationWillEnterForeground(_:)"
-            landmarkType = "7">
+            landmarkName = "AppDelegate"
+            landmarkType = "3">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -665,7 +659,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "70"
             endingLineNumber = "70"
-            landmarkName = "applicationWillEnterForeground(_:)"
+            landmarkName = "applicationWillTerminate(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -680,9 +674,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "937"
-            endingLineNumber = "937"
-            landmarkName = "onUpdateNotificationBadge(notification:)"
-            landmarkType = "7">
+            endingLineNumber = "937">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -712,9 +704,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "826"
-            endingLineNumber = "826"
-            landmarkName = "onGetNotificationsDetailsSucceeded(data:)"
-            landmarkType = "7">
+            endingLineNumber = "826">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -728,9 +718,7 @@
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "830"
-            endingLineNumber = "830"
-            landmarkName = "onGetNotificationsDetailsSucceeded(data:)"
-            landmarkType = "7">
+            endingLineNumber = "830">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -985,7 +973,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "847"
             endingLineNumber = "847"
-            landmarkName = "sideMenu(_:titleForHeaderInSection:)"
+            landmarkName = "searchBarCancelButtonClicked(_:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1017,7 +1005,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "881"
             endingLineNumber = "881"
-            landmarkName = "onUserAuthenticationStatusChanged(notification:)"
+            landmarkName = "createContainerView(acceptOrRejectSuccessMessage:)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -1060,12 +1048,12 @@
                   moduleName = "ExpertConnect"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/redbytes/RAMESH_WORKSPACE/PROJECTS/CLIENT_PROJECTS/ExpertConnectSwift/Working%20Copy/expertconnectapp/ExpertConnect/Modules/UpdateProfile/View/UpdateProfileView.swift"
-                  timestampString = "509268137.450895"
+                  timestampString = "524396507.424259"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "154"
-                  endingLineNumber = "154"
-                  offsetFromSymbolStart = "7648">
+                  startingLineNumber = "149"
+                  endingLineNumber = "149"
+                  offsetFromSymbolStart = "8967">
                </Location>
                <Location
                   shouldBeEnabled = "Yes"
@@ -1075,12 +1063,12 @@
                   moduleName = "ExpertConnect"
                   usesParentBreakpointCondition = "Yes"
                   urlString = "file:///Users/redbytes/RAMESH_WORKSPACE/PROJECTS/CLIENT_PROJECTS/ExpertConnectSwift/Working%20Copy/expertconnectapp/ExpertConnect/Modules/UpdateProfile/View/UpdateProfileView.swift"
-                  timestampString = "509268137.454136"
+                  timestampString = "524396507.426681"
                   startingColumnNumber = "9223372036854775807"
                   endingColumnNumber = "9223372036854775807"
-                  startingLineNumber = "154"
-                  endingLineNumber = "154"
-                  offsetFromSymbolStart = "7730">
+                  startingLineNumber = "149"
+                  endingLineNumber = "149"
+                  offsetFromSymbolStart = "9008">
                </Location>
             </Locations>
          </BreakpointContent>

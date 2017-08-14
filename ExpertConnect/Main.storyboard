@@ -1,11 +1,10 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11542" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="Wod-rO-pKr">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="12118" systemVersion="16F73" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="Wod-rO-pKr">
     <device id="retina4_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
-        <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11524"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="12086"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -32,7 +31,7 @@
         <scene sceneID="1G7-68-afV">
             <objects>
                 <navigationController id="Wod-rO-pKr" sceneMemberID="viewController">
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="oaR-Zz-Gag">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="oaR-Zz-Gag">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1052,7 +1051,7 @@
                     <tabBarItem key="tabBarItem" title="" image="unselected_home_btn" selectedImage="selected_home_btn" id="J27-u1-uA2">
                         <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
                     </tabBarItem>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="EcK-D3-79c">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="EcK-D3-79c">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1189,7 +1188,7 @@
                     <tabBarItem key="tabBarItem" title="" image="unselected_my_assignment_btn" selectedImage="selected_my_assignment_btn" id="91S-O9-XaL">
                         <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
                     </tabBarItem>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="AwN-Z0-r3v">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="AwN-Z0-r3v">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1208,7 +1207,7 @@
                     <tabBarItem key="tabBarItem" title="" image="unselected_browse_enquiry_btn" selectedImage="selected_browse_enquiry_btn" id="X61-rE-fYl">
                         <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
                     </tabBarItem>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="VI6-8A-64I">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="VI6-8A-64I">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -1269,7 +1268,7 @@
                                         <rect key="frame" x="0.0" y="28" width="375" height="202"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="jOv-7L-etS" id="cGP-Ae-MEX">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="202"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="201.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="SGv-l0-K7U">
@@ -1422,7 +1421,7 @@
                                         <rect key="frame" x="0.0" y="230" width="375" height="231"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="cUf-nE-KcM" id="HIC-NE-oCu">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="231"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="230.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4m6-YG-veR">
@@ -1583,7 +1582,7 @@
                     <tabBarItem key="tabBarItem" title="" image="unselected_browse_expert_btn" selectedImage="selected_browse_expert_btn" id="8RJ-2v-wcx">
                         <inset key="imageInsets" minX="0.0" minY="6" maxX="0.0" maxY="-6"/>
                     </tabBarItem>
-                    <navigationBar key="navigationBar" contentMode="scaleToFill" id="XeJ-12-UjD">
+                    <navigationBar key="navigationBar" contentMode="scaleToFill" misplaced="YES" id="XeJ-12-UjD">
                         <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                         <autoresizingMask key="autoresizingMask"/>
                     </navigationBar>
@@ -2824,10 +2823,10 @@
                                 <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" tag="101" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="NotificationsViewCell" rowHeight="75" id="ncz-Dp-1z8" customClass="NotificationsViewCell" customModule="ExpertConnect">
-                                        <rect key="frame" x="0.0" y="56" width="375" height="75"/>
+                                        <rect key="frame" x="0.0" y="55.5" width="375" height="75"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ncz-Dp-1z8" id="saF-hU-IkI">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="75"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="74.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="XNL-H9-s6l">
@@ -3120,10 +3119,10 @@
                                 </constraints>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" tag="101" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="SettingsViewCell" rowHeight="64" id="tzh-Jg-WxV" customClass="SettingsViewCell" customModule="ExpertConnect">
-                                        <rect key="frame" x="0.0" y="56" width="375" height="64"/>
+                                        <rect key="frame" x="0.0" y="55.5" width="375" height="64"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="tzh-Jg-WxV" id="SBT-g5-mTP">
-                                            <rect key="frame" x="0.0" y="0.0" width="375" height="64"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="375" height="63.5"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LNf-bx-8GN">
@@ -3590,7 +3589,7 @@
                                                 <nil key="highlightedColor"/>
                                             </label>
                                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lvj-rY-cPF">
-                                                <rect key="frame" x="121" y="34" width="116" height="35"/>
+                                                <rect key="frame" x="121.5" y="34" width="115.5" height="35"/>
                                                 <constraints>
                                                     <constraint firstAttribute="height" constant="35" id="7he-AI-lD5"/>
                                                 </constraints>
