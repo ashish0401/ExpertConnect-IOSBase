@@ -184,6 +184,14 @@ extension UIViewController {
         textfield.backgroundColor=UIColor.clear
     }
     
+    func setExpertConnectTextViewTheme(textview:UITextView) {
+        textview.layer.cornerRadius=3;
+        textview.layer.masksToBounds = true;
+        textview.layer.borderColor = UIColor.ExpertConnectBlack.cgColor
+        textview.layer.borderWidth = 1.0;
+        textview.backgroundColor=UIColor.clear
+    }
+
     func setExpertConnectDisabledTextFieldTheme(textfield:UITextField) {
         textfield.layer.cornerRadius=3;
         textfield.layer.masksToBounds = true;
@@ -237,13 +245,6 @@ extension UIViewController {
                         textField.font = UIFont(name: "Raleway-Medium", size: 16)
                         textField.textColor = UIColor.ExpertConnectBlack
                         
-                        //                        let image:UIImage = UIImage(named: "search_icon")!
-                        //                        let imageView:UIImageView = UIImageView.init(image: image)
-                        //                        textField.placeholder = "Search"
-                        //                        textField.rightView = nil
-                        //                        textField.leftView = imageView
-                        //                        textField.leftViewMode = UITextFieldViewMode.always
-                        
                         if let glassIconView = textField.leftView as? UIImageView {
                             glassIconView.image = glassIconView.image?.withRenderingMode(UIImageRenderingMode.alwaysTemplate)
                             glassIconView.tintColor = UIColor.ExpertConnectRed
@@ -273,10 +274,10 @@ extension UIViewController {
                     if (subviewOfSubview.isKind(of:UITextField.self)) {
                         textField = subviewOfSubview as! UITextField
                         
-                        var bounds: CGRect
-                        bounds = textField.frame
-                        bounds.size.height = 44 //(set height whatever you want)
-                        textField.bounds = bounds
+//                        var bounds: CGRect
+//                        bounds = textField.frame
+//                        bounds.size.height = 44 //(set height whatever you want)
+//                        textField.bounds = bounds
 
                         textField.borderStyle = .none
                         textField.layer.borderWidth = 0.2
@@ -288,27 +289,10 @@ extension UIViewController {
                         textField.layer.shadowOpacity = 0.2
                         textField.layer.shadowRadius = 0.3
                         textField.layer.cornerRadius = 3
-                        textField.font = UIFont(name: "Raleway-Medium", size: 17)
+                        textField.font = UIFont(name: "Raleway-Medium", size: 16)
                         textField.textColor = UIColor.white
                         textField.attributedPlaceholder = NSAttributedString(string: "What you want to learn today?",
                                                                                attributes: [NSForegroundColorAttributeName: UIColor.ExpertConnectOffWhite])
-//                        let image:UIImage = UIImage(named: "search_icon")!
-//                        let imageView:UIImageView = UIImageView.init(image: image)
-//                        textField.placeholder = "Search"
-//                        textField.rightView = nil
-//                        textField.leftView = imageView
-//                        textField.leftViewMode = UITextFieldViewMode.always
-                        
-//                        let leftImageView = UIImageView()
-//                        leftImageView.image = UIImage(named: "search_icon")
-//                        leftImageView.tintColor = UIColor.white
-//
-//                        let leftView = UIView()
-//                        leftView.addSubview(leftImageView)
-//                        leftView.frame = CGRect(x: 0, y: 0, width: 40, height: 40)
-//                        leftImageView.frame = CGRect(x: 10, y: 10, width: 16, height: 16)
-//                        textField.leftViewMode = .always
-//                        textField.leftView = leftView
 
                         if let glassIconView = textField.leftView as? UIImageView {
                             glassIconView.image = glassIconView.image?.withRenderingMode(UIImageRenderingMode.alwaysTemplate)

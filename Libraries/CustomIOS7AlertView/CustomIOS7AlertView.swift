@@ -193,6 +193,62 @@ class CustomIOS7AlertView: UIView {
             return view
         }
         
+        if stringObject == "AlertUpgradeTeacher"{
+            let screenSize = self.calculateScreenSize()
+            let dialogSize = self.calculateDialogSize()
+            let view = UIView(frame: CGRect(
+                x: (screenSize.width - dialogSize.width) / 2,
+                y: ((screenSize.height - dialogSize.height) / 2),
+                width: dialogSize.width,
+                height: dialogSize.height
+            ))
+            view.layer.insertSublayer(generateGradient(view.bounds), at: 0)
+            view.backgroundColor = UIColor.white;
+            if useMotionEffects {
+                applyMotionEffects(view)
+            }
+            view.addSubview(containerView)
+            view.layer.cornerRadius = 3
+            
+            if buttonTitles == nil || buttonTitles?.count == 0 {
+                return view
+            }
+            
+            let buttonWidth = view.bounds.size.width / CGFloat(buttonTitles!.count)
+            
+            for buttonIndex in 0...(buttonTitles!.count-1) {
+                
+                let button:UIButton! = UIButton.init(type: UIButtonType.custom)
+                
+                button.frame = CGRect(
+                    x: CGFloat(80),
+                    y: view.bounds.size.height-80,
+                    width: buttonWidth-160,
+                    height: buttonHeight
+                )
+                
+                button.tag = buttonIndex
+                button.addTarget(self, action: #selector(CustomIOS7AlertView.buttonTouchUpInside(_:)), for: UIControlEvents.touchUpInside)
+                
+                button.setTitle(buttonTitles![buttonIndex], for: UIControlState())
+                
+                button.tintColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1)
+                // button.backgroundColor = UIColor(red: 247/255, green: 67/255, blue: 0/255, alpha: 1)
+                
+                button.layer.cornerRadius=3;
+                button.layer.masksToBounds = true;
+                button.layer.backgroundColor = UIColor.ExpertConnectRed.cgColor
+                // button.layer.borderWidth = 1.0;
+                button.setTitleColor(UIColor.white, for:.normal);
+                button.titleLabel!.font =  UIFont(name: "Raleway-Medium", size: 16)
+                
+                view.addSubview(button)
+                
+            }
+
+            return view
+        }
+
         let screenSize = self.calculateScreenSize()
         let dialogSize = self.calculateDialogSize()
         
@@ -205,6 +261,8 @@ class CustomIOS7AlertView: UIView {
         
         // Style the alertView to match the iOS7 UIAlertView
         view.layer.insertSublayer(generateGradient(view.bounds), at: 0)
+        view.layer.cornerRadius = 3
+
         //        view.layer.cornerRadius = cornerRadius
         //
         //        view.layer.borderWidth = 1
@@ -243,9 +301,13 @@ class CustomIOS7AlertView: UIView {
             self.addButtonsToViewoneLineoneButton(view)
             
         } else if stringObject == "3"{
-            
             self.addSubmitButtonToView(view)
+        } else if stringObject == "4"{
+            self.addSendMessageButtonToView(view)
+        } else if stringObject == "5"{
+            self.addRateButtonToView(view)
         }
+
         
         return view
     }
@@ -380,7 +442,7 @@ class CustomIOS7AlertView: UIView {
             button.layer.backgroundColor = UIColor.ExpertConnectRed.cgColor
            // button.layer.borderWidth = 1.0;
             button.setTitleColor(UIColor.white, for:.normal);
-            button.titleLabel!.font =  UIFont(name: "Raleway-Light", size: 18)
+            button.titleLabel!.font =  UIFont(name: "Raleway-Medium", size: 16)
             
             container.addSubview(button)
         }
@@ -418,12 +480,98 @@ class CustomIOS7AlertView: UIView {
             button.layer.backgroundColor = UIColor.ExpertConnectRed.cgColor
            // button.layer.borderWidth = 1.0;
             button.setTitleColor(UIColor.white, for:.normal);
-            button.titleLabel!.font =  UIFont(name: "Raleway-Light", size: 18)
+            button.titleLabel!.font =  UIFont(name: "Raleway-Medium", size: 16)
 
             container.addSubview(button)
         }
     }
     
+    // Add Send Message Button To View
+    fileprivate func addSendMessageButtonToView(_ container: UIView) {
+        if buttonTitles == nil || buttonTitles?.count == 0 {
+            return
+        }
+        
+        let buttonWidth = container.bounds.size.width / CGFloat(buttonTitles!.count)
+        
+        
+        for buttonIndex in 0...(buttonTitles!.count-1) {
+            
+            let button:UIButton! = UIButton.init(type: UIButtonType.custom)
+            
+            button.frame = CGRect(
+                x: CGFloat(80),
+                y: container.bounds.size.height-205,
+                width: buttonWidth-160,
+                height: buttonHeight
+            )
+            
+            button.tag = buttonIndex
+            button.addTarget(self, action: #selector(CustomIOS7AlertView.buttonTouchUpInside(_:)), for: UIControlEvents.touchUpInside)
+            
+            button.setTitle(buttonTitles![buttonIndex], for: UIControlState())
+            
+            button.tintColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1)
+            // button.backgroundColor = UIColor(red: 247/255, green: 67/255, blue: 0/255, alpha: 1)
+            
+            button.layer.cornerRadius=3;
+            button.layer.masksToBounds = true;
+            button.layer.backgroundColor = UIColor.ExpertConnectRed.cgColor
+            // button.layer.borderWidth = 1.0;
+            button.setTitleColor(UIColor.white, for:.normal);
+            button.titleLabel!.font =  UIFont(name: "Raleway-Medium", size: 16)
+            
+            container.addSubview(button)
+        }
+    }
+
+    // Add Send Message Button To View
+    fileprivate func addRateButtonToView(_ container: UIView) {
+        if buttonTitles == nil || buttonTitles?.count == 0 {
+            return
+        }
+        
+        container.frame = CGRect(
+            x: container.frame.origin.x,
+            y: container.frame.origin.y,
+            width: container.frame.size.width,
+            height: container.frame.size.height - 100
+        )
+
+        let buttonWidth = container.bounds.size.width / CGFloat(buttonTitles!.count)
+        
+        
+        for buttonIndex in 0...(buttonTitles!.count-1) {
+            
+            let button:UIButton! = UIButton.init(type: UIButtonType.custom)
+            
+            button.frame = CGRect(
+                x: CGFloat(80),
+                y: container.bounds.size.height-80,
+                width: buttonWidth-160,
+                height: buttonHeight
+            )
+            
+            button.tag = buttonIndex
+            button.addTarget(self, action: #selector(CustomIOS7AlertView.buttonTouchUpInside(_:)), for: UIControlEvents.touchUpInside)
+            
+            button.setTitle(buttonTitles![buttonIndex], for: UIControlState())
+            
+            button.tintColor = UIColor(red: 255/255, green: 255/255, blue: 255/255, alpha: 1)
+            // button.backgroundColor = UIColor(red: 247/255, green: 67/255, blue: 0/255, alpha: 1)
+            
+            button.layer.cornerRadius=3;
+            button.layer.masksToBounds = true;
+            button.layer.backgroundColor = UIColor.ExpertConnectRed.cgColor
+            // button.layer.borderWidth = 1.0;
+            button.setTitleColor(UIColor.white, for:.normal);
+            button.titleLabel!.font =  UIFont(name: "Raleway-Medium", size: 16)
+            
+            container.addSubview(button)
+
+        }
+    }
+
     // setupExpertConnectAlertWithSlider
     fileprivate func setupExpertConnectAlertWithSlider(_ container: UIView) {
         if buttonTitles == nil || buttonTitles?.count == 0 {
@@ -457,7 +605,7 @@ class CustomIOS7AlertView: UIView {
             button.layer.backgroundColor = UIColor.ExpertConnectRed.cgColor
             // button.layer.borderWidth = 1.0;
             button.setTitleColor(UIColor.white, for:.normal);
-            button.titleLabel!.font =  UIFont(name: "Raleway-Light", size: 18)
+            button.titleLabel!.font =  UIFont(name: "Raleway-Medium", size: 16)
             
             container.addSubview(button)
         }

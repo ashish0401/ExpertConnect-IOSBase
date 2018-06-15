@@ -9,11 +9,14 @@
 import UIKit
 
 private var homeViewDelegate: HomeVC?
+private var blogViewDelegate: BlogView?
+private var promotionViewDelegate: PromotionView?
 private var browseViewDelegate: BrowseEnquiryVC?
 private var searchBrowseViewDelegate: BrowseEnquiryVC?
 private var manageExpertiseViewDelegate: ManageExpertiseView?
 private var expertDetailsViewDelegate: ExpertDetailsVC?
 private var updateProfileViewDelegate: UpdateProfileView?
+private var messagesViewDelegate: MessagesView?
 
 extension UIViewController {
     func activateHamburgerIcon(delegate: HomeVC) {
@@ -52,6 +55,45 @@ extension UIViewController {
         manageExpertiseViewDelegate = delegate
     }
 
+    func activateAddBlogIcon(delegate: BlogView) {
+        let rightButton: UIBarButtonItem = UIBarButtonItem(image: UIImage(named: "add_btn")!, style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.onAddBlogMenuBarTapped))
+        
+        if var items = self.navigationItem.rightBarButtonItems {
+            items.append(rightButton)
+            self.navigationItem.rightBarButtonItems = items
+        } else {
+            self.navigationItem.rightBarButtonItem = rightButton
+        }
+        self.navigationItem.rightBarButtonItem?.tintColor = UIColor.ExpertConnectRed
+        blogViewDelegate = delegate
+    }
+
+    func activateAddPromotionIcon(delegate: PromotionView) {
+        let rightButton: UIBarButtonItem = UIBarButtonItem(image: UIImage(named: "add_btn")!, style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.onAddPromotionMenuBarTapped))
+        
+        if var items = self.navigationItem.rightBarButtonItems {
+            items.append(rightButton)
+            self.navigationItem.rightBarButtonItems = items
+        } else {
+            self.navigationItem.rightBarButtonItem = rightButton
+        }
+        self.navigationItem.rightBarButtonItem?.tintColor = UIColor.ExpertConnectRed
+        promotionViewDelegate = delegate
+    }
+
+    func activateAddEnquiryIcon(delegate: MessagesView) {
+        let rightButton: UIBarButtonItem = UIBarButtonItem(image: UIImage(named: "add_btn")!, style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.onAddEnquiryMenuBarTapped))
+        
+        if var items = self.navigationItem.rightBarButtonItems {
+            items.append(rightButton)
+            self.navigationItem.rightBarButtonItems = items
+        } else {
+            self.navigationItem.rightBarButtonItem = rightButton
+        }
+        self.navigationItem.rightBarButtonItem?.tintColor = UIColor.ExpertConnectRed
+        messagesViewDelegate = delegate
+    }
+
     func activateTextualAddIcon(delegate: ExpertDetailsVC) {
 
         let addButton = UIBarButtonItem(title: "Add", style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.onTextualAddMenuBarTapped))
@@ -64,6 +106,20 @@ extension UIViewController {
         }
         self.navigationItem.rightBarButtonItem?.tintColor = UIColor.ExpertConnectRed
         expertDetailsViewDelegate = delegate
+    }
+
+    func activateTextualEnquiryIcon(delegate: MessagesView) {
+        
+        let addButton = UIBarButtonItem(title: "Enquire Now!", style: UIBarButtonItemStyle.plain, target: self, action: #selector(self.onAddEnquiryMenuBarTapped))
+        addButton.setTitleTextAttributes([NSFontAttributeName: UIFont(name: "Raleway-Medium", size: 15)!], for: UIControlState.normal)
+        if var items = self.navigationItem.rightBarButtonItems {
+            items.append(addButton)
+            self.navigationItem.rightBarButtonItems = items
+        } else {
+            self.navigationItem.rightBarButtonItem = addButton
+        }
+        self.navigationItem.rightBarButtonItem?.tintColor = UIColor.ExpertConnectRed
+        messagesViewDelegate = delegate
     }
 
     func activateNotificationIcon() {
@@ -165,6 +221,30 @@ extension UIViewController {
         let navController = UINavigationController(rootViewController: addExpertiseView)
         self.present(navController, animated: true, completion: nil)
         addExpertiseView.modalTransitionStyle = UIModalTransitionStyle(rawValue: 0)!
+    }
+
+    func onAddBlogMenuBarTapped() {
+        self.view.endEditing(true)
+        blogViewDelegate?.addBlogButtonClicked()
+        //        let addBlogView : AddBlogView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddBlogView") as UIViewController as! AddBlogView
+        //        addBlogView.delegate = blogViewDelegate
+        //        let navController = UINavigationController(rootViewController: addBlogView)
+        //        self.present(navController, animated: true, completion: nil)
+        //        addBlogView.modalTransitionStyle = UIModalTransitionStyle(rawValue: 0)!
+    }
+    func onAddPromotionMenuBarTapped() {
+        self.view.endEditing(true)
+        promotionViewDelegate?.addPromotionButtonClicked()
+        //        let addBlogView : AddBlogView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddBlogView") as UIViewController as! AddBlogView
+        //        addBlogView.delegate = blogViewDelegate
+        //        let navController = UINavigationController(rootViewController: addBlogView)
+        //        self.present(navController, animated: true, completion: nil)
+        //        addBlogView.modalTransitionStyle = UIModalTransitionStyle(rawValue: 0)!
+    }
+    
+    func onAddEnquiryMenuBarTapped() {
+        self.view.endEditing(true)
+        messagesViewDelegate?.sendEnquiryButtonClicked()
     }
 
     func onNotificationMenuBarTapped() {

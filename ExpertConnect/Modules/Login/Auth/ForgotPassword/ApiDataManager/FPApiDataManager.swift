@@ -15,7 +15,7 @@ final class FPApiDataManager: FPProtocols {
     func getStatusAndMessage(callback: @escaping (ECallbackResultType) -> Void) {
         do {
             let api: ApiServiceProtocol = ApiService()
-            let url: String = try api.constructApiEndpoint(base: "http://182.72.44.11/expert_connect", params: "forget_password.php")
+            let url: String = try api.constructApiEndpoint(base: "http://114.143.177.218/expert_connect", params: "forget_password.php")
             let headers = try api.constructHeader(withCsrfToken: true, cookieDictionary: nil)
             
             let parameters = ["email_id":"bhushan@gmail.com"] as [String : Any]

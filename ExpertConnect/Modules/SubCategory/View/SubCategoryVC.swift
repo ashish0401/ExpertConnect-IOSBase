@@ -96,13 +96,36 @@ class SubCategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
         self.subCategoryId = subCategoryId!
         let expertiseString = subCategoryDict?["sub_category_name"] as? String
         self.expertiseString = expertiseString!
-        alertView.buttonTitles = buttonTitleArray
-        alertView.containerView = createContainerViewForExpertLevel()
-        alertView.delegate = self
-        alertView.onButtonTouchUpInside = { (alertView: CustomIOS7AlertView, buttonIndex: Int) -> Void in
+        
+        if (!self.isInternetAvailable()) {
+            let message = "No Internet Connection".localized(in: "ExpertDetails")
+            self.displayErrorMessage(message: message)
+            return
         }
-        alertView.catchString(withString: "AlertWithSlider")
-        alertView.show()
+        let message = "Processing".localized(in: "SignUp")
+        self.displayProgress(message: message)
+        if UserDefaults.standard.bool(forKey: "UserLoggedInStatus") {
+            self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
+        } else {
+            self.userId = "0"
+        }
+        let teacherListModel = TeacherListDomainModel.init(userId: self.userId, categoryId: self.categoryId, subCategoryId: self.subCategoryId)
+        let APIDataManager : TeacherListProtocols = TeacherListApiDataManager()
+        APIDataManager.getTeacherList(data: teacherListModel, callback:{(result) in
+            print("result : ", result)
+            switch result {
+            case .Failure(let error):
+                self.ongetTeacherListFailed(error: error)
+            case .Success(let data as TeacherListOutputDomainModel):
+                do {
+                    self.ongetTeacherListSucceeded(data: data)
+                } catch {
+                    self.ongetTeacherListFailed(data: data)
+                }
+            default:
+                break
+            }
+        })
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat{
@@ -146,7 +169,7 @@ class SubCategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
         label.numberOfLines = 1
         label.textAlignment = NSTextAlignment.left;
         
-        label.font =  UIFont(name: "Raleway-Light", size: 15)
+        label.font =  UIFont(name: "Raleway-Medium", size: 15)
         label.textColor = UIColor.ExpertConnectBlack
         View.addSubview(label)
         let closeButton = UIButton()
@@ -258,8 +281,12 @@ class SubCategoryVC: UIViewController, UITableViewDelegate, UITableViewDataSourc
             }
             let message = "Processing".localized(in: "SignUp")
             self.displayProgress(message: message)
-            self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
-            let teacherListModel = TeacherListDomainModel.init(userId: self.userId, categoryId: self.categoryId, subCategoryId: self.subCategoryId, level: (self.expertiseLevelString.capitalized))
+            if UserDefaults.standard.bool(forKey: "UserLoggedInStatus") {
+                self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
+            } else {
+                self.userId = "0"
+            }
+            let teacherListModel = TeacherListDomainModel.init(userId: self.userId, categoryId: self.categoryId, subCategoryId: self.subCategoryId)
             //            capitalized
             let APIDataManager : TeacherListProtocols = TeacherListApiDataManager()
             APIDataManager.getTeacherList(data: teacherListModel, callback:{(result) in

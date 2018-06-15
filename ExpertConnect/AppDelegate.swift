@@ -8,18 +8,25 @@
 
 import UIKit
 import CoreData
+import GooglePlacePicker
 import GooglePlaces
 import GoogleMaps
 import FBSDKLoginKit
 import UserNotifications
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate {
     var window: UIWindow?
     var objTabbarMain = TabbarMainVC()
     var selectedCountryCode = String()
     var deviceToken = String()
     
+    var locationManager = CLLocationManager()
+    var locValue = CLLocationCoordinate2D()
+    var lattitude = CLLocationDegrees()
+    var longitude = CLLocationDegrees()
+    var cityName : String = ""
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         application.applicationIconBadgeNumber = 0
@@ -38,6 +45,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         if let font = UIFont(name: "Raleway-Medium", size: 22) {
             UINavigationBar.appearance().titleTextAttributes = [NSForegroundColorAttributeName : UIColor.ExpertConnectRed, NSFontAttributeName: font]
         }
+        //Get Current Location
+        self.getCurrentLocation()
+
         self.setInitialViewController()
         //FeceBook Login
         return FBSDKApplicationDelegate.sharedInstance().application(application, didFinishLaunchingWithOptions: launchOptions)
@@ -75,8 +85,73 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, open url: URL, sourceApplication: String?, annotation: Any) -> Bool {
         return FBSDKApplicationDelegate.sharedInstance().application(application, open: url, sourceApplication: sourceApplication, annotation: annotation)
     }
-    // MARK: - Core Data stack
     
+    func getCurrentLocation() {
+        // Ask for Authorisation from the User.
+        self.locationManager.requestAlwaysAuthorization()
+        // For use in foreground
+        self.locationManager.requestWhenInUseAuthorization()
+        if CLLocationManager.locationServicesEnabled() {
+            locationManager.delegate = self
+            locationManager.desiredAccuracy = kCLLocationAccuracyNearestTenMeters
+            locationManager.startUpdatingLocation()
+        }
+    }
+    
+    //MARK: LocationManager Delegate
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        locValue = manager.location!.coordinate
+        print("locations = \(locValue.latitude) \(locValue.longitude)")
+        self.lattitude = locValue.latitude
+        self.longitude = locValue.longitude
+        self.setUsersClosestCity()
+        self.locationManager.stopUpdatingLocation()
+    }
+    
+    func setUsersClosestCity()
+    {
+        let message = "Loading".localized(in: "BrowseExpertsVC")
+        //self.displayProgress(message: message)
+        
+        let geoCoder = CLGeocoder()
+        let location = CLLocation(latitude: self.lattitude, longitude: self.longitude)
+        geoCoder.reverseGeocodeLocation(location) {
+            (placemarks, error) -> Void in
+            //self.dismissProgress()
+            let placeArray = placemarks as [CLPlacemark]!
+            if((placeArray?.count)! > 0) {
+                // Place details
+                var placeMark: CLPlacemark!
+                placeMark = placeArray?[0]
+                
+                if placeMark.addressDictionary != nil {
+                    // Location name
+                    if let locationName = placeMark.addressDictionary?["Name"] as? NSString {
+                        print(locationName)
+                    }
+                    // Street address
+                    if let street = placeMark.addressDictionary?["Thoroughfare"] as? NSString {
+                        print(street)
+                    }
+                    // City
+                    if let city = placeMark.addressDictionary?["City"] as? NSString {
+                        print("City Place : \(city)")
+                        self.cityName = city as String
+                    }
+                    // Zip code
+                    if let zip = placeMark.addressDictionary?["ZIP"] as? NSString {
+                        print(zip)
+                    }
+                    // Country
+                    if let country = placeMark.addressDictionary?["Country"] as? NSString {
+                        print(country)
+                    }
+                }
+            }
+        }
+    }
+
+    // MARK: - Core Data stack
     lazy var persistentContainer: NSPersistentContainer = {
         /*
          The persistent container for the application. This implementation

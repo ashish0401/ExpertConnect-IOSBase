@@ -40,7 +40,6 @@ class HomeVC: UIViewController, VKSideMenuDelegate, VKSideMenuDataSource, UIColl
         super.viewDidLoad()
         self.setUpCollectionView()
         self.activateHamburgerIcon(delegate: self)
-        setUpNotificationBarButton()
         mySearchBar = UISearchBar()
         mySearchBar.delegate = self
         mySearchBar.frame = CGRect(x:0,y:0,width:300,height:65)
@@ -55,51 +54,62 @@ class HomeVC: UIViewController, VKSideMenuDelegate, VKSideMenuDataSource, UIColl
             self.showStylishSuccessMessage(message: message)
             self.isShowAlert = false
         }
-        
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        appDelegate.objTabbarMain.tabBar.isHidden = false
+
         self.navigationController?.setNavigationBarHidden(false, animated: true)
         self.navigationItem.title = "Expert Connect"
         self.navigationController?.navigationBar.backgroundColor = UIColor.white
-        if !UserDefaults.standard.bool(forKey: "UserLoggedInStatus") {
-            self.navigationController!.pushViewController(LoginWireFrame.setupLoginModule() as UIViewController, animated: false)
-        } else {
-            
-            if (!self.isInternetAvailable()) {
-                let message = "No Internet Connection".localized(in: "ExpertDetails")
-                self.displayErrorMessage(message: message)
-                return
-            }
-            
-            let message = "Loading Categories".localized(in: "Login")
-            self.displayProgress(message: message)
-            
-            let APIDataManager: HomeProtocols = HomeAPIDataManager()
-            APIDataManager.getCategoryDetails(callback: { (result) in
-                switch result {
-                case .Failure(let error):
-                    self.onUserLoginFailed(error: error)
-                case .Success(let data as HomeOutputDomainModel):
-                    do {
-                        self.onUserLoginSucceeded(data: data)
-                    } catch {
-                        self.onUserLoginFailed(error: EApiErrorType.InternalError)
-                    }
-                default:
-                    break
+        setUpNotificationBarButton()
+
+        self.menuLeft = VKSideMenu(size: (self.view.frame.size.width-(self.view.frame.size.width*20)/100), andDirection: VKSideMenuDirection.fromLeft)
+        self.menuLeft.dataSource = self;
+        self.menuLeft.delegate   = self;
+        self.menuLeft.addSwipeGestureRecognition(self.view)
+        
+        COLLECTION_CELL_EDGE_INTET = 0.0;
+        
+        self.collectionview.delegate = self;
+        self.collectionview.dataSource = self;
+        self.noDataLabel = self.showStickyErrorMessage(message: "No Results".localized(in: "Login"))
+
+        let isAccountDeleted = UserDefaults.standard.value(forKey: "isAccountDeleted")
+        if(isAccountDeleted == nil) {
+            UserDefaults.standard.set(false, forKey: "isAccountDeleted")
+        }
+        if(UserDefaults.standard.bool(forKey: "isAccountDeleted")) {
+            let loginView = LoginWireFrame.setupLoginModule() as UIViewController
+            let navController = UINavigationController(rootViewController: loginView)
+            self.present(navController, animated: true, completion: nil)
+            loginView.modalTransitionStyle = UIModalTransitionStyle(rawValue: 0)!
+        }
+
+        if (!self.isInternetAvailable()) {
+            let message = "No Internet Connection".localized(in: "ExpertDetails")
+            self.displayErrorMessage(message: message)
+            return
+        }
+        
+        let message = "Loading Categories".localized(in: "Login")
+        self.displayProgress(message: message)
+        
+        let APIDataManager: HomeProtocols = HomeAPIDataManager()
+        APIDataManager.getCategoryDetails(callback: { (result) in
+            switch result {
+            case .Failure(let error):
+                self.onUserLoginFailed(error: error)
+            case .Success(let data as HomeOutputDomainModel):
+                do {
+                    self.onUserLoginSucceeded(data: data)
+                } catch {
+                    self.onUserLoginFailed(error: EApiErrorType.InternalError)
                 }
-            })
-            
-            self.menuLeft = VKSideMenu(size: (self.view.frame.size.width-(self.view.frame.size.width*20)/100), andDirection: VKSideMenuDirection.fromLeft)
-            self.menuLeft.dataSource = self;
-            self.menuLeft.delegate   = self;
-            self.menuLeft.addSwipeGestureRecognition(self.view)
-            
-            COLLECTION_CELL_EDGE_INTET = 0.0;
-            
-            self.collectionview.delegate = self;
-            self.collectionview.dataSource = self;
-            self.noDataLabel = self.showStickyErrorMessage(message: "No Results".localized(in: "Login"))
-            let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            appDelegate.objTabbarMain.tabBar.isHidden = false
+            default:
+                break
+            }
+        })
+        
+        if UserDefaults.standard.bool(forKey: "UserLoggedInStatus") {
             self.userId = UserDefaults.standard.value(forKey: "UserId") as! String
             let notificationsDomainModel = NotificationsDomainModel.init(userId: self.userId)
             let notificationAPIDataManager : NotificationCountProtocols = NotificationsAPIDataManager()
@@ -122,10 +132,13 @@ class HomeVC: UIViewController, VKSideMenuDelegate, VKSideMenuDataSource, UIColl
     }
     
     override func viewDidAppear(_ animated: Bool) {
-        self.setExpertConnectHomeSeacrhBarTheme(searchBar: self.searchBar)
-        self.setExpertConnectHomeSeacrhBarTheme(searchBar: self.mySearchBar)
         NotificationCenter.default.addObserver(self, selector: #selector(self.onUpdateNotificationBadge), name: NSNotification.Name(rawValue: "com.ExpertConnect.UpdateBadge"), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(self.onUpdateNotificationBadgeFromBackground), name: NSNotification.Name(rawValue: "com.ExpertConnect.UpdateBadgeFromBackground"), object: nil)
+    }
+    
+    override func viewDidLayoutSubviews() {
+        self.setExpertConnectHomeSeacrhBarTheme(searchBar: self.searchBar)
+        self.setExpertConnectHomeSeacrhBarTheme(searchBar: self.mySearchBar)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -172,7 +185,11 @@ class HomeVC: UIViewController, VKSideMenuDelegate, VKSideMenuDataSource, UIColl
                           for: UIControlEvents.touchUpInside)
         let newBarButton1 = ENMBadgedBarButtonItem(customView: button1, value: "0")
         rightPromotionBarButton = newBarButton1
-        self.navigationItem.rightBarButtonItems = [negativeSpace, rightNotificationBarButton!, fixedSpace, rightPromotionBarButton!]
+        if UserDefaults.standard.bool(forKey: "UserLoggedInStatus") {
+            self.navigationItem.rightBarButtonItems = [negativeSpace, rightNotificationBarButton!, fixedSpace, rightPromotionBarButton!]
+        } else {
+            self.navigationItem.rightBarButtonItems = [negativeSpace, rightPromotionBarButton!]
+        }
     }
     
     func setUpDummyBarButton() {
@@ -227,10 +244,13 @@ class HomeVC: UIViewController, VKSideMenuDelegate, VKSideMenuDataSource, UIColl
         rightNotificationBarButton?.badgeValue = "0"
         let notificationsView : NotificationsView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "NotificationsView") as UIViewController as! NotificationsView
         self.navigationController?.pushViewController(notificationsView, animated: true)
-        
     }
     
     func promotionButtonPressed(_ sender: UIButton) {
+        self.view.endEditing(true)
+        rightPromotionBarButton?.badgeValue = "0"
+        let promotionView : PromotionView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "PromotionView") as UIViewController as! PromotionView
+        self.navigationController?.pushViewController(promotionView, animated: true)
     }
     
     func sideMenuButtonClicked(button: UIButton) {
@@ -259,27 +279,27 @@ class HomeVC: UIViewController, VKSideMenuDelegate, VKSideMenuDataSource, UIColl
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        var categoryDict = [String: String]()
+        var categoryDict = [String: AnyObject]()
         if searchActive {
-            categoryDict = (self.filteredArray[indexPath.row] as? [String:AnyObject])! as! [String : String]
+            categoryDict = (self.filteredArray[indexPath.row] as? [String:AnyObject])!
         } else {
-            categoryDict = (self.categoryArray[indexPath.row] as? [String:AnyObject])! as! [String : String]
+            categoryDict = (self.categoryArray[indexPath.row] as? [String:AnyObject])!
         }
         var categoryName = categoryDict["category_name"]
         var categoryImageUrl = categoryDict["category_icon"]
         if categoryDict["sub_category_name"] != nil {
             categoryName = categoryDict["sub_category_name"]
-            categoryImageUrl = ""
+            categoryImageUrl = "" as AnyObject
         }
         var cellidentifier = String()
         cellidentifier = "HomeViewCell"
         collectionView.register(UINib.init(nibName: "HomeViewCell", bundle: nil), forCellWithReuseIdentifier: cellidentifier)
         var cell = HomeViewCell()
         cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellidentifier, for: indexPath) as! HomeViewCell
-        cell.categoryNameLabel.text = categoryName
+        cell.categoryNameLabel.text = categoryName as? String
         cell.iconView.image = UIImage(named: "subcategory_dummy_image")
-        if (categoryImageUrl != "") {
-            let url = URL(string: categoryImageUrl!)
+        if (categoryImageUrl as! String != "") {
+            let url = URL(string: categoryImageUrl! as! String)
             cell.iconView.kf.setImage(with: url)
         }
         cell.categoryNameLabel.textColor = UIColor.ExpertConnectTabbarIconColor
@@ -295,11 +315,11 @@ class HomeVC: UIViewController, VKSideMenuDelegate, VKSideMenuDataSource, UIColl
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         self.view.endEditing(true)
         let subCategoryVC : SubCategoryVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SubCategoryVC") as UIViewController as! SubCategoryVC
-        var categoryDict = [String: String]()
+        var categoryDict = [String: AnyObject]()
         if searchActive {
-            categoryDict = (self.filteredArray[indexPath.row] as? [String:AnyObject])! as! [String : String]
+            categoryDict = (self.filteredArray[indexPath.row] as? [String:AnyObject])!
         } else {
-            categoryDict = (self.categoryArray[indexPath.row] as? [String:AnyObject])! as! [String : String]
+            categoryDict = (self.categoryArray[indexPath.row] as? [String:AnyObject])!
         }
         subCategoryVC.categoryDictionary = categoryDict as [String : AnyObject]
         searchBar.text = ""
@@ -334,14 +354,18 @@ class HomeVC: UIViewController, VKSideMenuDelegate, VKSideMenuDataSource, UIColl
     
     func sideMenu(_ sideMenu: VKSideMenu!, numberOfRowsInSection section: Int) -> Int {
         if (sideMenu == self.menuLeft || sideMenu == self.menuTop){
-            self.userType = UserDefaults.standard.value(forKey: "teacherStudentValue") as! String
-            if(self.userType == "2") {
-                return 10;
+            if UserDefaults.standard.bool(forKey: "UserLoggedInStatus") {
+                self.userType = UserDefaults.standard.value(forKey: "teacherStudentValue") as! String
+                if(self.userType == "2") {
+                    return 6
+                } else {
+                    return 10
+                }
             } else {
-                return 9;
+                return 2
             }
         }
-        return section == 0 ? 1 : 2;
+        return section == 0 ? 1 : 2
     }
     
     func sideMenu(_ sideMenu: VKSideMenu!, itemForRowAt indexPath: IndexPath!) -> VKSideMenuItem! {
@@ -349,128 +373,161 @@ class HomeVC: UIViewController, VKSideMenuDelegate, VKSideMenuDataSource, UIColl
         
         if (sideMenu == self.menuLeft || sideMenu == self.menuTop) // All LEFT and TOP menu items
         {
-            self.userType = UserDefaults.standard.value(forKey: "teacherStudentValue") as! String
-            if(self.userType == "2") {
-                switch (indexPath.row)
-                {
-                case 0:
-                    item.title = "Teacher Name";
-                    //                item.icon = UIImage.animatedImageNamed("boy_red_cap", duration: 0)
-                    item.icon = UIImage(named: "default_profile_pic")
-                    
-                    if let userFullName = UserDefaults.standard.value(forKey: "UserFullName") as? String {
-                        item.title = userFullName;
+            if UserDefaults.standard.bool(forKey: "UserLoggedInStatus") {
+                self.userType = UserDefaults.standard.value(forKey: "teacherStudentValue") as! String
+                if(self.userType == "2") {
+                    switch (indexPath.row)
+                    {
+                    case 0:
+                        item.title = "Teacher Name";
+                        //                item.icon = UIImage.animatedImageNamed("boy_red_cap", duration: 0)
+                        item.icon = UIImage(named: "default_profile_pic")
+                        
+                        if let userFullName = UserDefaults.standard.value(forKey: "UserFullName") as? String {
+                            item.title = userFullName;
+                        }
+                        
+                        if let userProfileData = UserDefaults.standard.value(forKey: "UserProfileData") as? Data {
+                            item.icon = UIImage(data: userProfileData as Data)
+                        }
+                        break;
+                        
+                    case 1:
+                        item.title = "Notification";
+                        item.icon = UIImage(named: "notification_icon")
+                        break;
+                        
+//                    case 2:
+//                        item.title = "My Categories";
+//                        item.icon = UIImage(named: "my_category_icon")
+//                        break;
+                        
+//                    case 2:
+//                        item.title = "Refer Friend";
+//                        item.icon = UIImage(named: "refer_friend_icon")
+//                        break;
+//
+//                    case 4:
+//                        item.title = "Add Category";
+//                        item.icon = UIImage(named: "add_category_icon")
+//                        break;
+//                        
+//                    case 5:
+//                        item.title = "Manage Expertise";
+//                        item.icon = UIImage(named: "manage_expertise_icon")
+//                        break;
+                        
+//                    case 6:
+//                        item.title = "My Account";
+//                        item.icon = UIImage(named: "my_account_icon")
+//                        break;
+                        
+                    case 2:
+                        item.title = "Upgrade To Teacher";
+                        item.icon = UIImage(named: "upgrade_teacher_icon")
+                        break;
+                        
+                    case 3:
+                        item.title = "Settings";
+                        item.icon = UIImage(named: "settings_icon")
+                        break;
+                        
+                    case 4:
+                        item.title = "Refer Friend";
+                        item.icon = UIImage(named: "refer_friend_icon")
+                        break;
+
+                    case 5:
+                        item.title = "Logout";
+                        item.icon = UIImage(named: "logout_icon")
+                        break;
+                        
+                    default:
+                        break;
                     }
-                    
-                    if let userProfileData = UserDefaults.standard.value(forKey: "UserProfileData") as? Data {
-                        item.icon = UIImage(data: userProfileData as Data)
+                } else {
+                    switch (indexPath.row)
+                    {
+                    case 0:
+                        item.title = "Teacher Name";
+                        item.icon = UIImage(named: "default_profile_pic")
+                        
+                        if let userFullName = UserDefaults.standard.value(forKey: "UserFullName") as? String {
+                            item.title = userFullName;
+                        }
+                        
+                        if let userProfileData = UserDefaults.standard.value(forKey: "UserProfileData") as? Data {
+                            item.icon = UIImage(data: userProfileData as Data)
+                        }
+                        break;
+                        
+                    case 1:
+                        item.title = "Notification";
+                        item.icon = UIImage(named: "notification_icon")
+                        break;
+                        
+                    case 2:
+                        item.title = "General Enquiries";
+                        item.icon = UIImage(named: "sidemenu_general_enquiry_icon")
+                        break;
+                        
+                    case 3:
+                        item.title = "My Blogs";
+                        item.icon = UIImage(named: "sidemenu_myblog_icon")
+                        break;
+                        
+                    case 4:
+                        item.title = "My Categories";
+                        item.icon = UIImage(named: "my_category_icon")
+                        break;
+
+//                        
+//                    case 5:
+//                        item.title = "Refer Friend";
+//                        item.icon = UIImage(named: "refer_friend_icon")
+//                        break;
+                        
+                    case 5:
+                        item.title = "Add Category";
+                        item.icon = UIImage(named: "add_category_icon")
+                        break;
+                        
+                    case 6:
+                        item.title = "Manage Expertise";
+                        item.icon = UIImage(named: "manage_expertise_icon")
+                        break;
+                        
+//                    case 6:
+//                        item.title = "My Account";
+//                        item.icon = UIImage(named: "my_account_icon")
+//                        break;
+                        
+                    case 7:
+                        item.title = "Settings";
+                        item.icon = UIImage(named: "settings_icon")
+                        break;
+                        
+                    case 8:
+                        item.title = "Refer Friend";
+                        item.icon = UIImage(named: "refer_friend_icon")
+                        break;
+
+                    case 9:
+                        item.title = "Logout";
+                        item.icon = UIImage(named: "logout_icon")
+                        break;
+                        
+                    default:
+                        break;
                     }
-                    break;
-                    
-                case 1:
-                    item.title = "Notification";
-                    item.icon = UIImage(named: "notification_icon")
-                    break;
-                    
-                case 2:
-                    item.title = "My Categories";
-                    item.icon = UIImage(named: "my_category_icon")
-                    break;
-                    
-                case 3:
-                    item.title = "Refer Friend";
-                    item.icon = UIImage(named: "refer_friend_icon")
-                    break;
-                    
-                case 4:
-                    item.title = "Add Category";
-                    item.icon = UIImage(named: "add_category_icon")
-                    break;
-                    
-                case 5:
-                    item.title = "Manage Expertise";
-                    item.icon = UIImage(named: "manage_expertise_icon")
-                    break;
-                    
-                case 6:
-                    item.title = "My Account";
-                    item.icon = UIImage(named: "my_account_icon")
-                    break;
-                    
-                case 7:
-                    item.title = "Upgrade To Teacher";
-                    item.icon = UIImage(named: "upgrade_teacher_icon")
-                    break;
-                    
-                case 8:
-                    item.title = "Settings";
-                    item.icon = UIImage(named: "settings_icon")
-                    break;
-                    
-                case 9:
-                    item.title = "Logout";
-                    item.icon = UIImage(named: "logout_icon")
-                    break;
-                    
-                default:
-                    break;
                 }
             } else {
                 switch (indexPath.row)
                 {
-                case 0:
-                    item.title = "Teacher Name";
-                    item.icon = UIImage(named: "default_profile_pic")
-                    
-                    if let userFullName = UserDefaults.standard.value(forKey: "UserFullName") as? String {
-                        item.title = userFullName;
-                    }
-                    
-                    if let userProfileData = UserDefaults.standard.value(forKey: "UserProfileData") as? Data {
-                        item.icon = UIImage(data: userProfileData as Data)
-                    }
-                    break;
-                    
                 case 1:
-                    item.title = "Notification";
-                    item.icon = UIImage(named: "notification_icon")
+                    item.title = "Sign Up / Sign In";
+                    item.icon = UIImage(named: "sidemenu_login_icon")
                     break;
-                    
-                case 2:
-                    item.title = "My Categories";
-                    item.icon = UIImage(named: "my_category_icon")
-                    break;
-                    
-                case 3:
-                    item.title = "Refer Friend";
-                    item.icon = UIImage(named: "refer_friend_icon")
-                    break;
-                    
-                case 4:
-                    item.title = "Add Category";
-                    item.icon = UIImage(named: "add_category_icon")
-                    break;
-                    
-                case 5:
-                    item.title = "Manage Expertise";
-                    item.icon = UIImage(named: "manage_expertise_icon")
-                    break;
-                    
-                case 6:
-                    item.title = "My Account";
-                    item.icon = UIImage(named: "my_account_icon")
-                    break;
-                    
-                case 7:
-                    item.title = "Settings";
-                    item.icon = UIImage(named: "settings_icon")
-                    break;
-                    
-                case 8:
-                    item.title = "Logout";
-                    item.icon = UIImage(named: "logout_icon")
-                    break;
-                    
                 default:
                     break;
                 }
@@ -481,131 +538,165 @@ class HomeVC: UIViewController, VKSideMenuDelegate, VKSideMenuDataSource, UIColl
     
     // MARK: - VKSideMenuDelegate
     func sideMenu(_ sideMenu: VKSideMenu!, didSelectRowAt indexPath: IndexPath!) {
-        self.userType = UserDefaults.standard.value(forKey: "teacherStudentValue") as! String
-        if(self.userType == "2") {
-            switch indexPath.row {
-            case 0:
-                let updateProfileView : UpdateProfileView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "UpdateProfileView") as UIViewController as! UpdateProfileView
-                updateProfileView.delegate = self
-                self.navigationController?.pushViewController(updateProfileView, animated: true)
-                break;
-                
-            case 1:
-                let notificationsView : NotificationsView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "NotificationsView") as UIViewController as! NotificationsView
-                self.navigationController?.pushViewController(notificationsView, animated: true)
-                break;
-                
-            case 2:
-                let myCategoryView : MyCategoryView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MyCategoryView") as UIViewController as! MyCategoryView
-                self.navigationController?.pushViewController(myCategoryView, animated: true)
-                break;
-                
-            case 3:
-                break;
-                
-            case 4:
-                self.userType = UserDefaults.standard.value(forKey: "teacherStudentValue") as! String
-                if(self.userType == "2") {
-                    alertView.containerView = createContainerView(acceptOrRejectSuccessMessage: "Please Upgrade to Teacher to Avail these Services")
-                    alertView.catchString(withString: "AlertForRequest/Accept/Reject")
-                    alertView.show()
-                    return
+        if UserDefaults.standard.bool(forKey: "UserLoggedInStatus") {
+            self.userType = UserDefaults.standard.value(forKey: "teacherStudentValue") as! String
+            if(self.userType == "2") {
+                switch indexPath.row {
+                case 0:
+                    let updateProfileView : UpdateProfileView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "UpdateProfileView") as UIViewController as! UpdateProfileView
+                    updateProfileView.delegate = self
+                    self.navigationController?.pushViewController(updateProfileView, animated: true)
+                    break;
+                    
+                case 1:
+                    let notificationsView : NotificationsView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "NotificationsView") as UIViewController as! NotificationsView
+                    self.navigationController?.pushViewController(notificationsView, animated: true)
+                    break;
+//                    
+//                case 2:
+//                    let myCategoryView : MyCategoryView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MyCategoryView") as UIViewController as! MyCategoryView
+//                    self.navigationController?.pushViewController(myCategoryView, animated: true)
+//                    break;
+                    
+//                case 2:
+//                    break;
+                    
+//                case 4:
+//                    self.userType = UserDefaults.standard.value(forKey: "teacherStudentValue") as! String
+//                    if(self.userType == "2") {
+//                        alertView.containerView = createContainerView(acceptOrRejectSuccessMessage: "Please Upgrade to Teacher to Avail these Services")
+//                        alertView.catchString(withString: "AlertForRequest/Accept/Reject")
+//                        alertView.show()
+//                        return
+//                    }
+//                    
+//                    let addCategoryView : AddCategoryView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddCategoryView") as UIViewController as! AddCategoryView
+//                    addCategoryView.delegate = self
+//                    self.navigationController?.pushViewController(addCategoryView, animated: true)
+//                    
+//                    break;
+//                    
+//                case 5:
+//                    self.userType = UserDefaults.standard.value(forKey: "teacherStudentValue") as! String
+//                    if(self.userType == "2") {
+//                        alertView.containerView = createContainerView(acceptOrRejectSuccessMessage: "Please Upgrade to Teacher to Avail these Services")
+//                        alertView.catchString(withString: "AlertForRequest/Accept/Reject")
+//                        alertView.show()
+//                        return
+//                    }
+//                    let manageExpertiseView : ManageExpertiseView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ManageExpertiseView") as UIViewController as! ManageExpertiseView
+//                    self.navigationController?.pushViewController(manageExpertiseView, animated: true)
+//                    break;
+//
+//                case 6:
+//                    break;
+//                    
+                case 2:
+                    let addExpertiseView : ExpertDetailsVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ExpertDetailsVC") as UIViewController as! ExpertDetailsVC
+                    addExpertiseView.isUpgradeToTeacher = true
+                    addExpertiseView.delegate = self
+                    self.navigationController?.pushViewController(addExpertiseView, animated: true)
+                    break;
+                    
+                case 3:
+                    let settingsView : SettingsView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SettingsView") as UIViewController as! SettingsView
+                    self.navigationController?.pushViewController(settingsView, animated: true)
+                    break;
+                    
+                case 4:
+//                    let settingsView : SettingsView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SettingsView") as UIViewController as! SettingsView
+//                    self.navigationController?.pushViewController(settingsView, animated: true)
+                    break;
+                    
+                case 5:
+                    self.view.endEditing(true)
+                    self.askForLogoutIfUserIsSure()
+                    break;
+                    
+                default:
+                    break;
                 }
-                
-                let addCategoryView : AddCategoryView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddCategoryView") as UIViewController as! AddCategoryView
-                addCategoryView.delegate = self
-                self.navigationController?.pushViewController(addCategoryView, animated: true)
-                
-                break;
-                
-            case 5:
-                self.userType = UserDefaults.standard.value(forKey: "teacherStudentValue") as! String
-                if(self.userType == "2") {
-                    alertView.containerView = createContainerView(acceptOrRejectSuccessMessage: "Please Upgrade to Teacher to Avail these Services")
-                    alertView.catchString(withString: "AlertForRequest/Accept/Reject")
-                    alertView.show()
-                    return
+            } else {
+                switch indexPath.row {
+                case 0:
+                    let updateProfileView : UpdateProfileView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "UpdateProfileView") as UIViewController as! UpdateProfileView
+                    updateProfileView.delegate = self
+                    self.navigationController?.pushViewController(updateProfileView, animated: true)
+                    break;
+                    
+                case 1:
+                    let notificationsView : NotificationsView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "NotificationsView") as UIViewController as! NotificationsView
+                    self.navigationController?.pushViewController(notificationsView, animated: true)
+                    break;
+                    
+                case 2:
+                    let generalEnquiryView : MessagesView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MessagesView") as UIViewController as! MessagesView
+                    generalEnquiryView.isFromGeneralEnquiry = true
+                    self.navigationController?.pushViewController(generalEnquiryView, animated: true)
+                    break;
+
+                case 3:
+                    let myBlogView : BlogView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "BlogView") as UIViewController as! BlogView
+                    myBlogView.isFromMyBlogs = true
+                    self.navigationController?.pushViewController(myBlogView, animated: true)
+                    break;
+                    
+                case 4:
+                    let myCategoryView : MyCategoryView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MyCategoryView") as UIViewController as! MyCategoryView
+                    self.navigationController?.pushViewController(myCategoryView, animated: true)
+                    break;
+                    
+//                case 5:
+//                    break;
+                    
+                case 5:
+                    let addCategoryView : AddCategoryView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddCategoryView") as UIViewController as! AddCategoryView
+                    addCategoryView.delegate = self
+                    self.navigationController?.pushViewController(addCategoryView, animated: true)
+                    
+                    break;
+                    
+                case 6:
+                    self.userType = UserDefaults.standard.value(forKey: "teacherStudentValue") as! String
+                    if(self.userType == "2") {
+                        alertView.containerView = createContainerView(acceptOrRejectSuccessMessage: "Please Upgrade to Teacher to Avail these Services")
+                        alertView.catchString(withString: "AlertForRequest/Accept/Reject")
+                        alertView.show()
+                        return
+                    }
+                    let manageExpertiseView : ManageExpertiseView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ManageExpertiseView") as UIViewController as! ManageExpertiseView
+                    self.navigationController?.pushViewController(manageExpertiseView, animated: true)
+                    break;
+                    
+//                case 6:
+//                    break;
+//                    
+                case 7:
+                    let settingsView : SettingsView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SettingsView") as UIViewController as! SettingsView
+                    self.navigationController?.pushViewController(settingsView, animated: true)
+                    break;
+                    
+                case 8:
+                    break;
+                    
+                case 9:
+                    self.view.endEditing(true)
+                    self.askForLogoutIfUserIsSure()
+                    break;
+                    
+                default:
+                    break;
                 }
-                let manageExpertiseView : ManageExpertiseView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ManageExpertiseView") as UIViewController as! ManageExpertiseView
-                self.navigationController?.pushViewController(manageExpertiseView, animated: true)
-                break;
-                
-            case 6:
-                break;
-                
-            case 7:
-                let addExpertiseView : ExpertDetailsVC = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ExpertDetailsVC") as UIViewController as! ExpertDetailsVC
-                addExpertiseView.isUpgradeToTeacher = true
-                addExpertiseView.delegate = self
-                self.navigationController?.pushViewController(addExpertiseView, animated: true)
-                break;
-                
-            case 8:
-                let settingsView : SettingsView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SettingsView") as UIViewController as! SettingsView
-                self.navigationController?.pushViewController(settingsView, animated: true)
-                break;
-                
-            case 9:
-                self.view.endEditing(true)
-                self.askForLogoutIfUserIsSure()
-                break;
-                
-            default:
-                break;
             }
         } else {
-            switch indexPath.row {
-            case 0:
-                let updateProfileView : UpdateProfileView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "UpdateProfileView") as UIViewController as! UpdateProfileView
-                updateProfileView.delegate = self
-                self.navigationController?.pushViewController(updateProfileView, animated: true)
-                break;
-                
+            switch (indexPath.row)
+            {
             case 1:
-                let notificationsView : NotificationsView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "NotificationsView") as UIViewController as! NotificationsView
-                self.navigationController?.pushViewController(notificationsView, animated: true)
+                let loginView = LoginWireFrame.setupLoginModule() as UIViewController
+                let navController = UINavigationController(rootViewController: loginView)
+                self.present(navController, animated: true, completion: nil)
+                loginView.modalTransitionStyle = UIModalTransitionStyle(rawValue: 0)!
                 break;
-                
-            case 2:
-                let myCategoryView : MyCategoryView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "MyCategoryView") as UIViewController as! MyCategoryView
-                self.navigationController?.pushViewController(myCategoryView, animated: true)
-                break;
-                
-            case 3:
-                break;
-                
-            case 4:
-                let addCategoryView : AddCategoryView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "AddCategoryView") as UIViewController as! AddCategoryView
-                addCategoryView.delegate = self
-                self.navigationController?.pushViewController(addCategoryView, animated: true)
-                
-                break;
-                
-            case 5:
-                self.userType = UserDefaults.standard.value(forKey: "teacherStudentValue") as! String
-                if(self.userType == "2") {
-                    alertView.containerView = createContainerView(acceptOrRejectSuccessMessage: "Please Upgrade to Teacher to Avail these Services")
-                    alertView.catchString(withString: "AlertForRequest/Accept/Reject")
-                    alertView.show()
-                    return
-                }
-                let manageExpertiseView : ManageExpertiseView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "ManageExpertiseView") as UIViewController as! ManageExpertiseView
-                self.navigationController?.pushViewController(manageExpertiseView, animated: true)
-                break;
-                
-            case 6:
-                break;
-                
-            case 7:
-                let settingsView : SettingsView = UIStoryboard(name: "Main", bundle: nil).instantiateViewController(withIdentifier: "SettingsView") as UIViewController as! SettingsView
-                self.navigationController?.pushViewController(settingsView, animated: true)
-                break;
-                
-            case 8:
-                self.view.endEditing(true)
-                self.askForLogoutIfUserIsSure()
-                break;
-                
             default:
                 break;
             }
@@ -620,11 +711,14 @@ class HomeVC: UIViewController, VKSideMenuDelegate, VKSideMenuDataSource, UIColl
         logoutAlert.addAction(UIAlertAction(title: cancel, style: .default, handler: nil))
         logoutAlert.addAction(UIAlertAction(title: logout, style: .default, handler: { (action: UIAlertAction!) in
             UserDefaults.standard.set(false, forKey: "UserLoggedInStatus")
-            self.navigationController!.pushViewController(LoginWireFrame.setupLoginModule() as UIViewController, animated: false)
+            let loginView = LoginWireFrame.setupLoginModule() as UIViewController
+            let navController = UINavigationController(rootViewController: loginView)
+            self.present(navController, animated: true, completion: nil)
+            loginView.modalTransitionStyle = UIModalTransitionStyle(rawValue: 0)!
         }))
         self.present(logoutAlert, animated: true, completion: nil)
     }
-    
+     
     func showLoginController() -> Void {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         let defaults = UserDefaults.standard
@@ -868,7 +962,7 @@ class HomeVC: UIViewController, VKSideMenuDelegate, VKSideMenuDataSource, UIColl
         label.numberOfLines = 2
         label.textAlignment = NSTextAlignment.center
         
-        label.font =  UIFont(name: "Raleway-Light", size: 18)
+        label.font =  UIFont(name: "Raleway-Medium", size: 18)
         label.textColor = UIColor.ExpertConnectBlack
         label.textAlignment = NSTextAlignment.center
         View.addSubview(label)

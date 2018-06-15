@@ -15,7 +15,7 @@ final class SubCategoryAPIDataManager: SubCategoryProtocols {
     func getSubCategoryDetails(model: SubCategoryDomainModel, callback: @escaping (ECallbackResultType) -> Void) {
         do {
             let api: ApiServiceProtocol = ApiService() 
-            let url: String = try api.constructApiEndpoint(base: "http://182.72.44.11/expert_connect", params: "get_sub_categories.php")
+            let url: String = try api.constructApiEndpoint(base: "http://114.143.177.218/expert_connect", params: "get_sub_categories.php")
             let headers = try api.constructHeader(withCsrfToken: true, cookieDictionary: nil)
             let parameters = ["category_id": model.categoryId] as [String : Any]
             

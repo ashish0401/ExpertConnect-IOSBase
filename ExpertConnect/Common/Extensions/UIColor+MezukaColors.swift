@@ -82,8 +82,27 @@ extension UIColor {
         return UIColor(red: 249/255, green: 249/255, blue: 249/255, alpha: 1.0)
     }
     
+    public class var ExpertConnectURL: UIColor
+    {
+        return UIColor(red: 77/255, green: 150/255, blue: 243/255, alpha: 1.0)
+    }
+    
     public class var ExpertConnectDisabled: UIColor
     {
         return UIColor.black.withAlphaComponent(0.3)
     }
+    
+    public class var ExpertConnectRatingGreen: UIColor
+    {
+        return UIColor(red: 73/255, green: 190/255, blue: 95/255, alpha: 1.0)
+    }
+    public class var ExpertConnectRatingOrange: UIColor
+    {
+        return UIColor(red: 238/255, green: 109/255, blue: 21/255, alpha: 1.0)
+    }
+    public class var ExpertConnectRatingYellow: UIColor
+    {
+        return UIColor(red: 243/255, green: 181/255, blue: 3/255, alpha: 1.0)
+    }
+
 }

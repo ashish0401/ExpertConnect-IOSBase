@@ -1,0 +1,28 @@
+//
+//  MessagesView.strings
+//  ExpertConnect
+//
+//  Created by Nadeem on 24/11/16.
+//  Copyright © 2016 user. All rights reserved.
+//
+
+"Processing" = "Processing";
+"No Internet Connection" = "No Internet Connection";
+
+"Updating mobile number" = "Updating mobile number";
+"Your mobile number updated successfully" = "Your mobile number updated successfully";
+"Verifying mobile number" = "Verifying mobile number";
+"Verifying OTP" = "Verifying OTP";
+"Please Enter Main Category First" = "Please Enter Main Category First";
+"Please Enter Main Category" = "Please Enter Main Category";
+"Please Enter Sub Category" = "Please Enter Sub Category";
+"Adding new category" = "Adding new category";
+
+"Please Enter Title" = "Please Enter Title";
+"Please Enter Description" = "Please Enter Description";
+"Please Enter Blog Url" = "Please Enter Blog Url";
+"Loading Messages" = "Loading Messages";
+"MessagesUnavailable" = "No Messages Available";
+"LoginRequest" = "Looks like you haven't Logged In yet,\nKindly login to avail these services.";
+"EnquiriesUnavailable" = "No Enquiries Available";
+"Posting Enquiry" = "Posting Enquiry";

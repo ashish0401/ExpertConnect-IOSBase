@@ -40,10 +40,14 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
         self.view.insertSubview(backgroundImage, at: 0)
         self.hideKeyboardWhenTappedAround()
         self.emailTextfield.delegate = self
+        self.activateTextualCancelIcon()
     }
     
     override func viewWillAppear(_ animated: Bool) {
-        self.navigationController?.setNavigationBarHidden(true, animated: true)
+        self.navigationController?.setNavigationBarHidden(false, animated: true)
+        self.navigationItem.title = "Login"
+        self.navigationController?.navigationBar.backgroundColor = UIColor.white
+
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.objTabbarMain.tabBar.isHidden = true
         
@@ -59,11 +63,13 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
     }
     
     override func viewDidAppear(_ animated: Bool) {
+    }
+    
+    override func viewDidLayoutSubviews() {
         self.setExpertConnectRedButtonTheme(button: self.loginButton)
         self.setExpertConnectWhiteButtonTheme(button: self.signUpButton)
-        
-        self.navigationController?.setNavigationBarHidden(true, animated: true)
     }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
@@ -214,7 +220,7 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
         let View=UIView(frame: CGRect(x: 0, y: 0, width: 290, height: 20))
         let label = UILabel(frame: CGRect(x: 0, y: 30, width: 290, height: 20))
         label.text = "SIGNUP AS"
-        label.font =  UIFont(name: "Raleway-Light", size: 18)
+        label.font =  UIFont(name: "Raleway-Medium", size: 18)
         label.textColor = UIColor.ExpertConnectBlack
         label.textAlignment = NSTextAlignment.center
         View.addSubview(label)
@@ -223,6 +229,8 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
         closeButton.addTarget(self, action: #selector(pressButton(button:)), for: .touchUpInside)
         closeButton.backgroundColor = UIColor.white
         closeButton.setImage(UIImage(named: "cross_btn"), for: UIControlState.normal)
+        closeButton.layer.cornerRadius = 3
+
         View.addSubview(closeButton)
         return View;
     }
@@ -235,7 +243,7 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
         label.numberOfLines = 2
         label.textAlignment = NSTextAlignment.center;
         
-        label.font =  UIFont(name: "Raleway-Light", size: 18)
+        label.font =  UIFont(name: "Raleway-Medium", size: 18)
         label.textColor = UIColor.ExpertConnectBlack
         label.textAlignment = NSTextAlignment.center
         View.addSubview(label)
@@ -244,6 +252,8 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
         closeButton.addTarget(self, action: #selector(pressButton(button:)), for: .touchUpInside)
         closeButton.backgroundColor = UIColor.white
         closeButton.setImage(UIImage(named: "cross_btn"), for: UIControlState.normal)
+        closeButton.layer.cornerRadius = 3
+
         View.addSubview(closeButton)
         OTPTextfield = UITextField(frame: CGRect(x: 20, y: 95, width: 250.00, height: 40.00))
         OTPTextfield.textAlignment = NSTextAlignment.center;
@@ -326,11 +336,13 @@ final class LoginVC: UIViewController, CustomIOS7AlertViewDelegate, LoginViewPro
     
     // MARK: LoginView Delegates
     func navigateBackToViewController() {
+        self.view.endEditing(true)
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
         appDelegate.setInitialViewController()
     }
     
     func navigateToSignup() {
+        self.view.endEditing(true)
         self.setupSignupOptionView()
     }
     

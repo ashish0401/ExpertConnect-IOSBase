@@ -177,9 +177,13 @@
     }
     else
     {
-        UIVisualEffect *blurEffect = [UIBlurEffect effectWithStyle:self.blurEffectStyle];
-        self.view = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
-        self.view.frame = frame;
+//        UIVisualEffect *blurEffect = [UIBlurEffect effectWithStyle:self.blurEffectStyle];
+//        self.view = [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+        self.view = [[UIView alloc] initWithFrame:frame];
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+        self.view.backgroundColor = self.backgroundColor;
+#pragma clang diagnostic pop
     }
     
     // Setup content table view
@@ -191,6 +195,10 @@
     //    self.tableView.backgroundColor = Rgb2UIColor(247.0, 67.0, 0.0);
     self.tableView.backgroundColor = [UIColor colorWithRed:242/255.0 green:90/255.0 blue:11/255.0 alpha:0.9];
     self.tableView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    if(![[NSUserDefaults standardUserDefaults] boolForKey:@"UserLoggedInStatus"])
+    {
+        self.tableView.scrollEnabled = NO;
+    }
 
     [self.view addSubview:self.tableView];
 }
@@ -275,6 +283,25 @@
         UIView *bgColorView = [[UIView alloc] init];
         [bgColorView setBackgroundColor:self.selectionColor];
         [cell setSelectedBackgroundView:bgColorView];
+        
+        if(![[NSUserDefaults standardUserDefaults] boolForKey:@"UserLoggedInStatus"])
+        {
+            if(indexPath.row == 0 || indexPath.row == 2)
+            {
+                cell.userInteractionEnabled = NO;
+            }
+//            if(indexPath.row == 2)
+//            {
+//                UIView *bgColorView = [[UIView alloc] init];
+//                [bgColorView setBackgroundColor:self.selectionColor];
+//                [cell setSelectedBackgroundView:bgColorView];
+//                cell.backgroundColor = [UIColor colorWithRed:146/255.0 green:53/255.0 blue:5/255.0 alpha:1.0];
+//            }
+        }
+        else
+        {
+            cell.userInteractionEnabled = YES;
+        }
     }
     
     VKSideMenuItem *item = [self.dataSource sideMenu:self itemForRowAtIndexPath:indexPath];
@@ -298,6 +325,7 @@
             else if (indexPath.row !=0)
             {
                 imageViewIcon = [[UIImageView alloc] initWithFrame:CGRectMake(20, contentTopBottomPadding+5, contentHeight-10, contentHeight-10)];
+                [imageViewIcon setContentMode:UIViewContentModeScaleAspectFit];
             }
             
             imageViewIcon.tag = 100;
@@ -321,13 +349,37 @@
         if (indexPath.row ==0) {
             CGFloat titleX = item.icon ? CGRectGetMaxX(imageViewIcon.frame) + 12 : 12;
             title = [[UILabel alloc] initWithFrame:CGRectMake(20, contentTopBottomPadding+75, self.size - 25, contentHeight+10)];
+
             UIView *lineView = [[UIView alloc] initWithFrame:CGRectMake(0, 132, self.view.bounds.size.width, 1)];
             lineView.backgroundColor = [UIColor whiteColor];
             [cell.contentView addSubview:lineView];
             
+            if([[NSUserDefaults standardUserDefaults] boolForKey:@"UserLoggedInStatus"])
+            {
             [cell.contentView addSubview:[self addButton:nil : CGRectMake(self.size - 44, contentTopBottomPadding, 44, 44) :@selector(btnAction:) :[UIImage imageNamed:@"sidemenu_edit_btn"] :indexPath]];
+            }
+            else
+            {
+                UILabel *logoLabelTop = [[UILabel alloc] initWithFrame:CGRectMake((self.view.bounds.size.width/2)-(contentHeight+133)/2, contentTopBottomPadding, contentHeight+133, contentHeight+49)];
+                [logoLabelTop setNumberOfLines:1
+                 ];
+                logoLabelTop.textAlignment = NSTextAlignmentCenter;
+                [logoLabelTop setFont:[UIFont fontWithName:@"01 Digitall" size:29]];
+                [logoLabelTop setTextColor:[UIColor whiteColor]];
+                [logoLabelTop setText:@"EXPERT"];
+                [cell.contentView addSubview:logoLabelTop];
+                
+                UILabel *logoLabelBottom = [[UILabel alloc] initWithFrame:CGRectMake((self.view.bounds.size.width/2)-(contentHeight+133)/2, contentTopBottomPadding+25, contentHeight+133, contentHeight+49)];
+                [logoLabelBottom setNumberOfLines:1
+                 ];
+                logoLabelBottom.textAlignment = NSTextAlignmentCenter;
+                [logoLabelBottom setFont:[UIFont fontWithName:@"01 Digitall" size:29]];
+                [logoLabelBottom setTextColor:[UIColor whiteColor]];
+                [logoLabelBottom setText:@"CONNECT"];
+                [cell.contentView addSubview:logoLabelBottom];
+            }
             
-            [title setFont:[UIFont fontWithName:@"Raleway-Medium" size:17]];
+            [title setFont:[UIFont fontWithName:@"Raleway-Medium" size:18]];
         }
         else if (indexPath.row !=0)
         {
@@ -381,6 +433,13 @@
 
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    if(![[NSUserDefaults standardUserDefaults] boolForKey:@"UserLoggedInStatus"])
+    {
+      if(indexPath.row == 0)
+      {
+          return;
+      }
+    }
     if (_delegate && [_delegate respondsToSelector:@selector(sideMenu:didSelectRowAtIndexPath:)])
         [_delegate sideMenu:self didSelectRowAtIndexPath:indexPath];
     
@@ -395,6 +454,12 @@
 {
     if (indexPath.row == 0) {
         return 140;
+    }
+    if(![[NSUserDefaults standardUserDefaults] boolForKey:@"UserLoggedInStatus"])
+    {
+        if (indexPath.row == 1) {
+//            return self.view.frame.size.height-(self.rowHeight+125+self.rowHeight);
+        }
     }
     return self.rowHeight;
 }

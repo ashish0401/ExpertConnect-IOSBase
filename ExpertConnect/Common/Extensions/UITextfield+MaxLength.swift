@@ -49,7 +49,7 @@ extension UITextField {
     }
     
     override open func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-        if action == #selector(copy(_:)) || action == #selector(paste(_:)) {
+        if action == #selector(cut(_:)) || action == #selector(paste(_:)) {
             return false
         }
         

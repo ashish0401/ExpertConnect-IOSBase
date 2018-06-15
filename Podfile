@@ -16,6 +16,7 @@ target 'ExpertConnect' do
     pod 'FacebookCore'
     pod 'FacebookLogin'
     pod 'FacebookShare'
+    pod 'eWAYPaymentsSDK'
 end
 
   target 'ExpertConnectTests' do

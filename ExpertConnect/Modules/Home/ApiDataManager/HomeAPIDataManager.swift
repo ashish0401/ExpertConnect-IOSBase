@@ -15,7 +15,7 @@ final class HomeAPIDataManager: HomeProtocols {
     func getCategoryDetails(callback: @escaping (ECallbackResultType) -> Void) {
         do {
             let api: ApiServiceProtocol = ApiService()
-            let url: String = try api.constructApiEndpoint(base: "http://182.72.44.11/expert_connect", params: "get_category_subcategory.php")
+            let url: String = try api.constructApiEndpoint(base: "http://114.143.177.218/expert_connect", params: "get_category_subcategory.php")
             let headers = try api.constructHeader(withCsrfToken: true, cookieDictionary: nil)
             let parameters = [:] as [String : Any]
             
@@ -30,7 +30,5 @@ final class HomeAPIDataManager: HomeProtocols {
             // Change it with the real error
             callback(.Failure(.UnknownError))
         }
-
     }
-  
 }

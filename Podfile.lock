@@ -7,6 +7,7 @@ PODS:
     - Bolts/Tasks
   - Bolts/Tasks (1.8.4)
   - Cosmos (7.0.0)
+  - eWAYPaymentsSDK (1.1.0)
   - FacebookCore (0.2.0):
     - Bolts (~> 1.8)
     - FBSDKCoreKit (~> 4.15)
@@ -44,6 +45,7 @@ PODS:
 DEPENDENCIES:
   - Alamofire (~> 4.0)
   - Cosmos (~> 7.0)
+  - eWAYPaymentsSDK
   - FacebookCore
   - FacebookLogin
   - FacebookShare
@@ -59,6 +61,7 @@ SPEC CHECKSUMS:
   Alamofire: 856a113053a7bc9cbe5d6367a555d773fc5cfef7
   Bolts: 8a7995239dbe724f9cba2248b766d48b7ebdd322
   Cosmos: 2c8299147138758f6ebbb247cf1aeed77998bdf9
+  eWAYPaymentsSDK: d0cb78895acae95abd274ebafff9658c7e70cde0
   FacebookCore: 2cb3f0fbff218e9d3119cec84bae983b232412de
   FacebookLogin: c9d606504735780a9e3002465a615512e0a691a5
   FacebookShare: 8e9ee8ea06505e6a1d3d719b0cc63e840fb8aaeb
@@ -73,6 +76,6 @@ SPEC CHECKSUMS:
   MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
   SwiftyJSON: c2842d878f95482ffceec5709abc3d05680c0220
 
-PODFILE CHECKSUM: 9101954e31872d7be41e9ea52cb5721967660fda
+PODFILE CHECKSUM: d016dcb42a5e59e7cbd9f22ed4bef7fd0c0a438a
 
-COCOAPODS: 1.0.1
+COCOAPODS: 1.2.1
